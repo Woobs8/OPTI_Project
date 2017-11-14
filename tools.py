@@ -1,5 +1,40 @@
 from sklearn.decomposition import PCA
-from numpy import reshape
+from mnist import MNIST
+import numpy as np
+import scipy.io as scio
+from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+
+
+"""" 
+Load MNIST dataset from directory
+param:
+    @fp: path to directory containing data
+returns:
+    train_images, train_lbls, test_images, test_lbls
+"""
+def loadMNIST(fp):
+    mndata = MNIST(fp, return_type='numpy')
+    train_images, train_lbls = mndata.load_training()
+    test_images, test_lbls = mndata.load_testing()
+    return train_images, train_lbls, test_images, test_lbls
+
+
+"""" 
+Load ORL dataset from directory and splits it training and testing datasets
+param:
+    @fp: path to directory containing data
+    @test_size: size of test dataset (0-1)
+returns:
+    train_data, train_lbls, test_data, test_lbls
+"""
+def loadORL(fp, test_size=0.3):
+    data = np.array(scio.loadmat(fp+'/orl_data.mat')['data']).transpose()
+    lbls = np.array(scio.loadmat(fp+'/orl_lbls.mat')['lbls'])
+    # Split data into training and testing datasets
+    train_data, test_data, train_lbls, test_lbls = train_test_split(data, lbls, test_size=test_size)
+    return train_data, train_lbls, test_data, test_lbls
+
 
 """" 
 Apply PCA to training and testing data samples
@@ -12,20 +47,11 @@ returns:
 def pca(train_data, test_data):
     # Initialize training PCA to 2-dimensions
     pca = PCA(n_components=2)
-
-    pca_train_data = []
-    # Iterate samples due to memory constraint
-    for sample in train_data:
-        # Optimize model to data and transform data
-        pca_train_data.append(pca.fit_transform(sample.reshape(1,-1)))
-
-    pca_test_data = []
-    # Iterate samples due to memory constraint
-    for sample in test_data:
-        # Optimize model to data and transform data
-        pca_test_data.append(pca.fit_transform(sample.reshape(1,-1)))
-
+    # Fit PCA to data and transform
+    pca_train_data = pca.fit_transform(train_data)
+    pca_test_data = pca.fit_transform(test_data)
     return pca_train_data, pca_test_data
+
 
 def visualize_data(data):
     print("not implemented yet")
