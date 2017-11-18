@@ -43,23 +43,26 @@ def nsc(train_data, train_lbls, test_data, test_lbls, subclass_count):
     # Iterate classes and apply K-means to find subclasses of each class
     kmeans = KMeans(n_clusters=subclass_count)
     grouped_train_data = [None] * class_count
-    subclass_centers = [None] * class_count * subclass_count
+    subclass_centers = [None] * class_count
+    label_offset = classes[0]   # Account for classifications which doesn't start at 0
     for label in classes:
+        index = label - label_offset
+
         # Group training samples into lists for each class
-        grouped_train_data[label-1] = [x for i, x in enumerate(train_data) if train_lbls[i]==label]
+        grouped_train_data[index] = [x for i, x in enumerate(train_data) if train_lbls[i]==label]
 
         # Apply K-means clustering algorithm to find subclasses
-        kmeans.fit(grouped_train_data[label-1])
-        subclass_centers[label-1] = kmeans.cluster_centers_
+        kmeans.fit(grouped_train_data[index])
+        subclass_centers[index] = kmeans.cluster_centers_
 
     # Iterate samples and calculate distance to subclass cluster centers
     test_sample_count = len(test_data)
     classification = [None]*test_sample_count
     for i, sample in enumerate(test_data):
         min = None
-        # Iterate classes
+        # Iterate base classes
         for j, class_centers in enumerate(subclass_centers):
-            label = j+1 # classes start at 1, index starts at 0
+            label = j + label_offset
             if class_centers is not None:
                 # Iterate centroids of subclasses
                 for subclass_center in class_centers:
@@ -77,6 +80,7 @@ def nsc(train_data, train_lbls, test_data, test_lbls, subclass_count):
     score = class_err_count / test_sample_count
 
     return classification, score
+
 
 """" 
 Fit model to training data and classify the test data using a Nearest Neighbor algorithm
