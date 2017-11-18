@@ -1,7 +1,7 @@
 import os
 import sys
 from tools import loadMNIST, loadORL, pca
-from classification import nc, nsc
+from classify import nc, nsc, nn
 
 
 def main(run_nc = True, run_nsc = True, run_nn = True):
@@ -37,27 +37,49 @@ def main(run_nc = True, run_nsc = True, run_nn = True):
     if run_nsc:
         # 2 subclasses, 784D data
         nsc_2_mnist_class, nsc_2_mnist_score = nsc(mnist_train_images, mnist_train_lbls, mnist_test_images, mnist_test_lbls,2)
+        # 2 subclasses, PCA data
+        pca_nsc_2_mnist_class, pca_nsc_2_mnist_score = nsc(pca_mnist_train_images, mnist_train_lbls, pca_mnist_test_images, mnist_test_lbls,2)
         # 3 subclasses, 784D data
         nsc_3_mnist_class, nsc_3_mnist_score = nsc(mnist_train_images, mnist_train_lbls, mnist_test_images, mnist_test_lbls,3)
+        # 3 subclasses, PCA data
+        pca_nsc_3_mnist_class, pca_nsc_3_mnist_score = nsc(pca_mnist_train_images, mnist_train_lbls, pca_mnist_test_images, mnist_test_lbls,3)
         # 5 subclasses, 784D data
         nsc_5_mnist_class, nsc_5_mnist_score = nsc(mnist_train_images, mnist_train_lbls, mnist_test_images, mnist_test_lbls,5)
+        # 5 subclasses, PCA data
+        pca_nsc_5_mnist_class, pca_nsc_5_mnist_score = nsc(pca_mnist_train_images, mnist_train_lbls, pca_mnist_test_images, mnist_test_lbls,5)
 
+    # Nearest Neighbor
+    if run_nn:
+        nn_mnist_class, nn_mnist_prob, nn_mnist_score = nn(mnist_train_images, mnist_train_lbls, mnist_test_images, mnist_test_lbls,1,'uniform')
+        pca_nn_mnist_class, pca_nn_mnist_prob, pca_nn_mnist_score = nn(pca_mnist_train_images, mnist_train_lbls, pca_mnist_test_images, mnist_test_lbls,1,'uniform')
 
     """ ********* Classifying ORL samples ********* """
     # Nearest Centroid
     if run_nc:
-        nc_orl_class, nc_orl_score = nc(orl_train_images, orl_train_lbls, orl_test_images, orl_test_lbls)
-        # Nearest Centroid w/ PCA data
-        pca_nc_orl_class, pca_nc_orl_score = nc(pca_orl_train_images, orl_train_lbls, pca_orl_test_images, orl_test_lbls)
+        # 784D data
+        nc_orl_class, nc_orl_score = nc(orl_train_images, orl_train_lbls.ravel(), orl_test_images, orl_test_lbls)
+        # PCA data
+        pca_nc_orl_class, pca_nc_orl_score = nc(pca_orl_train_images, orl_train_lbls.ravel(), pca_orl_test_images, orl_test_lbls)
 
     # Nearest Subclass Centroid
     if run_nsc:
         # 2 subclasses, 1200D data
         nsc_2_orl_class, nsc_2_orl_score = nsc(orl_train_images, orl_train_lbls.ravel(), orl_test_images, orl_test_lbls,2)
+        # 2 subclasses, PCA data
+        pca_nsc_2_orl_class, pca_nsc_2_orl_score = nsc(pca_orl_train_images, orl_train_lbls.ravel(), pca_orl_test_images, orl_test_lbls,2)
         # 3 subclasses, 1200D data
         nsc_3_orl_class, nsc_3_orl_score = nsc(orl_train_images, orl_train_lbls.ravel(), orl_test_images, orl_test_lbls,3)
+        # 3 subclasses, PCA data
+        pca_nsc_3_orl_class, pca_nsc_3_orl_score = nsc(pca_orl_train_images, orl_train_lbls.ravel(), pca_orl_test_images, orl_test_lbls,3)
         # 5 subclasses, 1200D data
         #nsc_5_orl_class, nsc_5_orl_score = nsc(orl_train_images, orl_train_lbls.ravel(), orl_test_images, orl_test_lbls,5)
+        # 5 subclasses, PCA data
+        #pca_nsc_5_orl_class, pca_nsc_5_orl_score = nsc(pca_orl_train_images, orl_train_lbls.ravel(), pca_orl_test_images, orl_test_lbls,5)
+
+    # Nearest Neighbor
+    if run_nn:
+        nn_orl_class, nn_orl_prob, nn_orl_score = nn(orl_train_images, orl_train_lbls.ravel(), orl_test_images, orl_test_lbls,1,'uniform')
+        pca_nn_orl_class, pca_nn_orl_prob, pca_nn_orl_score = nn(pca_orl_train_images, orl_train_lbls.ravel(), pca_orl_test_images, orl_test_lbls,1,'uniform')
 
 
     """ ********* Classification scores ********* """
@@ -71,8 +93,17 @@ def main(run_nc = True, run_nsc = True, run_nn = True):
     # Nearest Subclass Centroid
     if run_nsc:
         print("\tNearest Subclass Centroid (2): " + str(nsc_2_mnist_score))
+        print("\tNearest Subclass Centroid (2) w/ PCA: " + str(pca_nsc_2_mnist_score))
         print("\tNearest Subclass Centroid (3): " + str(nsc_3_mnist_score))
+        print("\tNearest Subclass Centroid (3) w/ PCA: " + str(pca_nsc_3_mnist_score))
         print("\tNearest Subclass Centroid (5): " + str(nsc_5_mnist_score))
+        print("\tNearest Subclass Centroid (5) w/ PCA: " + str(pca_nsc_5_mnist_score))
+
+    # Nearest Neighbor
+    if run_nn:
+        print("\tNearest Neighbor: " + str(nn_mnist_score))
+        print("\tNearest Neighbor w/ PCA: " + str(pca_nn_mnist_score))
+
 
     print("\n*** ORL ***")
     # Nearest Centroid
@@ -83,8 +114,15 @@ def main(run_nc = True, run_nsc = True, run_nn = True):
     # Nearest Subclass Centroid
     if run_nsc:
         print("\tNearest Subclass Centroid (2): " + str(nsc_2_orl_score))
+        print("\tNearest Subclass Centroid (2) w/ PCA: " + str(pca_nsc_2_orl_score))
         print("\tNearest Subclass Centroid (3): " + str(nsc_3_orl_score))
+        print("\tNearest Subclass Centroid (3) w/ PCA: " + str(pca_nsc_3_orl_score))
         #print("\tNearest Subclass Centroid (5): " + str(nsc_5_orl_score))
+
+    # Nearest Neighbor
+    if run_nn:
+        print("\tNearest Neighbor: " + str(nn_orl_score))
+        print("\tNearest Neighbor w/ PCA: " + str(pca_nn_orl_score))
 
 
 if __name__ == "__main__":

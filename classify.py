@@ -1,9 +1,10 @@
-from sklearn.neighbors import NearestCentroid
+from sklearn.neighbors import NearestCentroid, KNeighborsClassifier
 from sklearn.cluster import KMeans
 import numpy as np
 
 """" 
-Fit model to training data and classify the test data using a Nearest Centroid algorithm
+Calculates the mean of each class in the training data. 
+Test samples are then classified using a Nearest Centroid algorithm.
 param:
     @train_data: training data
     @train_lbls: training labels
@@ -22,8 +23,8 @@ def nc(train_data, train_label, test_data, test_lbls):
 
 
 """" 
-Applies a K-means clustering algorithm on the training data to identity subclasses of each class, and then classifies 
-the test data using a Nearest Subclass Centroid algorithm
+Applies K-means clustering algorithm, to cluster each class in the training data into N subclasses. 
+Test samples are then classified to the class corresponding to the nearest subclass.
 param:
     @train_data: training data
     @train_lbls: training labels
@@ -76,3 +77,23 @@ def nsc(train_data, train_lbls, test_data, test_lbls, subclass_count):
     score = class_err_count / test_sample_count
 
     return classification, score
+
+"""" 
+Fit model to training data and classify the test data using a Nearest Neighbor algorithm
+param:
+    @train_data: training data
+    @train_lbls: training labels
+    @test_data: testing data
+    @test_lbls: testing labels
+returns:
+    @classification: numpy array with classification labels
+    @probabilities: numpy array with probability estimates for the test data
+    @score: the mean accuracy classifications
+"""
+def nn(train_data, train_label, test_data, test_lbls, neighbor_count, neighbor_weight='uniform'):
+    clf = KNeighborsClassifier(neighbor_count, weights=neighbor_weight)
+    clf.fit(train_data, train_label.ravel())
+    classification = clf.predict(test_data)
+    probabilities = clf.predict_proba(test_data)
+    score = clf.score(test_data, test_lbls)
+    return classification, probabilities, score
