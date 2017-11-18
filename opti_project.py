@@ -33,29 +33,40 @@ def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn
         # Nearest Centroid
         if run_nc:
             # 784D data
-            nc_mnist_class, nc_mnist_score = nc(mnist_train_images, mnist_train_lbls, mnist_test_images, mnist_test_lbls)
+            nc_mnist_class, nc_mnist_score = nc(mnist_train_images, mnist_train_lbls, mnist_test_images,
+                                                mnist_test_lbls)
             # PCA data
-            pca_nc_mnist_class, pca_nc_mnist_score = nc(pca_mnist_train_images, mnist_train_lbls, pca_mnist_test_images, mnist_test_lbls)
+            pca_nc_mnist_class, pca_nc_mnist_score = nc(pca_mnist_train_images, mnist_train_lbls, pca_mnist_test_images,
+                                                        mnist_test_lbls)
 
         # Nearest Subclass Centroid
         if run_nsc:
             # 2 subclasses, 784D data
-            nsc_2_mnist_class, nsc_2_mnist_score = nsc(mnist_train_images, mnist_train_lbls, mnist_test_images, mnist_test_lbls,2)
+            nsc_2_mnist_class, nsc_2_mnist_score = nsc(mnist_train_images, mnist_train_lbls, mnist_test_images,
+                                                       mnist_test_lbls, 2)
             # 2 subclasses, PCA data
-            pca_nsc_2_mnist_class, pca_nsc_2_mnist_score = nsc(pca_mnist_train_images, mnist_train_lbls, pca_mnist_test_images, mnist_test_lbls,2)
+            pca_nsc_2_mnist_class, pca_nsc_2_mnist_score = nsc(pca_mnist_train_images, mnist_train_lbls,
+                                                               pca_mnist_test_images, mnist_test_lbls, 2)
             # 3 subclasses, 784D data
-            nsc_3_mnist_class, nsc_3_mnist_score = nsc(mnist_train_images, mnist_train_lbls, mnist_test_images, mnist_test_lbls,3)
+            nsc_3_mnist_class, nsc_3_mnist_score = nsc(mnist_train_images, mnist_train_lbls, mnist_test_images,
+                                                       mnist_test_lbls, 3)
             # 3 subclasses, PCA data
-            pca_nsc_3_mnist_class, pca_nsc_3_mnist_score = nsc(pca_mnist_train_images, mnist_train_lbls, pca_mnist_test_images, mnist_test_lbls,3)
+            pca_nsc_3_mnist_class, pca_nsc_3_mnist_score = nsc(pca_mnist_train_images, mnist_train_lbls,
+                                                               pca_mnist_test_images, mnist_test_lbls, 3)
             # 5 subclasses, 784D data
-            nsc_5_mnist_class, nsc_5_mnist_score = nsc(mnist_train_images, mnist_train_lbls, mnist_test_images, mnist_test_lbls,5)
+            nsc_5_mnist_class, nsc_5_mnist_score = nsc(mnist_train_images, mnist_train_lbls, mnist_test_images,
+                                                       mnist_test_lbls, 5)
             # 5 subclasses, PCA data
-            pca_nsc_5_mnist_class, pca_nsc_5_mnist_score = nsc(pca_mnist_train_images, mnist_train_lbls, pca_mnist_test_images, mnist_test_lbls,5)
+        pca_nsc_5_mnist_class, pca_nsc_5_mnist_score = nsc(pca_mnist_train_images, mnist_train_lbls,
+                                                           pca_mnist_test_images, mnist_test_lbls, 5)
 
         # Nearest Neighbor
         if run_nn:
-            nn_mnist_class, nn_mnist_prob, nn_mnist_score = nn(mnist_train_images, mnist_train_lbls, mnist_test_images, mnist_test_lbls,1,'uniform')
-            pca_nn_mnist_class, pca_nn_mnist_prob, pca_nn_mnist_score = nn(pca_mnist_train_images, mnist_train_lbls, pca_mnist_test_images, mnist_test_lbls,1,'uniform')
+            nn_mnist_class, nn_mnist_prob, nn_mnist_score = nn(mnist_train_images, mnist_train_lbls, mnist_test_images,
+                                                               mnist_test_lbls, 1, 'uniform')
+            pca_nn_mnist_class, pca_nn_mnist_prob, pca_nn_mnist_score = nn(pca_mnist_train_images, mnist_train_lbls,
+                                                                           pca_mnist_test_images, mnist_test_lbls, 1,
+                                                                           'uniform')
 
 
     """ ********* Classifying ORL samples ********* """
@@ -63,29 +74,34 @@ def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn
         # Nearest Centroid
         if run_nc:
             # 784D data
-            nc_orl_class, nc_orl_score = nc(orl_train_images, orl_train_lbls.ravel(), orl_test_images, orl_test_lbls)
+            nc_orl_class, nc_orl_score = nc(orl_train_images, orl_train_lbls, orl_test_images, orl_test_lbls)
             # PCA data
-            pca_nc_orl_class, pca_nc_orl_score = nc(pca_orl_train_images, orl_train_lbls.ravel(), pca_orl_test_images, orl_test_lbls)
+            pca_nc_orl_class, pca_nc_orl_score = nc(pca_orl_train_images, orl_train_lbls, pca_orl_test_images,
+                                                    orl_test_lbls)
 
         # Nearest Subclass Centroid
         if run_nsc:
             # 2 subclasses, 1200D data
-            nsc_2_orl_class, nsc_2_orl_score = nsc(orl_train_images, orl_train_lbls.ravel(), orl_test_images, orl_test_lbls,2)
+            nsc_2_orl_class, nsc_2_orl_score = nsc(orl_train_images, orl_train_lbls, orl_test_images,
+                                                   orl_test_lbls, 2)
             # 2 subclasses, PCA data
-            pca_nsc_2_orl_class, pca_nsc_2_orl_score = nsc(pca_orl_train_images, orl_train_lbls.ravel(), pca_orl_test_images, orl_test_lbls,2)
+            pca_nsc_2_orl_class, pca_nsc_2_orl_score = nsc(pca_orl_train_images, orl_train_lbls,
+                                                           pca_orl_test_images, orl_test_lbls, 2)
             # 3 subclasses, 1200D data
-            nsc_3_orl_class, nsc_3_orl_score = nsc(orl_train_images, orl_train_lbls.ravel(), orl_test_images, orl_test_lbls,3)
+            nsc_3_orl_class, nsc_3_orl_score = nsc(orl_train_images, orl_train_lbls, orl_test_images,
+                                                   orl_test_lbls, 3)
             # 3 subclasses, PCA data
-            pca_nsc_3_orl_class, pca_nsc_3_orl_score = nsc(pca_orl_train_images, orl_train_lbls.ravel(), pca_orl_test_images, orl_test_lbls,3)
+            pca_nsc_3_orl_class, pca_nsc_3_orl_score = nsc(pca_orl_train_images, orl_train_lbls,
+                                                           pca_orl_test_images, orl_test_lbls, 3)
             # 5 subclasses, 1200D data
-            #nsc_5_orl_class, nsc_5_orl_score = nsc(orl_train_images, orl_train_lbls.ravel(), orl_test_images, orl_test_lbls,5)
-            # 5 subclasses, PCA data
-            #pca_nsc_5_orl_class, pca_nsc_5_orl_score = nsc(pca_orl_train_images, orl_train_lbls.ravel(), pca_orl_test_images, orl_test_lbls,5)
+            # Not enough test samples to cluster each of the 40 classes into 5 subclasses
 
         # Nearest Neighbor
         if run_nn:
-            nn_orl_class, nn_orl_prob, nn_orl_score = nn(orl_train_images, orl_train_lbls.ravel(), orl_test_images, orl_test_lbls,1,'uniform')
-            pca_nn_orl_class, pca_nn_orl_prob, pca_nn_orl_score = nn(pca_orl_train_images, orl_train_lbls.ravel(), pca_orl_test_images, orl_test_lbls,1,'uniform')
+            nn_orl_class, nn_orl_prob, nn_orl_score = nn(orl_train_images, orl_train_lbls, orl_test_images,
+                                                         orl_test_lbls, 1, 'uniform')
+            pca_nn_orl_class, pca_nn_orl_prob, pca_nn_orl_score = nn(pca_orl_train_images, orl_train_lbls,
+                                                                     pca_orl_test_images, orl_test_lbls, 1, 'uniform')
 
 
     """ ********* Data Visualization ********* """
@@ -101,19 +117,36 @@ def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn
             # PCA Training data
             plot_2D_data(pca_mnist_train_images, mnist_train_lbls, 'MNIST PCA Training Data')
 
-            # Classified PCA test data
-            if run_nc: plot_2D_data(pca_mnist_test_images, pca_nc_mnist_class,
-                                           'NC Classified MNIST PCA Test Data')
-            if run_nsc: subplot_2D_data(pca_mnist_test_images,
-                                          [pca_nsc_2_mnist_class, pca_nsc_3_mnist_class, pca_nsc_5_mnist_class],
-                                          'NSC Classified MNIST PCA Test Data',
-                                          ['2 Subclasses', '3 Subclasses', '5 Subclasses'])
-
-            if run_nn: plot_2D_data(pca_mnist_test_images, pca_nc_mnist_class,
-                                       'NN Classified MNIST PCA Test Data')
-
             # Labeled (actual) PCA test data
             plot_2D_data(pca_mnist_test_images, mnist_test_lbls, 'Labeled MNIST PCA Test Data')
+
+            # Classified test data
+            if run_nc:
+                # PCA data scatterplot
+                plot_2D_data(pca_mnist_test_images, pca_nc_mnist_class,'NC Classified MNIST PCA Test Data')
+                # Class mean vectors of classified test data
+                plot_mnist_centroids(mnist_test_images, nc_mnist_class, 'NC Classified MNIST Test Data Centroids')
+                plot_mnist_centroids(mnist_test_images, pca_nc_mnist_class,
+                                     'NC Classified MNIST PCA Test Data Centroids')
+
+            if run_nsc:
+                # PCA data scatterplots
+                subplot_2D_data(pca_mnist_test_images,
+                                [pca_nsc_2_mnist_class, pca_nsc_3_mnist_class, pca_nsc_5_mnist_class],
+                                'NSC Classified MNIST PCA Test Data', ['2 Subclasses', '3 Subclasses', '5 Subclasses'])
+                # Class mean vectors of classified test data
+                plot_mnist_centroids(mnist_test_images, nsc_5_mnist_class, 'NSC Classified MNIST Test Data Centroids')
+                plot_mnist_centroids(mnist_test_images, pca_nsc_5_mnist_class,
+                                     'NSC Classified MNIST PCA Test Data Centroids')
+
+            if run_nn:
+                # PCA data scatterplot
+                plot_2D_data(pca_mnist_test_images, pca_nc_mnist_class,'NN Classified MNIST PCA Test Data')
+                # Class mean vectors of classified test data
+                plot_mnist_centroids(mnist_test_images, nn_mnist_class,'NN Classified MNIST Test Data Centroids')
+                plot_mnist_centroids(mnist_test_images, pca_nn_mnist_class,
+                                     'NN Classified MNIST PCA Test Data Centroids')
+
 
         """ ********* ORL ********* """
         if run_orl:
@@ -121,25 +154,40 @@ def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn
             plot_orl_centroids(orl_train_images, orl_train_lbls, 'ORL Training Data Centroids')
 
             # Test data
-            plot_orl_centroids(orl_test_images, orl_test_lbls.ravel(), 'ORL Test Data Centroids')
+            plot_orl_centroids(orl_test_images, orl_test_lbls, 'ORL Test Data Centroids')
 
             # PCA Training data
-            plot_2D_data(pca_orl_train_images, orl_train_lbls.ravel(), 'ORL PCA Training Data')
-
-            # Classified PCA test data
-            if run_nc: plot_2D_data(pca_orl_test_images, pca_nc_orl_class, 'NC Classified ORL PCA Test Data')
-
-            if run_nsc: subplot_2D_data(pca_orl_test_images, [pca_nsc_2_orl_class, pca_nsc_3_orl_class],
-                                'NSC Classified ORL PCA Test Data', ['2 Subclasses', '3 Subclasses'])
-
-            if run_nn: plot_2D_data(pca_orl_test_images, pca_nc_orl_class, 'NN Classified ORL PCA Test Data')
+            plot_2D_data(pca_orl_train_images, orl_train_lbls, 'ORL PCA Training Data')
 
             # Labeled (actual) PCA test data
-            plot_2D_data(pca_orl_test_images, orl_test_lbls.ravel(), 'Labeled ORL PCA Test Data')
+            plot_2D_data(pca_orl_test_images, orl_test_lbls, 'Labeled ORL PCA Test Data')
+
+            # Classified test data
+            if run_nc:
+                # PCA data scatterplot
+                plot_2D_data(pca_orl_test_images, pca_nc_orl_class, 'NC Classified ORL PCA Test Data')
+                # Class mean vectors of classified test data
+                plot_orl_centroids(orl_test_images, nc_orl_class, 'NC Classified ORL Test Data Centroids')
+                plot_orl_centroids(orl_test_images, pca_nc_orl_class, 'NC Classified ORL PCA Test Data Centroids')
+
+            if run_nsc:
+                # PCA data scatterplots
+                subplot_2D_data(pca_orl_test_images, [pca_nsc_2_orl_class, pca_nsc_3_orl_class],
+                                'NSC Classified ORL PCA Test Data', ['2 Subclasses', '3 Subclasses'])
+                # Class mean vectors of classified test data
+                plot_orl_centroids(orl_test_images, nsc_3_orl_class, 'NSC Classified ORL Test Data Centroids')
+                plot_orl_centroids(orl_test_images, pca_nsc_3_orl_class, 'NSC Classified ORL PCA Test Data Centroids')
+
+            if run_nn:
+                # PCA data scatterplot
+                plot_2D_data(pca_orl_test_images, pca_nn_orl_class, 'NN Classified ORL PCA Test Data')
+                # Class mean vectors of classified test data
+                plot_orl_centroids(orl_test_images, nn_orl_class, 'NN Classified ORL Test Data Centroids')
+                plot_orl_centroids(orl_test_images, pca_nn_orl_class, 'NN Classified ORL PCA Test Data Centroids')
 
 
     """ ********* Classification scores ********* """
-    print("*** Classification Scores ***")
+    print("*** Classification Scores ***\n")
     if run_mnist:
         print("*** MNIST ***")
         # Nearest Centroid
@@ -162,7 +210,7 @@ def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn
             print("\tNearest Neighbor w/ PCA: " + str(pca_nn_mnist_score))
 
     if run_orl:
-        print("\n*** ORL ***")
+        print("*** ORL ***")
         # Nearest Centroid
         if run_nc:
             print("\tNearest-Centroid: " + str(nc_orl_score))
@@ -195,7 +243,18 @@ if __name__ == "__main__":
     show_figs = True
     run_mnist = False
     run_orl = False
-    if len(sys.argv[1]) > 1:
+    if len(sys.argv) > 1:
+        if sys.argv[1] == 'help':
+            print("[Options]:")
+            print("\tDataset: mnist, orl")
+            print("\tAlgorithm: nc, nsc, nn")
+            print("\tShow figures: no-fig\n")
+            print("Usage:")
+            print("\topti_project.py [<mnist> <orl>] [<nc> <nsc> <nn>] [no-fig]\n")
+            print("Example:")
+            print("\topti_project.py mnist nc nn")
+            print("\tNo options runs all algorithms for both datasets without figures")
+            exit(0)
         for arg in sys.argv:
             if arg == 'nc' or arg == 'NC':
                 run_nc = True

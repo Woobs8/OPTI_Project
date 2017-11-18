@@ -1,6 +1,7 @@
 from sklearn.neighbors import NearestCentroid, KNeighborsClassifier
 from sklearn.cluster import KMeans
 import numpy as np
+from tools import flatten_array
 
 """" 
 Calculates the mean of each class in the training data. 
@@ -14,9 +15,12 @@ returns:
     @classification: numpy array with classification labels
     @score: the mean accuracy classifications
 """
-def nc(train_data, train_label, test_data, test_lbls):
+def nc(train_data, train_lbls, test_data, test_lbls):
+    train_lbls = flatten_array(train_lbls)
+    test_lbls = flatten_array(test_lbls)
+
     clf = NearestCentroid()
-    clf.fit(train_data, train_label.ravel())
+    clf.fit(train_data, train_lbls)
     classification = clf.predict(test_data)
     score = clf.score(test_data,test_lbls)
     return classification, score
@@ -36,6 +40,9 @@ returns:
     @score: the mean accuracy classifications
 """
 def nsc(train_data, train_lbls, test_data, test_lbls, subclass_count):
+    train_lbls = flatten_array(train_lbls)
+    test_lbls = flatten_array(test_lbls)
+
     # Create set of training classes
     classes = list(set(train_lbls))
     class_count = len(classes)
@@ -75,11 +82,11 @@ def nsc(train_data, train_lbls, test_data, test_lbls, subclass_count):
                         classification[i]=label
 
     # Determine classification errors by comparing classification with known labels
-    classification_errors = [x for i, x in enumerate(classification) if classification[i] == test_lbls[i]]
+    classification_errors = [x for i, x in enumerate(classification) if classification[i] != test_lbls[i]]
     class_err_count = len(classification_errors)
-    score = class_err_count / test_sample_count
+    score = 1-class_err_count / test_sample_count
 
-    return classification, score
+    return np.asarray(classification), score
 
 
 """" 
@@ -94,9 +101,12 @@ returns:
     @probabilities: numpy array with probability estimates for the test data
     @score: the mean accuracy classifications
 """
-def nn(train_data, train_label, test_data, test_lbls, neighbor_count, neighbor_weight='uniform'):
+def nn(train_data, train_lbls, test_data, test_lbls, neighbor_count, neighbor_weight='uniform'):
+    train_lbls = flatten_array(train_lbls)
+    test_lbls = flatten_array(test_lbls)
+
     clf = KNeighborsClassifier(neighbor_count, weights=neighbor_weight)
-    clf.fit(train_data, train_label.ravel())
+    clf.fit(train_data, train_lbls)
     classification = clf.predict(test_data)
     probabilities = clf.predict_proba(test_data)
     score = clf.score(test_data, test_lbls)

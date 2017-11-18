@@ -48,10 +48,22 @@ returns:
 def pca(train_data, test_data):
     # Initialize training PCA to 2-dimensions
     pca = PCA(n_components=2)
+    pca.fit(train_data)
     # Fit PCA to data and transform
-    pca_train_data = pca.fit_transform(train_data)
-    pca_test_data = pca.fit_transform(test_data)
+    pca_train_data = pca.transform(train_data)
+    pca_test_data = pca.transform(test_data)
     return pca_train_data, pca_test_data
+
+
+"""" 
+Flattens array to 1D list
+param:
+    @array: array to flatten
+"""
+def flatten_array(array):
+    if not type(array) is 'numpy.ndarray':
+        array = array.ravel()
+    return array
 
 
 """" 
@@ -62,9 +74,14 @@ param:
     @tile: plot title
 """
 def plot_mnist_centroids(data, labels, title=""):
+    labels = flatten_array(labels)
+
+    # Create set of classes in data set
+    classes = list(set(labels))
+
     # Calculate mean vector of each class
     clf = NearestCentroid()
-    clf.fit(data, labels.ravel())
+    clf.fit(data, labels)
     centroids = clf.centroids_
 
     # https://stackoverflow.com/questions/37228371/visualize-mnist-dataset-using-opencv-or-matplotlib-pyplot
@@ -78,7 +95,7 @@ def plot_mnist_centroids(data, labels, title=""):
 
         # Plot each mean vector as a gray scale image in a subplot
         plt.subplot(2,5,i+1)
-        plt.title('Label: {label}'.format(label=i+1))
+        plt.title('Label: {label}'.format(label=classes[i]))
         plt.imshow(pixels, cmap='gray')
 
     plt.draw()
@@ -92,9 +109,14 @@ param:
     @tile: plot title
 """
 def plot_orl_centroids(data, labels, title=""):
+    labels = flatten_array(labels)
+
+    # Create set of classes in data set
+    classes = list(set(labels))
+
     # Calculate mean vector of each class
     clf = NearestCentroid()
-    clf.fit(data, labels.ravel())
+    clf.fit(data, labels)
     centroids = clf.centroids_
 
     plt.figure(figsize=(18,12))
@@ -107,20 +129,22 @@ def plot_orl_centroids(data, labels, title=""):
 
         # Plot each mean vector as a gray scale image in a subplot
         plt.subplot(4,10,i+1)
-        plt.title('Label: {label}'.format(label=i+1))
+        plt.title('Label: {label}'.format(label=classes[i]))
         plt.imshow(pixels, cmap='gray')
 
     plt.draw()
 
 
 """" 
-Plots color coded 2D data points with unique color code for each class
+Scatterplots color coded 2D data points with unique color code for each class
 param:
     @data: 2D data
     @labels: list of data labels
     @tile: plot title
 """
 def plot_2D_data(data, labels, title=""):
+    labels = flatten_array(labels)
+
     # Create set of classes in data set
     classes = list(set(labels))
     class_count = len(classes)
@@ -150,17 +174,18 @@ def plot_2D_data(data, labels, title=""):
     plt.draw()
 
 """" 
-Plots color coded 2D data points with unique color code for each class
+Scatterplots color coded 2D data points with unique color code for each class in a subplot for each list of labels supplied
 param:
     @data: 2D data
     @labels: list of data labels 
     @tile: plot title
+    @subplot_titles: list of titles of subplots
 """
-
 def subplot_2D_data(data, dataset_labels, title="", subplot_titles=[]):
     plt.figure()
     plt.suptitle(title)
     for i,labels in enumerate(dataset_labels):
+        labels = flatten_array(labels)
         plt.subplot(len(dataset_labels), 1, i + 1)
         # Create set of classes in data set
         classes = list(set(labels))
