@@ -3,8 +3,9 @@ from mnist import MNIST
 import numpy as np
 import scipy.io as scio
 from sklearn.model_selection import train_test_split
+from sklearn.neighbors import NearestCentroid
 import matplotlib.pyplot as plt
-
+import matplotlib.cm as cm
 
 """" 
 Load MNIST dataset from directory
@@ -53,5 +54,138 @@ def pca(train_data, test_data):
     return pca_train_data, pca_test_data
 
 
-def visualize_data(data):
-    print("not implemented yet")
+"""" 
+Plots the class mean vectors of supplied MNIST data
+param:
+    @data: MNIST data
+    @labels: data labels
+    @tile: plot title
+"""
+def plot_mnist_centroids(data, labels, title=""):
+    # Calculate mean vector of each class
+    clf = NearestCentroid()
+    clf.fit(data, labels.ravel())
+    centroids = clf.centroids_
+
+    # https://stackoverflow.com/questions/37228371/visualize-mnist-dataset-using-opencv-or-matplotlib-pyplot
+    plt.figure()
+    plt.suptitle(title, fontsize=14)
+    for i, class_center in enumerate(centroids):
+        pixels = np.array(class_center, dtype='uint8')
+
+        # Reshape the array into 28 x 28 array (2-dimensional array)
+        pixels = pixels.reshape((28, 28))
+
+        # Plot each mean vector as a gray scale image in a subplot
+        plt.subplot(2,5,i+1)
+        plt.title('Label: {label}'.format(label=i+1))
+        plt.imshow(pixels, cmap='gray')
+
+    plt.draw()
+
+
+"""" 
+Plots the class mean vectors of supplied ORL data
+param:
+    @data: ORL data
+    @labels: data labels
+    @tile: plot title
+"""
+def plot_orl_centroids(data, labels, title=""):
+    # Calculate mean vector of each class
+    clf = NearestCentroid()
+    clf.fit(data, labels.ravel())
+    centroids = clf.centroids_
+
+    plt.figure(figsize=(18,12))
+    plt.suptitle(title, fontsize=14)
+    for i, class_center in enumerate(centroids):
+        pixels = np.array(class_center, dtype='float')
+
+        # Reshape the array into 40 x 30 array (2-dimensional array)
+        pixels = pixels.reshape((30, 40)).transpose()   # image vectors are sideways
+
+        # Plot each mean vector as a gray scale image in a subplot
+        plt.subplot(4,10,i+1)
+        plt.title('Label: {label}'.format(label=i+1))
+        plt.imshow(pixels, cmap='gray')
+
+    plt.draw()
+
+
+"""" 
+Plots color coded 2D data points with unique color code for each class
+param:
+    @data: 2D data
+    @labels: list of data labels
+    @tile: plot title
+"""
+def plot_2D_data(data, labels, title=""):
+    # Create set of classes in data set
+    classes = list(set(labels))
+    class_count = len(classes)
+
+    # Generate color map with unique color for each class
+    color_map = cm.rainbow(np.linspace(0, 1, class_count))
+
+    # Generate scatter plots for each class
+    plots = []
+    plt.figure()
+    plt.title(title)
+    for i, label in enumerate(classes):
+        # Group data into numpy arrays for each class
+        class_data = np.asarray([x for j, x in enumerate(data) if labels[j]==label])
+        x = class_data[:,0]
+        y = class_data[:,1]
+        plots.append(plt.scatter(x,y,color=color_map[i]))
+
+    # Add legend
+    plt.legend(plots,
+               classes,
+               scatterpoints=1,
+               loc='upper right',
+               ncol=2,
+               fontsize=8)
+
+    plt.draw()
+
+"""" 
+Plots color coded 2D data points with unique color code for each class
+param:
+    @data: 2D data
+    @labels: list of data labels 
+    @tile: plot title
+"""
+
+def subplot_2D_data(data, dataset_labels, title="", subplot_titles=[]):
+    plt.figure()
+    plt.suptitle(title)
+    for i,labels in enumerate(dataset_labels):
+        plt.subplot(len(dataset_labels), 1, i + 1)
+        # Create set of classes in data set
+        classes = list(set(labels))
+        class_count = len(classes)
+
+        # Generate color map with unique color for each class
+        color_map = cm.rainbow(np.linspace(0, 1, class_count))
+
+        # Generate scatter plots for each class
+        plots = []
+        if subplot_titles != []:
+            plt.title(subplot_titles[i])
+        for i, label in enumerate(classes):
+            # Group data into numpy arrays for each class
+            class_data = np.asarray([x for j, x in enumerate(data) if labels[j] == label])
+            x = class_data[:, 0]
+            y = class_data[:, 1]
+            plots.append(plt.scatter(x, y, color=color_map[i]))
+
+        # Add legend
+        plt.legend(plots,
+                   classes,
+                   scatterpoints=1,
+                   loc='upper right',
+                   ncol=2,
+                   fontsize=8)
+
+    plt.draw()

@@ -1,7 +1,8 @@
 import os
 import sys
-from tools import loadMNIST, loadORL, pca
+from tools import loadMNIST, loadORL, pca, plot_mnist_centroids, plot_orl_centroids, plot_2D_data, subplot_2D_data
 from classify import nc, nsc, nn
+import matplotlib.pyplot as plt
 
 
 def main(run_nc = True, run_nsc = True, run_nn = True):
@@ -82,6 +83,41 @@ def main(run_nc = True, run_nsc = True, run_nn = True):
         pca_nn_orl_class, pca_nn_orl_prob, pca_nn_orl_score = nn(pca_orl_train_images, orl_train_lbls.ravel(), pca_orl_test_images, orl_test_lbls,1,'uniform')
 
 
+    """ ********* Data Visualization ********* """
+    if show_figs:
+        # Training data
+        plot_mnist_centroids(mnist_train_images, mnist_train_lbls, 'MNIST Training Data Centroids')
+        plot_orl_centroids(orl_train_images, orl_train_lbls, 'ORL Training Data Centroids')
+
+        # Test data
+        plot_mnist_centroids(mnist_test_images, mnist_test_lbls, 'MNIST Test Data Centroids')
+        plot_orl_centroids(orl_test_images, orl_test_lbls.ravel(), 'ORL Test Data Centroids')
+
+        # PCA Training data
+        plot_2D_data(pca_mnist_train_images, mnist_train_lbls, 'MNIST PCA Training Data')
+        plot_2D_data(pca_orl_train_images, orl_train_lbls.ravel(), 'ORL PCA Training Data')
+
+        # Classified PCA test data
+        if run_nc:
+            plot_2D_data(pca_mnist_test_images, pca_nc_mnist_class, 'NC Classified MNIST PCA Test Data')
+            plot_2D_data(pca_orl_test_images, pca_nc_orl_class, 'NC Classified ORL PCA Test Data')
+
+        if run_nsc:
+            subplot_2D_data(pca_mnist_test_images,
+                            [pca_nsc_2_mnist_class, pca_nsc_3_mnist_class, pca_nsc_5_mnist_class],
+                            'NSC Classified MNIST PCA Test Data', ['2 Subclasses', '3 Subclasses', '5 Subclasses'])
+            subplot_2D_data(pca_orl_test_images, [pca_nsc_2_orl_class, pca_nsc_3_orl_class],
+                            'NSC Classified ORL PCA Test Data', ['2 Subclasses', '3 Subclasses'])
+
+        if run_nn:
+            plot_2D_data(pca_mnist_test_images, pca_nc_mnist_class, 'NN Classified MNIST PCA Test Data')
+            plot_2D_data(pca_orl_test_images, pca_nc_orl_class, 'NN Classified ORL PCA Test Data')
+
+        # Labeled (actual) PCA test data
+        plot_2D_data(pca_mnist_test_images, mnist_test_lbls, 'Labeled MNIST PCA Test Data')
+        plot_2D_data(pca_orl_test_images, orl_test_lbls.ravel(), 'Labeled ORL PCA Test Data')
+
+
     """ ********* Classification scores ********* """
     print("*** Classification Scores ***")
     print("*** MNIST ***")
@@ -124,12 +160,18 @@ def main(run_nc = True, run_nsc = True, run_nn = True):
         print("\tNearest Neighbor: " + str(nn_orl_score))
         print("\tNearest Neighbor w/ PCA: " + str(pca_nn_orl_score))
 
+    # Flush results to stdout
+    sys.stdout.flush()
+
+    # Block scriot to keep figures
+    plt.show()
 
 if __name__ == "__main__":
     # set which algorithm to apply for this execution
     run_nc = False
     run_nsc = False
     run_nn = False
+    show_figs = True
     if len(sys.argv[1]) > 1:
         for arg in sys.argv:
             if arg == 'nc':
@@ -138,6 +180,8 @@ if __name__ == "__main__":
                 run_nsc = True
             elif arg == 'nn':
                 run_nn = True
+            elif arg == 'no-fig':
+                show_figs = False
     else:
         run_nc = True
         run_nsc = True
