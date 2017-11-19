@@ -8,7 +8,7 @@ import multiprocessing
 
 def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn = True, cpus=1):
 
-    """ ********* Loading ORL samples ********* """
+    """ ********* Loading MNIST samples ********* """
     if run_mnist:
         # MNIST sample directory
         MNIST_DIR = "MNIST"
@@ -255,7 +255,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         if sys.argv[1] == 'help':
             print("Usage:")
-            print("\topti_project.py [<mnist> <orl>] [<nc> <nsc> <nn>] [no-figs] [cpus=]\n")
+            print("\topti_project.py [<mnist> <orl>] [<nc> <nsc> <nn>] [no-figs] [cpus=<int>]\n")
             print('[Optional Parameters]:')
             help_text = [['Description', 'Usage', 'Default'],
                          ['-----------','-----------','-----------'],
