@@ -150,7 +150,8 @@ def plot_2D_data(data, labels, title=""):
     class_count = len(classes)
 
     # Generate color map with unique color for each class
-    color_map = cm.rainbow(np.linspace(0, 1, class_count))
+    color_map = plt.get_cmap('rainbow')
+    colors = color_map(np.linspace(0, 1.0, class_count))
 
     # Generate scatter plots for each class
     plots = []
@@ -161,7 +162,7 @@ def plot_2D_data(data, labels, title=""):
         class_data = np.asarray([x for j, x in enumerate(data) if labels[j]==label])
         x = class_data[:,0]
         y = class_data[:,1]
-        plots.append(plt.scatter(x,y,color=color_map[i]))
+        plots.append(plt.scatter(x,y,color=colors[i]))
 
     # Add legend
     plt.legend(plots,
@@ -192,7 +193,8 @@ def subplot_2D_data(data, dataset_labels, title="", subplot_titles=[]):
         class_count = len(classes)
 
         # Generate color map with unique color for each class
-        color_map = cm.rainbow(np.linspace(0, 1, class_count))
+        color_map = plt.get_cmap('rainbow')
+        colors = color_map(np.linspace(0, 1.0, class_count))
 
         # Generate scatter plots for each class
         plots = []
@@ -203,7 +205,7 @@ def subplot_2D_data(data, dataset_labels, title="", subplot_titles=[]):
             class_data = np.asarray([x for j, x in enumerate(data) if labels[j] == label])
             x = class_data[:, 0]
             y = class_data[:, 1]
-            plots.append(plt.scatter(x, y, color=color_map[i]))
+            plots.append(plt.scatter(x, y, color=colors[i]))
 
         # Add legend
         plt.legend(plots,
