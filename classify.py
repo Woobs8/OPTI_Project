@@ -1,10 +1,13 @@
 from sklearn.neighbors import NearestCentroid, KNeighborsClassifier
+from sklearn.linear_model import Perceptron, SGDClassifier
 from sklearn.cluster import KMeans
 from sklearn.metrics import accuracy_score
 import numpy as np
 from tools import flatten_array
+from sklearn.preprocessing import add_dummy_feature
+from sklearn.utils import shuffle
 
-"""" 
+""" 
 Calculates the mean of each class in the training data. 
 Test samples are then classified using a Nearest Centroid algorithm.
 param:
@@ -27,7 +30,7 @@ def nc(train_data, train_lbls, test_data, test_lbls):
     return classification, score
 
 
-"""" 
+""" 
 Applies K-means clustering algorithm, to cluster each class in the training data into N subclasses. 
 Test samples are then classified to the class corresponding to the nearest subclass.
 param:
@@ -88,13 +91,14 @@ def nsc(train_data, train_lbls, test_data, test_lbls, subclass_count):
     return np.asarray(classification), score
 
 
-"""" 
-Fit model to training data and classify the test data using a Nearest Neighbor algorithm
+"""
+Classifies the test data using a Nearest Neighbor algorithm
 param:
     @train_data: training data
     @train_lbls: training labels
     @test_data: testing data
     @test_lbls: testing labels
+    @neighbor_count: number of neighbors to consider when classifying samples
     @neighbor_weight: 'uniform' / 'distance' / [callable] (weight function used for prediction)
     @n_jobs: number of parallel jobs to run (each taking up 1 cpu core)
     @classification: 'hard' / 'soft' (return classified samples or classification probabilities)
@@ -114,3 +118,52 @@ def nn(train_data, train_lbls, test_data, test_lbls, neighbor_count, neighbor_we
         classification = clf.predict_proba(test_data)
     score = accuracy_score(test_lbls, classification)
     return classification, score
+
+
+""" 
+Trains a perceptron using the training data, and classifies the test data using the trained perceptron model. 
+param:
+    @train_data: training data
+    @train_lbls: training labels
+    @test_data: testing data
+    @test_lbls: testing labels
+    @n_jobs: number of parallel jobs to run (each taking up 1 cpu core)
+returns:
+    @classification: numpy array with classification labels or classification probabilities
+    @score: the mean accuracy classifications
+"""
+def perceptron(train_data, train_lbls, test_data, test_lbls, eta=1, n_jobs=1):
+    train_lbls = flatten_array(train_lbls)
+    test_lbls = flatten_array(test_lbls)
+
+    clf = Perceptron(eta0=eta, n_jobs=n_jobs, shuffle=True)
+    clf.fit(train_data, train_lbls)
+    classification = clf.predict(test_data)
+
+    score = accuracy_score(test_lbls, classification)
+    return classification, score
+
+
+def perceptron_bp(train_data, train_lbls, test_data, test_lbls, eta=1, w=None, epochs=1000):
+    train_lbls = flatten_array(train_lbls)
+    test_lbls = flatten_array(test_lbls)
+    aug_train_data = add_dummy_feature(train_data)
+    aug_test_data = add_dummy_feature(test_data)
+
+    # Initialize w
+    if w == None:
+        w = np.zeros(len(train_data[0]))
+
+    # Single-sample perceptron
+    for t in range(epochs):
+        # Shuffle data
+        train_data, train_lbls = shuffle(train_data, train_lbls)
+
+        # Iterate shuffled training data
+        for i, x in enumerate(train_data):
+            # Evaluate perceptron criterion function
+            if (np.dot(train_data[i], w)*train_lbls[i]) < 0:
+                # Update w if sample was misclassified
+                w = w + eta*train_data[i]*train_lbls[i]
+
+    return w

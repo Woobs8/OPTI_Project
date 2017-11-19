@@ -1,7 +1,7 @@
 import os
 import sys
 from tools import loadMNIST, loadORL, pca, plot_mnist_centroids, plot_orl_centroids, plot_2D_data, subplot_2D_data
-from classify import nc, nsc, nn
+from classify import nc, nsc, nn, perceptron_bp
 import matplotlib.pyplot as plt
 import multiprocessing
 
@@ -70,10 +70,10 @@ def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn
         # Nearest Neighbor
         if run_nn:
             nn_mnist_class, nn_mnist_score = nn(mnist_train_images, mnist_train_lbls, mnist_test_images,
-                                                               mnist_test_lbls, 1, 'uniform',allowed_cpus,'hard')
+                                                               mnist_test_lbls, 1, 'uniform',cpus,'hard')
             pca_nn_mnist_class, pca_nn_mnist_score = nn(pca_mnist_train_images, mnist_train_lbls,
                                                                            pca_mnist_test_images, mnist_test_lbls, 1,
-                                                                           'uniform',allowed_cpus,'hard')
+                                                                           'uniform',cpus,'hard')
 
 
     """ ********* Classifying ORL samples ********* """
@@ -106,10 +106,10 @@ def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn
         # Nearest Neighbor
         if run_nn:
             nn_orl_class, nn_orl_prob, nn_orl_score = nn(orl_train_images, orl_train_lbls, orl_test_images,
-                                                         orl_test_lbls, 1, 'uniform','hard')
+                                                         orl_test_lbls, 1, 'uniform',cpus,'hard')
             pca_nn_orl_class, pca_nn_orl_prob, pca_nn_orl_score = nn(pca_orl_train_images, orl_train_lbls,
                                                                      pca_orl_test_images, orl_test_lbls, 1, 'uniform',
-                                                                     'hard')
+                                                                     cpus,'hard')
 
 
     """ ********* Data Visualization ********* """

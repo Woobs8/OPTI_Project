@@ -7,7 +7,7 @@ from sklearn.neighbors import NearestCentroid
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
-"""" 
+""" 
 Load MNIST dataset from directory
 param:
     @fp: path to directory containing data
@@ -21,7 +21,7 @@ def loadMNIST(fp):
     return train_images, train_lbls, test_images, test_lbls
 
 
-"""" 
+""" 
 Load ORL dataset from directory and splits it training and testing datasets
 param:
     @fp: path to directory containing data
@@ -37,7 +37,7 @@ def loadORL(fp, test_size=0.3):
     return train_data, train_lbls, test_data, test_lbls
 
 
-"""" 
+""" 
 Apply PCA to training and testing data samples
 param:
     @train_data: training data
@@ -55,7 +55,7 @@ def pca(train_data, test_data):
     return pca_train_data, pca_test_data
 
 
-"""" 
+""" 
 Flattens array to 1D list
 param:
     @array: array to flatten
@@ -66,7 +66,7 @@ def flatten_array(array):
     return array
 
 
-"""" 
+""" 
 Plots the class mean vectors of supplied MNIST data
 param:
     @data: MNIST data
@@ -101,7 +101,7 @@ def plot_mnist_centroids(data, labels, title=""):
     plt.draw()
 
 
-"""" 
+""" 
 Plots the class mean vectors of supplied ORL data
 param:
     @data: ORL data
@@ -135,7 +135,7 @@ def plot_orl_centroids(data, labels, title=""):
     plt.draw()
 
 
-"""" 
+""" 
 Scatterplots color coded 2D data points with unique color code for each class
 param:
     @data: 2D data
@@ -174,7 +174,7 @@ def plot_2D_data(data, labels, title=""):
 
     plt.draw()
 
-"""" 
+""" 
 Scatterplots color coded 2D data points with unique color code for each class in a subplot for each list of labels supplied
 param:
     @data: 2D data
