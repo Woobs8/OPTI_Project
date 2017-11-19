@@ -3,6 +3,7 @@ import sys
 from tools import loadMNIST, loadORL, pca, plot_mnist_centroids, plot_orl_centroids, plot_2D_data, subplot_2D_data
 from classify import nc, nsc, nn
 import matplotlib.pyplot as plt
+import multiprocessing
 
 
 def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn = True):
@@ -26,6 +27,13 @@ def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn
         orl_train_images, orl_train_lbls, orl_test_images, orl_test_lbls = loadORL(ORL_PATH)
         # Apply PCA to ORL samples
         pca_orl_train_images, pca_orl_test_images = pca(orl_train_images, orl_test_images)
+
+
+    """ ********* Performance Parameters ********* """
+    # Set parameters for parallel execution
+    cpus = multiprocessing.cpu_count()
+    allowed_cpus = round(cpus / 2)
+    print("Employing " + str(allowed_cpus) + "/" + str(cpus) + " for parallel execution.")
 
 
     """ ********* Classifying MNIST samples ********* """
@@ -63,10 +71,10 @@ def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn
         # Nearest Neighbor
         if run_nn:
             nn_mnist_class, nn_mnist_prob, nn_mnist_score = nn(mnist_train_images, mnist_train_lbls, mnist_test_images,
-                                                               mnist_test_lbls, 1, 'uniform')
+                                                               mnist_test_lbls, 1, 'uniform',allowed_cpus)
             pca_nn_mnist_class, pca_nn_mnist_prob, pca_nn_mnist_score = nn(pca_mnist_train_images, mnist_train_lbls,
                                                                            pca_mnist_test_images, mnist_test_lbls, 1,
-                                                                           'uniform')
+                                                                           'uniform',allowed_cpus)
 
 
     """ ********* Classifying ORL samples ********* """
@@ -278,5 +286,10 @@ if __name__ == "__main__":
     if (not run_mnist) and (not run_orl):
         run_mnist = True
         run_orl = True
+
+    if (not run_nc) and (not run_nsc) and (not run_nn):
+        run_nc = True
+        run_nsc = True
+        run_nn = True
 
     main(run_mnist, run_orl, run_nc, run_nsc, run_nn)

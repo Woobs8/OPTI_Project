@@ -96,16 +96,18 @@ param:
     @train_lbls: training labels
     @test_data: testing data
     @test_lbls: testing labels
+    @neighbor_weight: weight function used for prediction
+    @n_jobs: number of parallel jobs to run (each taking up 1 cpu core)
 returns:
     @classification: numpy array with classification labels
     @probabilities: numpy array with probability estimates for the test data
     @score: the mean accuracy classifications
 """
-def nn(train_data, train_lbls, test_data, test_lbls, neighbor_count, neighbor_weight='uniform'):
+def nn(train_data, train_lbls, test_data, test_lbls, neighbor_count, neighbor_weight='uniform', n_jobs=1):
     train_lbls = flatten_array(train_lbls)
     test_lbls = flatten_array(test_lbls)
 
-    clf = KNeighborsClassifier(neighbor_count, weights=neighbor_weight)
+    clf = KNeighborsClassifier(neighbor_count, weights=neighbor_weight, n_jobs=n_jobs)
     clf.fit(train_data, train_lbls)
     classification = clf.predict(test_data)
     probabilities = clf.predict_proba(test_data)
