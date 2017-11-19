@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import multiprocessing
 
 
-def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn = True):
+def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn = True, cpus=1):
 
     """ ********* Loading ORL samples ********* """
     if run_mnist:
@@ -31,9 +31,8 @@ def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn
 
     """ ********* Performance Parameters ********* """
     # Set parameters for parallel execution
-    cpus = multiprocessing.cpu_count()
-    allowed_cpus = round(cpus / 2)
-    print("Employing " + str(allowed_cpus) + "/" + str(cpus) + " for parallel execution.")
+    avail_cpus = multiprocessing.cpu_count()
+    print("Utilizing " + str(cpus) + "/" + str(avail_cpus) + " CPU cores for parallel execution.")
 
 
     """ ********* Classifying MNIST samples ********* """
@@ -70,11 +69,11 @@ def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn
 
         # Nearest Neighbor
         if run_nn:
-            nn_mnist_class, nn_mnist_prob, nn_mnist_score = nn(mnist_train_images, mnist_train_lbls, mnist_test_images,
-                                                               mnist_test_lbls, 1, 'uniform',allowed_cpus)
-            pca_nn_mnist_class, pca_nn_mnist_prob, pca_nn_mnist_score = nn(pca_mnist_train_images, mnist_train_lbls,
+            nn_mnist_class, nn_mnist_score = nn(mnist_train_images, mnist_train_lbls, mnist_test_images,
+                                                               mnist_test_lbls, 1, 'uniform',allowed_cpus,'hard')
+            pca_nn_mnist_class, pca_nn_mnist_score = nn(pca_mnist_train_images, mnist_train_lbls,
                                                                            pca_mnist_test_images, mnist_test_lbls, 1,
-                                                                           'uniform',allowed_cpus)
+                                                                           'uniform',allowed_cpus,'hard')
 
 
     """ ********* Classifying ORL samples ********* """
@@ -107,9 +106,10 @@ def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn
         # Nearest Neighbor
         if run_nn:
             nn_orl_class, nn_orl_prob, nn_orl_score = nn(orl_train_images, orl_train_lbls, orl_test_images,
-                                                         orl_test_lbls, 1, 'uniform')
+                                                         orl_test_lbls, 1, 'uniform','hard')
             pca_nn_orl_class, pca_nn_orl_prob, pca_nn_orl_score = nn(pca_orl_train_images, orl_train_lbls,
-                                                                     pca_orl_test_images, orl_test_lbls, 1, 'uniform')
+                                                                     pca_orl_test_images, orl_test_lbls, 1, 'uniform',
+                                                                     'hard')
 
 
     """ ********* Data Visualization ********* """
@@ -251,17 +251,24 @@ if __name__ == "__main__":
     show_figs = True
     run_mnist = False
     run_orl = False
+    cpus = 1
     if len(sys.argv) > 1:
         if sys.argv[1] == 'help':
-            print("[Options]:")
-            print("\tDataset: mnist, orl")
-            print("\tAlgorithm: nc, nsc, nn")
-            print("\tShow figures: no-fig\n")
             print("Usage:")
-            print("\topti_project.py [<mnist> <orl>] [<nc> <nsc> <nn>] [no-fig]\n")
+            print("\topti_project.py [<mnist> <orl>] [<nc> <nsc> <nn>] [no-figs] [cpus=]\n")
+            print('[Optional Parameters]:')
+            help_text = [['Description', 'Usage', 'Default'],
+                         ['-----------','-----------','-----------'],
+                         ['Specify Dataset:', 'mnist, orl', 'both'],
+                         ['Specify Algorithm:', 'nc, nsc, nn', 'all'],
+                         ['Disable figures:', 'no-figs', 'enabled'],
+                         ['CPU cores:', 'cpus=[int]', '1\n']]
+            col_width = max(len(word) for row in help_text for word in row) + 2  # padding
+            for row in help_text:
+                print("".join(word.ljust(col_width) for word in row))
+
             print("Example:")
-            print("\topti_project.py mnist nc nn")
-            print("\tNo options runs all algorithms for both datasets without figures")
+            print("\topti_project.py mnist nc nn cpus=2")
             exit(0)
         for arg in sys.argv:
             if arg == 'nc' or arg == 'NC':
@@ -270,12 +277,14 @@ if __name__ == "__main__":
                 run_nsc = True
             elif arg == 'nn' or arg == 'NN':
                 run_nn = True
-            elif arg == 'no-fig':
+            elif arg == 'no-figs':
                 show_figs = False
             elif arg == 'mnist' or arg == 'MNIST':
                 run_mnist = True
             elif arg == 'orl' or arg == 'ORL':
                 run_orl = True
+            elif 'cpus=' in arg:
+                cpus = int(arg[arg.find('=')+1:])
     else:
         run_nc = True
         run_nsc = True
@@ -292,4 +301,4 @@ if __name__ == "__main__":
         run_nsc = True
         run_nn = True
 
-    main(run_mnist, run_orl, run_nc, run_nsc, run_nn)
+    main(run_mnist, run_orl, run_nc, run_nsc, run_nn, cpus=cpus)
