@@ -1,5 +1,6 @@
 from sklearn.neighbors import NearestCentroid, KNeighborsClassifier
 from sklearn.cluster import KMeans
+from sklearn.metrics import accuracy_score
 import numpy as np
 from tools import flatten_array
 
@@ -22,7 +23,7 @@ def nc(train_data, train_lbls, test_data, test_lbls):
     clf = NearestCentroid()
     clf.fit(train_data, train_lbls)
     classification = clf.predict(test_data)
-    score = clf.score(test_data,test_lbls)
+    score = accuracy_score(test_lbls, classification)
     return classification, score
 
 
@@ -82,9 +83,7 @@ def nsc(train_data, train_lbls, test_data, test_lbls, subclass_count):
                         classification[i]=label
 
     # Determine classification errors by comparing classification with known labels
-    classification_errors = [x for i, x in enumerate(classification) if classification[i] != test_lbls[i]]
-    class_err_count = len(classification_errors)
-    score = 1-class_err_count / test_sample_count
+    score = accuracy_score(test_lbls, classification)
 
     return np.asarray(classification), score
 
@@ -96,20 +95,22 @@ param:
     @train_lbls: training labels
     @test_data: testing data
     @test_lbls: testing labels
-    @neighbor_weight: weight function used for prediction
+    @neighbor_weight: 'uniform' / 'distance' / [callable] (weight function used for prediction)
     @n_jobs: number of parallel jobs to run (each taking up 1 cpu core)
+    @classification: 'hard' / 'soft' (return classified samples or classification probabilities)
 returns:
-    @classification: numpy array with classification labels
-    @probabilities: numpy array with probability estimates for the test data
+    @classification: numpy array with classification labels or classification probabilities
     @score: the mean accuracy classifications
 """
-def nn(train_data, train_lbls, test_data, test_lbls, neighbor_count, neighbor_weight='uniform', n_jobs=1):
+def nn(train_data, train_lbls, test_data, test_lbls, neighbor_count, neighbor_weight='uniform', n_jobs=1, classification="hard"):
     train_lbls = flatten_array(train_lbls)
     test_lbls = flatten_array(test_lbls)
 
     clf = KNeighborsClassifier(neighbor_count, weights=neighbor_weight, n_jobs=n_jobs)
     clf.fit(train_data, train_lbls)
-    classification = clf.predict(test_data)
-    probabilities = clf.predict_proba(test_data)
-    score = clf.score(test_data, test_lbls)
-    return classification, probabilities, score
+    if classification == 'hard':
+        classification = clf.predict(test_data)
+    elif classification =='soft':
+        classification = clf.predict_proba(test_data)
+    score = accuracy_score(test_lbls, classification)
+    return classification, score
