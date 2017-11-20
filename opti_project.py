@@ -101,7 +101,11 @@ def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn
             pca_nsc_3_orl_class, pca_nsc_3_orl_score = nsc(pca_orl_train_images, orl_train_lbls,
                                                            pca_orl_test_images, orl_test_lbls, 3)
             # 5 subclasses, 1200D data
-            # Not enough test samples to cluster each of the 40 classes into 5 subclasses
+            nsc_5_orl_class, nsc_5_orl_score = nsc(orl_train_images, orl_train_lbls,
+                                                           orl_test_images, orl_test_lbls, 5)
+            # 5 subclasses, PCA data
+            pca_nsc_5_orl_class, pca_nsc_5_orl_score = nsc(pca_orl_train_images, orl_train_lbls,
+                                                           pca_orl_test_images, orl_test_lbls, 5)
 
         # Nearest Neighbor
         if run_nn:
@@ -180,11 +184,11 @@ def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn
 
             if run_nsc:
                 # PCA data scatterplots
-                subplot_2D_data(pca_orl_test_images, [pca_nsc_2_orl_class, pca_nsc_3_orl_class],
-                                'NSC Classified ORL PCA Test Data', ['2 Subclasses', '3 Subclasses'])
+                subplot_2D_data(pca_orl_test_images, [pca_nsc_2_orl_class, pca_nsc_3_orl_class, pca_nsc_5_orl_class],
+                                'NSC Classified ORL PCA Test Data', ['2 Subclasses', '3 Subclasses', '5 subclasses'])
                 # Class mean vectors of classified test data
-                plot_orl_centroids(orl_test_images, nsc_3_orl_class, 'NSC Classified ORL Test Data Centroids')
-                plot_orl_centroids(orl_test_images, pca_nsc_3_orl_class, 'NSC Classified ORL PCA Test Data Centroids')
+                plot_orl_centroids(orl_test_images, nsc_5_orl_class, 'NSC Classified ORL Test Data Centroids')
+                plot_orl_centroids(orl_test_images, pca_nsc_5_orl_class, 'NSC Classified ORL PCA Test Data Centroids')
 
             if run_nn:
                 # PCA data scatterplot
@@ -230,7 +234,8 @@ def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn
             print("\tNearest Subclass Centroid (2) w/ PCA: " + str(pca_nsc_2_orl_score))
             print("\tNearest Subclass Centroid (3): " + str(nsc_3_orl_score))
             print("\tNearest Subclass Centroid (3) w/ PCA: " + str(pca_nsc_3_orl_score))
-            #print("\tNearest Subclass Centroid (5): " + str(nsc_5_orl_score))
+            print("\tNearest Subclass Centroid (5): " + str(nsc_5_orl_score))
+            print("\tNearest Subclass Centroid (5) w/ PCA: " + str(pca_nsc_5_orl_score))
 
         # Nearest Neighbor
         if run_nn:

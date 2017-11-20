@@ -3,7 +3,6 @@ from sklearn.linear_model import Perceptron, SGDClassifier
 from sklearn.cluster import KMeans
 from sklearn.metrics import accuracy_score
 import numpy as np
-from tools import flatten_array
 from sklearn.preprocessing import add_dummy_feature
 from sklearn.utils import shuffle
 
@@ -20,9 +19,6 @@ returns:
     @score: the mean accuracy classifications
 """
 def nc(train_data, train_lbls, test_data, test_lbls):
-    train_lbls = flatten_array(train_lbls)
-    test_lbls = flatten_array(test_lbls)
-
     clf = NearestCentroid()
     clf.fit(train_data, train_lbls)
     classification = clf.predict(test_data)
@@ -44,9 +40,6 @@ returns:
     @score: the mean accuracy classifications
 """
 def nsc(train_data, train_lbls, test_data, test_lbls, subclass_count):
-    train_lbls = flatten_array(train_lbls)
-    test_lbls = flatten_array(test_lbls)
-
     # Create set of training classes
     classes = list(set(train_lbls))
     class_count = len(classes)
@@ -107,9 +100,6 @@ returns:
     @score: the mean accuracy classifications
 """
 def nn(train_data, train_lbls, test_data, test_lbls, neighbor_count, neighbor_weight='uniform', n_jobs=1, classification="hard"):
-    train_lbls = flatten_array(train_lbls)
-    test_lbls = flatten_array(test_lbls)
-
     clf = KNeighborsClassifier(neighbor_count, weights=neighbor_weight, n_jobs=n_jobs)
     clf.fit(train_data, train_lbls)
     if classification == 'hard':
@@ -133,9 +123,6 @@ returns:
     @score: the mean accuracy classifications
 """
 def perceptron(train_data, train_lbls, test_data, test_lbls, eta=1, n_jobs=1):
-    train_lbls = flatten_array(train_lbls)
-    test_lbls = flatten_array(test_lbls)
-
     clf = Perceptron(eta0=eta, n_jobs=n_jobs, shuffle=True)
     clf.fit(train_data, train_lbls)
     classification = clf.predict(test_data)
@@ -145,8 +132,6 @@ def perceptron(train_data, train_lbls, test_data, test_lbls, eta=1, n_jobs=1):
 
 
 def perceptron_bp(train_data, train_lbls, test_data, test_lbls, eta=1, w=None, epochs=1000):
-    train_lbls = flatten_array(train_lbls)
-    test_lbls = flatten_array(test_lbls)
     aug_train_data = add_dummy_feature(train_data)
     aug_test_data = add_dummy_feature(test_data)
 
