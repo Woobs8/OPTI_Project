@@ -73,7 +73,7 @@ def train_test_split(data, lbls, test_size):
         # Randomize training and test indices within class data set
         train_indices = sample(range(0,class_sample_count), class_train_sample_count)
         test_indices = list(set(range(class_sample_count)) - set(train_indices))
-        # Assign randomized data to training and test arrays
+        # Assign randomized data samples to training and test arrays in proportion with the desired test size
         train_data[i*class_train_sample_count:(i+1)*class_train_sample_count] = label_samples[train_indices]
         train_lbls[i*class_train_sample_count:(i+1)*class_train_sample_count] = [label for i in range(class_train_sample_count)]
         test_data[i*class_test_sample_count:(i+1)*class_test_sample_count] = label_samples[test_indices]

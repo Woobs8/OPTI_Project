@@ -1,12 +1,12 @@
 import os
 import sys
 from tools import loadMNIST, loadORL, pca, plot_mnist_centroids, plot_orl_centroids, plot_2D_data, subplot_2D_data
-from classify import nc, nsc, nn, perceptron_bp
+from classify import nc, nsc, nn, perceptron_bp, perceptron_classify, perceptron_benchmark
 import matplotlib.pyplot as plt
 import multiprocessing
 
 
-def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn = True, cpus=1):
+def main(run_mnist=True,run_orl=True,run_nc=True,run_nsc=True,run_nn=True,run_perc_bp=True,run_perc_mse=True, cpus=1):
 
     """ ********* Loading MNIST samples ********* """
     if run_mnist:
@@ -75,6 +75,17 @@ def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn
                                                                            pca_mnist_test_images, mnist_test_lbls, 1,
                                                                            'uniform',cpus,'hard')
 
+        # Backpropagation Perceptron
+        if run_perc_bp:
+            # 784D data
+            W = perceptron_bp(mnist_train_images, mnist_train_lbls, eta=0.01, max_iter=100)
+            perc_bp_mnist_class, perc_bp_mnist_score = perceptron_classify(W, mnist_test_images,mnist_test_lbls)
+
+            # PCA data
+            W = perceptron_bp(pca_mnist_train_images, mnist_train_lbls, eta=0.01, max_iter=100)
+            pca_perc_bp_mnist_class, pca_perc_bp_mnist_score = perceptron_classify(W, pca_mnist_test_images,mnist_test_lbls)
+
+
 
     """ ********* Classifying ORL samples ********* """
     if run_orl:
@@ -114,6 +125,16 @@ def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn
             pca_nn_orl_class, pca_nn_orl_prob, pca_nn_orl_score = nn(pca_orl_train_images, orl_train_lbls,
                                                                      pca_orl_test_images, orl_test_lbls, 1, 'uniform',
                                                                      cpus,'hard')
+
+        # Backpropagation Perceptron
+        if run_perc_bp:
+            # 1200D data
+            W = perceptron_bp(orl_train_images, orl_train_lbls,eta=0.01, max_iter=100)
+            perc_bp_orl_class, perc_bp_orl_score = perceptron_classify(W, orl_test_images, orl_test_lbls)
+
+            # PCA data
+            W = perceptron_bp(pca_orl_train_images, orl_train_lbls,eta=0.01, max_iter=100)
+            pca_perc_bp_orl_class, pca_perc_bp_orl_score = perceptron_classify(W, pca_orl_test_images, orl_test_lbls)
 
 
     """ ********* Data Visualization ********* """
@@ -159,6 +180,15 @@ def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn
                 plot_mnist_centroids(mnist_test_images, pca_nn_mnist_class,
                                      'NN Classified MNIST PCA Test Data Centroids')
 
+            if run_perc_bp:
+                # PCA data scatterplot
+                plot_2D_data(pca_mnist_test_images, pca_perc_bp_mnist_class,
+                             'Backpropagation Perceptron Classified MNIST PCA Test Data')
+                plot_mnist_centroids(mnist_test_images, perc_bp_mnist_class,
+                                     'Backpropagation Perceptron Classified MNIST Test Data Centroids')
+                plot_mnist_centroids(mnist_test_images, pca_perc_bp_mnist_class,
+                                     'Backpropagation Perceptron Classified MNIST PCA Test Data Centroids')
+
 
         """ ********* ORL ********* """
         if run_orl:
@@ -197,6 +227,15 @@ def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn
                 plot_orl_centroids(orl_test_images, nn_orl_class, 'NN Classified ORL Test Data Centroids')
                 plot_orl_centroids(orl_test_images, pca_nn_orl_class, 'NN Classified ORL PCA Test Data Centroids')
 
+            if run_perc_bp:
+                # PCA data scatterplot
+                plot_2D_data(pca_orl_test_images, pca_perc_bp_orl_class,
+                             'Backpropagation Perceptron Classified ORL PCA Test Data')
+                plot_orl_centroids(orl_test_images, perc_bp_orl_class,
+                                     'Backpropagation Perceptron Classified ORL Test Data Centroids')
+                plot_orl_centroids(orl_test_images, pca_perc_bp_orl_class,
+                                     'Backpropagation Perceptron Classified ORL PCA Test Data Centroids')
+
 
     """ ********* Classification scores ********* """
     print("*** Classification Scores ***\n")
@@ -221,6 +260,11 @@ def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn
             print("\tNearest Neighbor: " + str(nn_mnist_score))
             print("\tNearest Neighbor w/ PCA: " + str(pca_nn_mnist_score))
 
+        # Backpropagation Perceptron
+        if run_perc_bp:
+            print("\tBackpropagation Perceptron: " + str(perc_bp_mnist_score))
+            print("\tBackpropagation Perceptron w/ PCA: " + str(pca_perc_bp_mnist_score))
+
     if run_orl:
         print("*** ORL ***")
         # Nearest Centroid
@@ -242,6 +286,11 @@ def main(run_mnist = True, run_orl = True, run_nc = True, run_nsc = True, run_nn
             print("\tNearest Neighbor: " + str(nn_orl_score))
             print("\tNearest Neighbor w/ PCA: " + str(pca_nn_orl_score))
 
+        # Backpropagation Perceptron
+        if run_perc_bp:
+            print("\tBackpropagation Perceptron: " + str(perc_bp_orl_score))
+            print("\tBackpropagation Perceptron w/ PCA: " + str(pca_perc_bp_orl_score))
+
     # Flush results to stdout
     sys.stdout.flush()
 
@@ -256,6 +305,8 @@ if __name__ == "__main__":
     show_figs = True
     run_mnist = False
     run_orl = False
+    run_perc_bp = False
+    run_perc_mse = False
     cpus = 1
     if len(sys.argv) > 1:
         if sys.argv[1] == 'help':
@@ -265,7 +316,7 @@ if __name__ == "__main__":
             help_text = [['Description', 'Usage', 'Default'],
                          ['-----------','-----------','-----------'],
                          ['Specify Dataset:', 'mnist, orl', 'both'],
-                         ['Specify Algorithm:', 'nc, nsc, nn', 'all'],
+                         ['Specify Algorithm:', 'nc, nsc, nn, perc-bp, perc-mse', 'all'],
                          ['Disable figures:', 'no-figs', 'enabled'],
                          ['CPU cores:', 'cpus=[int]', '1\n']]
             col_width = max(len(word) for row in help_text for word in row) + 2  # padding
@@ -288,6 +339,10 @@ if __name__ == "__main__":
                 run_mnist = True
             elif arg == 'orl' or arg == 'ORL':
                 run_orl = True
+            elif arg == 'perc-bp':
+                run_perc_bp = True
+            elif arg == 'perc-mse':
+                run_perc_mse = True
             elif 'cpus=' in arg:
                 cpus = int(arg[arg.find('=')+1:])
     else:
@@ -296,14 +351,18 @@ if __name__ == "__main__":
         run_nn = True
         run_mnist = True
         run_orl = True
+        run_perc_bp = True
+        run_perc_mse = True
 
     if (not run_mnist) and (not run_orl):
         run_mnist = True
         run_orl = True
 
-    if (not run_nc) and (not run_nsc) and (not run_nn):
+    if (not run_nc) and (not run_nsc) and (not run_nn) and (not run_perc_bp) and (not run_perc_mse):
         run_nc = True
         run_nsc = True
         run_nn = True
+        run_perc_bp = True
+        run_perc_mse = True
 
-    main(run_mnist, run_orl, run_nc, run_nsc, run_nn, cpus=cpus)
+    main(run_mnist, run_orl, run_nc, run_nsc, run_nn, run_perc_bp, run_perc_mse, cpus=cpus)

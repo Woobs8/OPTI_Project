@@ -111,19 +111,22 @@ def nn(train_data, train_lbls, test_data, test_lbls, neighbor_count, neighbor_we
 
 
 """ 
-Trains a perceptron using the training data, and classifies the test data using the trained perceptron model. 
+Trains a benchmark perceptron using the Scikit-learn implemented training data, and classifies the test data using the 
+trained perceptron model. 
 param:
     @train_data: training data
     @train_lbls: training labels
     @test_data: testing data
     @test_lbls: testing labels
+    @eta: learning rate
     @n_jobs: number of parallel jobs to run (each taking up 1 cpu core)
+    @max_iter: maximum training iterations 
 returns:
     @classification: numpy array with classification labels or classification probabilities
     @score: the mean accuracy classifications
 """
-def perceptron(train_data, train_lbls, test_data, test_lbls, eta=1, n_jobs=1):
-    clf = Perceptron(eta0=eta, n_jobs=n_jobs, shuffle=True)
+def perceptron_benchmark(train_data, train_lbls, test_data, test_lbls, eta=1, n_jobs=1, max_iter=1000):
+    clf = Perceptron(eta0=eta, n_jobs=n_jobs, shuffle=True, max_iter=max_iter)
     clf.fit(train_data, train_lbls)
     classification = clf.predict(test_data)
 
@@ -131,24 +134,85 @@ def perceptron(train_data, train_lbls, test_data, test_lbls, eta=1, n_jobs=1):
     return classification, score
 
 
-def perceptron_bp(train_data, train_lbls, test_data, test_lbls, eta=1, w=None, epochs=1000):
+""" 
+Trains an OVR multi-class perceptron using backpropagation
+    @train_data: training data
+    @train_lbls: training labels
+    @eta: learning rate
+    @max_iter: maximum training iterations 
+returns:
+    @W: trained OVR weight matrix
+"""
+def perceptron_bp(train_data, train_lbls, eta=1, max_iter=1000):
+    # Create set of training classes
+    classes = list(set(train_lbls))
+    class_count = len(classes)
+
+    # Augment data with bias to simplify linear discriminant function
     aug_train_data = add_dummy_feature(train_data)
+    N = len(aug_train_data)
+    aug_feature_count = len(aug_train_data[0])
+
+    W = np.zeros((class_count,aug_feature_count))
+    label_offset = classes[0]   # Account for classifications which doesn't start at 0
+    for label in classes:
+        # Initialize w
+        w = np.zeros(aug_feature_count)
+
+        # Prepare OVR (One vs Rest) binary classifier
+        ovr_lbls = [1 if lbl == label else -1 for lbl in train_lbls]
+
+        # Batch perceptron training
+        for t in range(max_iter):
+            delta = 0
+            for i in range(N):
+                # Evaluate perceptron criterion function
+                if (np.dot(aug_train_data[i],w)*ovr_lbls[i]) <= 0:
+                    delta += aug_train_data[i]*ovr_lbls[i]
+
+            # No classification error, algorithm is done
+            if not np.count_nonzero(delta):
+                break
+
+            # Update w
+            w = w + eta*delta
+
+        # Assign w to label-based index
+        index = label - label_offset
+        W[index] = w
+
+    return W
+
+
+""" 
+Applies OVR to classify test data using a trained weight matrix
+    @W: weight matrix
+    @test_data: test data
+    @test_lbls: test labels
+returns:
+    @classification: numpy array with classification labels
+    @score: the mean accuracy classifications
+"""
+def perceptron_classify(W, test_data, test_lbls):
+    # Create set of training classes
+    classes = list(set(test_lbls))
+    class_count = len(classes)
+    label_offset = classes[0]  # Account for classifications which doesn't start at 0
+
+    # Augment data with bias to simplify linear discriminant function
     aug_test_data = add_dummy_feature(test_data)
+    sample_count = len(aug_test_data)
 
-    # Initialize w
-    if w == None:
-        w = np.zeros(len(train_data[0]))
+    # Iterate and classify samples
+    classification = np.zeros(sample_count)
+    for i, sample in enumerate(aug_test_data):
+        # Process K binary classifiers
+        decision = [None]*len(W)
+        for j, w in enumerate(W):
+            decision[j] = np.dot(sample,w)
 
-    # Single-sample perceptron
-    for t in range(epochs):
-        # Shuffle data
-        train_data, train_lbls = shuffle(train_data, train_lbls)
+        # Classify as class furthest from the decision hyperplane (max decision response)
+        classification[i] = decision.index(max(decision))+label_offset
 
-        # Iterate shuffled training data
-        for i, x in enumerate(train_data):
-            # Evaluate perceptron criterion function
-            if (np.dot(train_data[i], w)*train_lbls[i]) < 0:
-                # Update w if sample was misclassified
-                w = w + eta*train_data[i]*train_lbls[i]
-
-    return w
+    score = accuracy_score(test_lbls, classification)
+    return classification, score
