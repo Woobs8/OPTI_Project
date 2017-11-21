@@ -135,7 +135,8 @@ def perceptron_benchmark(train_data, train_lbls, test_data, test_lbls, eta=1, n_
 
 
 """ 
-Trains an OVR multi-class perceptron using backpropagation
+Trains an OVR multi-class perceptron using backpropagation.
+param:
     @train_data: training data
     @train_lbls: training labels
     @eta: learning rate
@@ -150,9 +151,9 @@ def perceptron_bp(train_data, train_lbls, eta=1, max_iter=1000):
 
     # Augment data with bias to simplify linear discriminant function
     aug_train_data = add_dummy_feature(train_data)
-    N = len(aug_train_data)
     aug_feature_count = len(aug_train_data[0])
 
+    # Determine discriminant hyperplane for each OVR binary classification
     W = np.zeros((class_count,aug_feature_count))
     label_offset = classes[0]   # Account for classifications which doesn't start at 0
     for label in classes:
@@ -165,10 +166,11 @@ def perceptron_bp(train_data, train_lbls, eta=1, max_iter=1000):
         # Batch perceptron training
         for t in range(max_iter):
             delta = 0
-            for i in range(N):
+            for i,x in enumerate(aug_train_data):
                 # Evaluate perceptron criterion function
-                if (np.dot(aug_train_data[i],w)*ovr_lbls[i]) <= 0:
-                    delta += aug_train_data[i]*ovr_lbls[i]
+                if (np.dot(x,w)*ovr_lbls[i]) <= 0:
+                    # Sum error terms of misclassified samples
+                    delta += x*ovr_lbls[i]
 
             # No classification error, algorithm is done
             if not np.count_nonzero(delta):
@@ -185,7 +187,52 @@ def perceptron_bp(train_data, train_lbls, eta=1, max_iter=1000):
 
 
 """ 
-Applies OVR to classify test data using a trained weight matrix
+Trains an OVR multi-class perceptron using LMS (Least-Mean-Squares).
+param:
+    @train_data: training data
+    @train_lbls: training labels
+    @eta: learning rate
+    @max_iter: maximum training iterations 
+returns:
+    @W: trained OVR weight matrix
+"""
+def perceptron_lms(train_data, train_lbls, eta=1, max_iter=1000, theta=0):
+    # Create set of training classes
+    classes = list(set(train_lbls))
+    class_count = len(classes)
+
+    # Augment data with bias to simplify linear discriminant function
+    aug_train_data = add_dummy_feature(train_data)
+    aug_feature_count = len(aug_train_data[0])
+
+    # Determine discriminant hyperplane for each OVR binary classification
+    W = np.zeros((class_count,aug_feature_count))
+    label_offset = classes[0]   # Account for classifications which doesn't start at 0
+    for label in classes:
+        # Initialize w
+        w = np.zeros(aug_feature_count)
+
+        # Prepare OVR (One vs Rest) binary classifier
+        ovr_lbls = [1 if lbl == label else -1 for lbl in train_lbls]
+
+        # Batch perceptron training
+        for t in range(max_iter):
+            mse = np.dot(w,aug_train_data) - ovr_lbls
+            if eta*mse >= theta:
+                w = w - eta*mse
+            else:
+                break
+
+        # Assign w to label-based index
+        index = label - label_offset
+        W[index] = w
+
+    return W
+
+
+""" 
+Applies OVR to classify test data using a trained weight matrix.
+param:
     @W: weight matrix
     @test_data: test data
     @test_lbls: test labels

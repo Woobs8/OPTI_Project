@@ -1,7 +1,7 @@
 import os
 import sys
 from tools import loadMNIST, loadORL, pca, plot_mnist_centroids, plot_orl_centroids, plot_2D_data, subplot_2D_data
-from classify import nc, nsc, nn, perceptron_bp, perceptron_classify, perceptron_benchmark
+from classify import nc, nsc, nn, perceptron_bp, perceptron_classify, perceptron_lms
 import matplotlib.pyplot as plt
 import multiprocessing
 
@@ -86,6 +86,18 @@ def main(run_mnist=True,run_orl=True,run_nc=True,run_nsc=True,run_nn=True,run_pe
             pca_perc_bp_mnist_class, pca_perc_bp_mnist_score = perceptron_classify(W, pca_mnist_test_images,mnist_test_lbls)
 
 
+        # MSE Perceptron
+        if run_perc_mse:
+            # 1200D data
+            W = perceptron_lms(mnist_train_images, mnist_train_lbls, eta=0.01, max_iter=100)
+            perc_lms_mnist_class, perc_lms_mnist_score = perceptron_classify(W, mnist_test_images, mnist_test_lbls)
+
+            # PCA data
+            W = perceptron_lms(pca_mnist_train_images, mnist_train_lbls, eta=0.01, max_iter=100)
+            pca_perc_lms_mnist_class, pca_perc_lms_mnist_score = perceptron_classify(W, pca_mnist_test_images,
+                                                                                     mnist_test_lbls)
+
+
 
     """ ********* Classifying ORL samples ********* """
     if run_orl:
@@ -135,6 +147,17 @@ def main(run_mnist=True,run_orl=True,run_nc=True,run_nsc=True,run_nn=True,run_pe
             # PCA data
             W = perceptron_bp(pca_orl_train_images, orl_train_lbls,eta=0.01, max_iter=100)
             pca_perc_bp_orl_class, pca_perc_bp_orl_score = perceptron_classify(W, pca_orl_test_images, orl_test_lbls)
+
+
+        # MSE Perceptron
+        if run_perc_mse:
+            # 1200D data
+            W = perceptron_lms(orl_train_images, orl_train_lbls,eta=0.01, max_iter=100)
+            perc_lms_orl_class, perc_lms_orl_score = perceptron_classify(W, orl_test_images, orl_test_lbls)
+
+            # PCA data
+            W = perceptron_lms(pca_orl_train_images, orl_train_lbls,eta=0.01, max_iter=100)
+            pca_perc_lms_orl_class, pca_perc_lms_orl_score = perceptron_classify(W, pca_orl_test_images, orl_test_lbls)
 
 
     """ ********* Data Visualization ********* """
@@ -189,6 +212,16 @@ def main(run_mnist=True,run_orl=True,run_nc=True,run_nsc=True,run_nn=True,run_pe
                 plot_mnist_centroids(mnist_test_images, pca_perc_bp_mnist_class,
                                      'Backpropagation Perceptron Classified MNIST PCA Test Data Centroids')
 
+            if run_perc_mse:
+                # PCA data scatterplot
+                plot_2D_data(pca_orl_test_images, pca_perc_lms_mnist_class,
+                             'MSE Perceptron Classified MNIST PCA Test Data')
+                # Class mean vectors of classified test data
+                plot_mnist_centroids(orl_test_images, perc_lms_mnist_class,
+                                   'MSE Perceptron Classified MNIST Test Data Centroids')
+                plot_mnist_centroids(orl_test_images, pca_perc_lms_mnist_class,
+                                   'MSE Perceptron Classified MNIST PCA Test Data Centroids')
+
 
         """ ********* ORL ********* """
         if run_orl:
@@ -236,6 +269,15 @@ def main(run_mnist=True,run_orl=True,run_nc=True,run_nsc=True,run_nn=True,run_pe
                 plot_orl_centroids(orl_test_images, pca_perc_bp_orl_class,
                                      'Backpropagation Perceptron Classified ORL PCA Test Data Centroids')
 
+            if run_perc_mse:
+                # PCA data scatterplot
+                plot_2D_data(pca_orl_test_images, pca_perc_lms_orl_class,
+                             'MSE Perceptron Classified ORL PCA Test Data')
+                # Class mean vectors of classified test data
+                plot_orl_centroids(orl_test_images, perc_lms_orl_class,
+                                     'MSE Perceptron Classified ORL Test Data Centroids')
+                plot_orl_centroids(orl_test_images, pca_perc_lms_orl_class,
+                                     'MSE Perceptron Classified ORL PCA Test Data Centroids')
 
     """ ********* Classification scores ********* """
     print("*** Classification Scores ***\n")
