@@ -1,7 +1,7 @@
 from sklearn.neighbors import NearestCentroid, KNeighborsClassifier
 from sklearn.linear_model import Perceptron, SGDClassifier
 from sklearn.cluster import KMeans
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, mean_squared_error
 import numpy as np
 from sklearn.preprocessing import add_dummy_feature
 from sklearn.utils import shuffle
@@ -196,7 +196,7 @@ param:
 returns:
     @W: trained OVR weight matrix
 """
-def perceptron_lms(train_data, train_lbls, eta=1, max_iter=1000, theta=0):
+def perceptron_lms(train_data, train_lbls, eta=1, max_iter=1000):
     # Create set of training classes
     classes = list(set(train_lbls))
     class_count = len(classes)
@@ -204,6 +204,9 @@ def perceptron_lms(train_data, train_lbls, eta=1, max_iter=1000, theta=0):
     # Augment data with bias to simplify linear discriminant function
     aug_train_data = add_dummy_feature(train_data)
     aug_feature_count = len(aug_train_data[0])
+
+    # Initialize theta
+    theta = np.zeros(aug_feature_count)
 
     # Determine discriminant hyperplane for each OVR binary classification
     W = np.zeros((class_count,aug_feature_count))
@@ -217,8 +220,12 @@ def perceptron_lms(train_data, train_lbls, eta=1, max_iter=1000, theta=0):
 
         # Batch perceptron training
         for t in range(max_iter):
-            mse = np.dot(w,aug_train_data) - ovr_lbls
-            if eta*mse >= theta:
+            mse = np.dot((np.dot(aug_train_data,w) - ovr_lbls),aug_train_data)
+            #print((np.dot(aug_train_data.transpose(),w).shape))
+            #mse = mean_squared_error(np.dot(aug_train_data,w),ovr_lbls)
+            print(mse)
+            print(np.all(mse > theta))
+            if np.all(mse > theta):
                 w = w - eta*mse
             else:
                 break
