@@ -153,7 +153,6 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
         if run_perc_lms:
             # 1200D data
             W = perceptron_lms(orl_train_images, orl_train_lbls,eta=0.01, max_iter=100)
-            print(W)
             perc_lms_orl_class, perc_lms_orl_score = perceptron_classify(W, orl_test_images, orl_test_lbls)
 
             # PCA data

@@ -1,10 +1,9 @@
 from sklearn.neighbors import NearestCentroid, KNeighborsClassifier
-from sklearn.linear_model import Perceptron, SGDClassifier
+from sklearn.linear_model import Perceptron
 from sklearn.cluster import KMeans
-from sklearn.metrics import accuracy_score, mean_squared_error
+from sklearn.metrics import accuracy_score
 import numpy as np
 from sklearn.preprocessing import add_dummy_feature
-from sklearn.utils import shuffle
 
 """ 
 Calculates the mean of each class in the training data. 
@@ -160,7 +159,7 @@ def perceptron_bp(train_data, train_lbls, eta=1, max_iter=1000):
         # Initialize w
         w = np.zeros(aug_feature_count)
 
-        # Prepare OVR (One vs Rest) binary classifier
+        # Initialize OVR (One vs Rest) binary classification
         ovr_lbls = [1 if lbl == label else -1 for lbl in train_lbls]
 
         # Batch perceptron training
@@ -215,24 +214,49 @@ def perceptron_lms(train_data, train_lbls, eta=1, max_iter=1000):
         # Initialize w
         w = np.zeros(aug_feature_count)
 
-        # Prepare OVR (One vs Rest) binary classifier
-        ovr_lbls = [1 if lbl == label else -1 for lbl in train_lbls]
+        # Initialize OVR (One vs Rest) binary classification
+        ovr_lbls = np.array([1 if lbl == label else -1 for lbl in train_lbls])
 
         # Batch perceptron training
         for t in range(max_iter):
-            mse = np.dot((np.dot(aug_train_data,w) - ovr_lbls),aug_train_data)
-            #print((np.dot(aug_train_data.transpose(),w).shape))
-            #mse = mean_squared_error(np.dot(aug_train_data,w),ovr_lbls)
-            print(mse)
-            print(np.all(mse > theta))
-            if np.all(mse > theta):
-                w = w - eta*mse
-            else:
+            delta = np.dot(aug_train_data.transpose(),(np.dot(aug_train_data,w) - ovr_lbls))
+            w = w - eta*delta
+            if np.all(np.abs(delta) < theta):
                 break
 
         # Assign w to label-based index
         index = label - label_offset
         W[index] = w
+
+
+    # # Determine discriminant hyperplane for each OVR binary classification
+    # W = np.zeros((class_count,aug_feature_count))
+    # label_offset = classes[0]   # Account for classifications which doesn't start at 0
+    # for label in classes:
+    #     # Initialize w
+    #     w = np.zeros(aug_feature_count)
+    #
+    #     # Initialize theta
+    #     theta = np.zeros(aug_feature_count)
+    #
+    #     # Initialize OVR (One vs Rest) binary classification
+    #     ovr_lbls = np.array([1 if lbl == label else -1 for lbl in train_lbls])
+    #
+    #     # Batch perceptron training
+    #     for i, x in enumerate(aug_train_data):
+    #         for t in range(max_iter):
+    #             delta = (np.dot(w,x)-ovr_lbls[i])*x
+    #             # No classification error, algorithm is done
+    #             if np.all(abs(delta) < theta):
+    #                 break
+    #
+    #             # Update w
+    #             w = w - eta * delta
+    #
+    #
+    #     # Assign w to label-based index
+    #     index = label - label_offset
+    #     W[index] = w
 
     return W
 
