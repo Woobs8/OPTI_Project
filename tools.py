@@ -5,6 +5,7 @@ import scipy.io as scio
 from sklearn.neighbors import NearestCentroid
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
+from sklearn.manifold import TSNE
 
 """ 
 Load MNIST dataset from directory
@@ -55,13 +56,35 @@ def pca(train_data, test_data, n_components=2):
 
 
 """ 
+Apply t-SNE to training and testing data samples
+param:
+    @train_data: training data
+    @test_data: testing data
+returns:
+    train_images, train_lbls, test_images, test_lbls
+"""
+def tsne(train_data, test_data, n_components=2):
+    # Speed ud TSNE computations by performing initial dimensionality reduction
+    pca = PCA(n_components=50)
+    pca.fit(train_data)
+    pca_train_data = pca.transform(train_data)
+    pca_test_data = pca.transform(test_data)
+
+    # Initialize training PCA to 2-dimensions
+    tsne = TSNE(n_components=n_components)
+    tsne_train_data = tsne.fit_transform(pca_train_data)
+    tsne_test_data = tsne.fit_transform(pca_test_data)
+    return tsne_train_data, tsne_test_data
+
+
+""" 
 Plots the class mean vectors of supplied MNIST data
 param:
     @data: MNIST data
     @labels: data labels
     @tile: plot title
 """
-def plot_mnist_centroids(data, labels, title=""):
+def plot_mnist_centroids(data, labels, title="", fp=""):
     # Create set of classes in data set
     classes = list(set(labels))
 
@@ -83,7 +106,8 @@ def plot_mnist_centroids(data, labels, title=""):
         plt.subplot(2,5,i+1)
         plt.title('Label: {label}'.format(label=classes[i]))
         plt.imshow(pixels, cmap='gray')
-
+    if fp != "":
+        plt.savefig(fp)
     plt.draw()
 
 
@@ -94,7 +118,7 @@ param:
     @labels: data labels
     @tile: plot title
 """
-def plot_orl_centroids(data, labels, title=""):
+def plot_orl_centroids(data, labels, title="", fp=""):
     # Create set of classes in data set
     classes = list(set(labels))
 
@@ -115,7 +139,8 @@ def plot_orl_centroids(data, labels, title=""):
         plt.subplot(4,10,i+1)
         plt.title('Label: {label}'.format(label=classes[i]))
         plt.imshow(pixels, cmap='gray')
-
+    if fp != "":
+        plt.savefig(fp)
     plt.draw()
 
 
@@ -126,7 +151,7 @@ param:
     @labels: list of data labels
     @tile: plot title
 """
-def plot_2D_data(data, labels, title=""):
+def plot_2D_data(data, labels, title="", fp=""):
     # Create set of classes in data set
     classes = list(set(labels))
     class_count = len(classes)
@@ -144,7 +169,7 @@ def plot_2D_data(data, labels, title=""):
         class_data = np.asarray([x for j, x in enumerate(data) if labels[j]==label])
         x = class_data[:,0]
         y = class_data[:,1]
-        plots.append(plt.scatter(x,y,color=colors[i]))
+        plots.append(plt.scatter(x,y,color=colors[i],s=0.5))
 
     # Add legend
     plt.legend(plots,
@@ -153,7 +178,8 @@ def plot_2D_data(data, labels, title=""):
                loc='upper right',
                ncol=2,
                fontsize=8)
-
+    if fp != "":
+        plt.savefig(fp)
     plt.draw()
 
 
@@ -165,7 +191,7 @@ param:
     @tile: plot title
     @subplot_titles: list of titles of subplots
 """
-def subplot_2D_data(data, dataset_labels, title="", subplot_titles=[]):
+def subplot_2D_data(data, dataset_labels, title="", subplot_titles=[],  fp=""):
     plt.figure()
     plt.suptitle(title)
     for i,labels in enumerate(dataset_labels):
@@ -187,7 +213,7 @@ def subplot_2D_data(data, dataset_labels, title="", subplot_titles=[]):
             class_data = np.asarray([x for j, x in enumerate(data) if labels[j] == label])
             x = class_data[:, 0]
             y = class_data[:, 1]
-            plots.append(plt.scatter(x, y, color=colors[i]))
+            plots.append(plt.scatter(x, y, color=colors[i],s=0.5))
 
         # Add legend
         plt.legend(plots,
@@ -196,5 +222,6 @@ def subplot_2D_data(data, dataset_labels, title="", subplot_titles=[]):
                    loc='upper right',
                    ncol=2,
                    fontsize=8)
-
+    if fp != "":
+        plt.savefig(fp)
     plt.draw()

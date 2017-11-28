@@ -1,9 +1,11 @@
 import os
 import sys
-from tools import loadMNIST, loadORL, pca, plot_mnist_centroids, plot_orl_centroids, plot_2D_data, subplot_2D_data
+from tools import loadMNIST, loadORL, pca, tsne, plot_mnist_centroids, plot_orl_centroids, plot_2D_data, subplot_2D_data
 from classify import nc, nsc, nn, perceptron_bp, perceptron_classify, perceptron_lms
 import matplotlib.pyplot as plt
 import multiprocessing
+from os.path import exists
+from os import makedirs
 
 
 def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, run_perc_bp=True, run_perc_lms=True, cpus=1):
@@ -17,6 +19,8 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
         mnist_train_images, mnist_train_lbls, mnist_test_images, mnist_test_lbls = loadMNIST(MNIST_PATH)
         # Apply PCA to MNIST samples
         pca_mnist_train_images, pca_mnist_test_images = pca(mnist_train_images, mnist_test_images)
+        # Apply TSNE to MNIST samples
+        tsne_mnist_train_images, tsne_mnist_test_images = tsne(mnist_train_images, mnist_test_images)
 
     """ ********* Loading ORL samples ********* """
     if run_orl:
@@ -27,6 +31,8 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
         orl_train_images, orl_train_lbls, orl_test_images, orl_test_lbls = loadORL(ORL_PATH)
         # Apply PCA to ORL samples
         pca_orl_train_images, pca_orl_test_images = pca(orl_train_images, orl_test_images)
+        # Apply TSNE to MNIST samples
+        tsne_orl_train_images, tsne_orl_test_images = tsne(orl_train_images, orl_test_images)
 
 
     """ ********* Performance Parameters ********* """
@@ -162,122 +168,215 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
 
     """ ********* Data Visualization ********* """
     if show_figs:
+        dir = 'figures/'
+        if not exists(dir):
+            os.makedirs(dir)
+
         """ ********* MNIST ********* """
         if run_mnist:
+            mnist_dir = dir + 'mnist/'
+            if not exists(mnist_dir):
+                os.makedirs(mnist_dir)
+
             # Training data
-            plot_mnist_centroids(mnist_train_images, mnist_train_lbls, 'MNIST Training Data Centroids')
+            plot_mnist_centroids(mnist_train_images, mnist_train_lbls, 'MNIST Training Data Centroids',
+                                 mnist_dir + 'train_cent.png')
 
             # Test data
-            plot_mnist_centroids(mnist_test_images, mnist_test_lbls, 'MNIST Test Data Centroids')
+            plot_mnist_centroids(mnist_test_images, mnist_test_lbls, 'MNIST Test Data Centroids',
+                                 mnist_dir + 'test_cent.png')
 
             # PCA Training data
-            plot_2D_data(pca_mnist_train_images, mnist_train_lbls, 'MNIST PCA Training Data')
+            plot_2D_data(pca_mnist_train_images, mnist_train_lbls, 'MNIST PCA Training Data',
+                         mnist_dir + 'pca_train.png')
 
-            # Labeled (actual) PCA test data
-            plot_2D_data(pca_mnist_test_images, mnist_test_lbls, 'Labeled MNIST PCA Test Data')
+            # PCA test data
+            plot_2D_data(pca_mnist_test_images, mnist_test_lbls, 'MNIST PCA Test Data',
+                         mnist_dir + 'pca_test.png')
+
+            # TSNE Training data
+            plot_2D_data(tsne_mnist_train_images, mnist_train_lbls, 'MNIST TSNE Training Data',
+                         mnist_dir + 'tsne_train.png')
+
+            # TSNE test data
+            plot_2D_data(tsne_mnist_test_images, mnist_test_lbls, 'MNIST TSNE Test Data', mnist_dir + 'tsne_test.png')
 
             # Classified test data
             if run_nc:
+                nc_dir = mnist_dir + 'nc/'
                 # PCA data scatterplot
-                plot_2D_data(pca_mnist_test_images, pca_nc_mnist_class,'NC Classified MNIST PCA Test Data')
+                plot_2D_data(pca_mnist_test_images, pca_nc_mnist_class, 'NC Classified MNIST PCA Test Data',
+                             nc_dir + 'pca_nc_class.png')
                 # Class mean vectors of classified test data
-                plot_mnist_centroids(mnist_test_images, nc_mnist_class, 'NC Classified MNIST Test Data Centroids')
+                plot_mnist_centroids(mnist_test_images, nc_mnist_class, 'NC Classified MNIST Test Data Centroids',
+                                     nc_dir + 'nc_class_cent.png')
                 plot_mnist_centroids(mnist_test_images, pca_nc_mnist_class,
-                                     'NC Classified MNIST PCA Test Data Centroids')
+                                     'NC Classified MNIST PCA Test Data Centroids', nc_dir + 'pca_nc_class_cent.png')
+
 
             if run_nsc:
+                nsc_dir = mnist_dir + 'nsc/'
+                if not exists(nsc_dir):
+                    os.makedirs(nsc_dir)
+
                 # PCA data scatterplots
                 subplot_2D_data(pca_mnist_test_images,
                                 [pca_nsc_2_mnist_class, pca_nsc_3_mnist_class, pca_nsc_5_mnist_class],
-                                'NSC Classified MNIST PCA Test Data', ['2 Subclasses', '3 Subclasses', '5 Subclasses'])
+                                'NSC Classified MNIST PCA Test Data', ['2 Subclasses', '3 Subclasses', '5 Subclasses'],
+                                nsc_dir + 'pca_nc_class.png')
                 # Class mean vectors of classified test data
-                plot_mnist_centroids(mnist_test_images, nsc_5_mnist_class, 'NSC Classified MNIST Test Data Centroids')
+                plot_mnist_centroids(mnist_test_images, nsc_5_mnist_class, 'NSC Classified MNIST Test Data Centroids',
+                                     nsc_dir + 'nc_class_cent.png')
                 plot_mnist_centroids(mnist_test_images, pca_nsc_5_mnist_class,
-                                     'NSC Classified MNIST PCA Test Data Centroids')
+                                     'NSC Classified MNIST PCA Test Data Centroids', nsc_dir + 'pca_nc_class_cent.png')
 
             if run_nn:
+                nn_dir = mnist_dir + 'nn/'
+                if not exists(nn_dir):
+                    os.makedirs(nn_dir)
+
                 # PCA data scatterplot
-                plot_2D_data(pca_mnist_test_images, pca_nc_mnist_class,'NN Classified MNIST PCA Test Data')
+                plot_2D_data(pca_mnist_test_images, pca_nc_mnist_class, 'NN Classified MNIST PCA Test Data',
+                             nn_dir + 'pca_nc_class.png')
                 # Class mean vectors of classified test data
-                plot_mnist_centroids(mnist_test_images, nn_mnist_class,'NN Classified MNIST Test Data Centroids')
+                plot_mnist_centroids(mnist_test_images, nn_mnist_class, 'NN Classified MNIST Test Data Centroids',
+                                     nn_dir + 'nc_class_cent.png')
                 plot_mnist_centroids(mnist_test_images, pca_nn_mnist_class,
-                                     'NN Classified MNIST PCA Test Data Centroids')
+                                     'NN Classified MNIST PCA Test Data Centroids', nn_dir + 'pca_nc_class_cent.png')
 
             if run_perc_bp:
+                perc_bp_dir = mnist_dir + 'perc-bp/'
+                if not exists(perc_bp_dir):
+                    os.makedirs(perc_bp_dir)
+
                 # PCA data scatterplot
                 plot_2D_data(pca_mnist_test_images, pca_perc_bp_mnist_class,
-                             'Backpropagation Perceptron Classified MNIST PCA Test Data')
+                             'Backpropagation Perceptron Classified MNIST PCA Test Data',
+                             perc_bp_dir + 'pca_nc_class_cent.png')
                 plot_mnist_centroids(mnist_test_images, perc_bp_mnist_class,
-                                     'Backpropagation Perceptron Classified MNIST Test Data Centroids')
+                                     'Backpropagation Perceptron Classified MNIST Test Data Centroids',
+                                     perc_bp_dir + 'pca_nc_class_cent.png')
                 plot_mnist_centroids(mnist_test_images, pca_perc_bp_mnist_class,
-                                     'Backpropagation Perceptron Classified MNIST PCA Test Data Centroids')
+                                     'Backpropagation Perceptron Classified MNIST PCA Test Data Centroids',
+                                     perc_bp_dir + 'pca_nc_class_cent.png')
 
             if run_perc_lms:
+                perc_lms_dir = mnist_dir + 'perc-lms/'
+                if not exists(perc_lms_dir):
+                    os.makedirs(perc_lms_dir)
+
                 # PCA data scatterplot
                 plot_2D_data(pca_orl_test_images, pca_perc_lms_mnist_class,
-                             'MSE Perceptron Classified MNIST PCA Test Data')
+                             'MSE Perceptron Classified MNIST PCA Test Data', perc_lms_dir + 'pca_nc_class_cent.png')
                 # Class mean vectors of classified test data
                 plot_mnist_centroids(orl_test_images, perc_lms_mnist_class,
-                                   'MSE Perceptron Classified MNIST Test Data Centroids')
+                                     'MSE Perceptron Classified MNIST Test Data Centroids',
+                                     perc_lms_dir + 'pca_nc_class_cent.png')
                 plot_mnist_centroids(orl_test_images, pca_perc_lms_mnist_class,
-                                   'MSE Perceptron Classified MNIST PCA Test Data Centroids')
+                                     'MSE Perceptron Classified MNIST PCA Test Data Centroids',
+                                     perc_lms_dir + 'pca_nc_class_cent.png')
 
 
         """ ********* ORL ********* """
         if run_orl:
+            orl_dir = dir + 'orl/'
+            if not exists(orl_dir):
+                os.makedirs(orl_dir)
+
             # Training data
-            plot_orl_centroids(orl_train_images, orl_train_lbls, 'ORL Training Data Centroids')
+            plot_orl_centroids(orl_train_images, orl_train_lbls, 'ORL Training Data Centroids',
+                               orl_dir + 'train_cent.png')
 
             # Test data
-            plot_orl_centroids(orl_test_images, orl_test_lbls, 'ORL Test Data Centroids')
+            plot_orl_centroids(orl_test_images, orl_test_lbls, 'ORL Test Data Centroids', orl_dir+'test_cent.png')
 
             # PCA Training data
-            plot_2D_data(pca_orl_train_images, orl_train_lbls, 'ORL PCA Training Data')
+            plot_2D_data(pca_orl_train_images, orl_train_lbls, 'ORL PCA Training Data', orl_dir+'pca_train.png')
 
             # Labeled (actual) PCA test data
-            plot_2D_data(pca_orl_test_images, orl_test_lbls, 'Labeled ORL PCA Test Data')
+            plot_2D_data(pca_orl_test_images, orl_test_lbls, 'ORL PCA Test Data', orl_dir+'pca_test.png')
+
+            # TSNE Training data
+            plot_2D_data(tsne_orl_train_images, orl_train_lbls, 'ORL TSNE Training Data', orl_dir+'tsne_train.png')
+
+            # TSNE test data
+            plot_2D_data(tsne_orl_test_images, orl_test_lbls, 'ORL TSNE Test Data', orl_dir+'tsne_test.png')
 
             # Classified test data
             if run_nc:
+                nc_dir = orl_dir+'nc/'
+                if not exists(nc_dir):
+                    os.makedirs(nc_dir)
+
                 # PCA data scatterplot
-                plot_2D_data(pca_orl_test_images, pca_nc_orl_class, 'NC Classified ORL PCA Test Data')
+                plot_2D_data(pca_orl_test_images, pca_nc_orl_class, 'NC Classified ORL PCA Test Data',
+                             nc_dir + 'pca_nc_class.png')
                 # Class mean vectors of classified test data
-                plot_orl_centroids(orl_test_images, nc_orl_class, 'NC Classified ORL Test Data Centroids')
-                plot_orl_centroids(orl_test_images, pca_nc_orl_class, 'NC Classified ORL PCA Test Data Centroids')
+                plot_orl_centroids(orl_test_images, nc_orl_class, 'NC Classified ORL Test Data Centroids',
+                                   nc_dir + 'nc_class_cent.png')
+                plot_orl_centroids(orl_test_images, pca_nc_orl_class, 'NC Classified ORL PCA Test Data Centroids',
+                                   nc_dir + 'pca_nc_class_cent.png')
 
             if run_nsc:
+                nsc_dir = orl_dir+'nsc/'
+                if not exists(nsc_dir):
+                    os.makedirs(nsc_dir)
+
                 # PCA data scatterplots
                 subplot_2D_data(pca_orl_test_images, [pca_nsc_2_orl_class, pca_nsc_3_orl_class, pca_nsc_5_orl_class],
-                                'NSC Classified ORL PCA Test Data', ['2 Subclasses', '3 Subclasses', '5 subclasses'])
+                                'NSC Classified ORL PCA Test Data', ['2 Subclasses', '3 Subclasses', '5 subclasses'],
+                                nsc_dir + 'pca_nsc_class.png')
                 # Class mean vectors of classified test data
-                plot_orl_centroids(orl_test_images, nsc_5_orl_class, 'NSC Classified ORL Test Data Centroids')
-                plot_orl_centroids(orl_test_images, pca_nsc_5_orl_class, 'NSC Classified ORL PCA Test Data Centroids')
+                plot_orl_centroids(orl_test_images, nsc_5_orl_class, 'NSC Classified ORL Test Data Centroids',
+                                   nsc_dir + 'nsc_class_cent.png')
+                plot_orl_centroids(orl_test_images, pca_nsc_5_orl_class, 'NSC Classified ORL PCA Test Data Centroids',
+                                   nsc_dir + 'pca_nsc_class_cent.png')
 
             if run_nn:
+                nn_dir = orl_dir+'nn/'
+                if not exists(nn_dir):
+                    os.makedirs(nn_dir)
+
                 # PCA data scatterplot
-                plot_2D_data(pca_orl_test_images, pca_nn_orl_class, 'NN Classified ORL PCA Test Data')
+                plot_2D_data(pca_orl_test_images, pca_nn_orl_class, 'NN Classified ORL PCA Test Data',
+                             nn_dir + 'pca_nsc_class.png')
                 # Class mean vectors of classified test data
-                plot_orl_centroids(orl_test_images, nn_orl_class, 'NN Classified ORL Test Data Centroids')
-                plot_orl_centroids(orl_test_images, pca_nn_orl_class, 'NN Classified ORL PCA Test Data Centroids')
+                plot_orl_centroids(orl_test_images, nn_orl_class, 'NN Classified ORL Test Data Centroids',
+                                   nn_dir + 'nsc_class_cent.png')
+                plot_orl_centroids(orl_test_images, pca_nn_orl_class, 'NN Classified ORL PCA Test Data Centroids',
+                                   nn_dir + 'pca_nsc_class_cent.png')
 
             if run_perc_bp:
+                perc_bp_dir = orl_dir+'perc-bp/'
+                if not exists(perc_bp_dir):
+                    os.makedirs(perc_bp_dir)
+
                 # PCA data scatterplot
                 plot_2D_data(pca_orl_test_images, pca_perc_bp_orl_class,
-                             'Backpropagation Perceptron Classified ORL PCA Test Data')
+                             'Backpropagation Perceptron Classified ORL PCA Test Data',
+                             perc_bp_dir + 'pca_nsc_class.png')
                 plot_orl_centroids(orl_test_images, perc_bp_orl_class,
-                                     'Backpropagation Perceptron Classified ORL Test Data Centroids')
+                                   'Backpropagation Perceptron Classified ORL Test Data Centroids',
+                                   perc_bp_dir + 'nsc_class_cent.png')
                 plot_orl_centroids(orl_test_images, pca_perc_bp_orl_class,
-                                     'Backpropagation Perceptron Classified ORL PCA Test Data Centroids')
+                                   'Backpropagation Perceptron Classified ORL PCA Test Data Centroids',
+                                   perc_bp_dir + 'pca_nsc_class_cent.png')
 
             if run_perc_lms:
+                perc_lms_dir = orl_dir + 'perc-lms/'
+                if not exists(perc_lms_dir):
+                    os.makedirs(perc_lms_dir)
+
                 # PCA data scatterplot
                 plot_2D_data(pca_orl_test_images, pca_perc_lms_orl_class,
-                             'MSE Perceptron Classified ORL PCA Test Data')
+                             'MSE Perceptron Classified ORL PCA Test Data', perc_lms_dir + 'pca_nsc_class.png')
                 # Class mean vectors of classified test data
                 plot_orl_centroids(orl_test_images, perc_lms_orl_class,
-                                     'MSE Perceptron Classified ORL Test Data Centroids')
+                                   'MSE Perceptron Classified ORL Test Data Centroids',
+                                   perc_lms_dir + 'nsc_class_cent.png')
                 plot_orl_centroids(orl_test_images, pca_perc_lms_orl_class,
-                                     'MSE Perceptron Classified ORL PCA Test Data Centroids')
+                                   'MSE Perceptron Classified ORL PCA Test Data Centroids',
+                                   perc_lms_dir + 'pca_nsc_class_cent.png')
 
     """ ********* Classification scores ********* """
     print("*** Classification Scores ***\n")
@@ -346,7 +445,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
     # Flush results to stdout
     sys.stdout.flush()
 
-    # Block scriot to keep figures
+    # Block script to keep figures
     plt.show()
 
 if __name__ == "__main__":
