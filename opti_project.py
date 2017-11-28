@@ -20,7 +20,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
         # Apply PCA to MNIST samples
         pca_mnist_train_images, pca_mnist_test_images = pca(mnist_train_images, mnist_test_images)
         # Apply TSNE to MNIST samples
-        tsne_mnist_train_images, tsne_mnist_test_images = tsne(mnist_train_images, mnist_test_images)
+        #tsne_mnist_train_images, tsne_mnist_test_images = tsne(mnist_train_images, mnist_test_images)
 
     """ ********* Loading ORL samples ********* """
     if run_orl:
@@ -32,7 +32,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
         # Apply PCA to ORL samples
         pca_orl_train_images, pca_orl_test_images = pca(orl_train_images, orl_test_images)
         # Apply TSNE to MNIST samples
-        tsne_orl_train_images, tsne_orl_test_images = tsne(orl_train_images, orl_test_images)
+        #tsne_orl_train_images, tsne_orl_test_images = tsne(orl_train_images, orl_test_images)
 
 
     """ ********* Performance Parameters ********* """
@@ -195,15 +195,18 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                          mnist_dir + 'pca_test.png')
 
             # TSNE Training data
-            plot_2D_data(tsne_mnist_train_images, mnist_train_lbls, 'MNIST TSNE Training Data',
-                         mnist_dir + 'tsne_train.png')
+            #plot_2D_data(tsne_mnist_train_images, mnist_train_lbls, 'MNIST TSNE Training Data',
+            #             mnist_dir + 'tsne_train.png')
 
             # TSNE test data
-            plot_2D_data(tsne_mnist_test_images, mnist_test_lbls, 'MNIST TSNE Test Data', mnist_dir + 'tsne_test.png')
+            #plot_2D_data(tsne_mnist_test_images, mnist_test_lbls, 'MNIST TSNE Test Data', mnist_dir + 'tsne_test.png')
 
             # Classified test data
             if run_nc:
                 nc_dir = mnist_dir + 'nc/'
+                if not exists(nc_dir):
+                    os.makedirs(nc_dir)
+
                 # PCA data scatterplot
                 plot_2D_data(pca_mnist_test_images, pca_nc_mnist_class, 'NC Classified MNIST PCA Test Data',
                              nc_dir + 'pca_nc_class.png')
@@ -297,10 +300,10 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
             plot_2D_data(pca_orl_test_images, orl_test_lbls, 'ORL PCA Test Data', orl_dir+'pca_test.png')
 
             # TSNE Training data
-            plot_2D_data(tsne_orl_train_images, orl_train_lbls, 'ORL TSNE Training Data', orl_dir+'tsne_train.png')
+            #plot_2D_data(tsne_orl_train_images, orl_train_lbls, 'ORL TSNE Training Data', orl_dir+'tsne_train.png')
 
             # TSNE test data
-            plot_2D_data(tsne_orl_test_images, orl_test_lbls, 'ORL TSNE Test Data', orl_dir+'tsne_test.png')
+            #plot_2D_data(tsne_orl_test_images, orl_test_lbls, 'ORL TSNE Test Data', orl_dir+'tsne_test.png')
 
             # Classified test data
             if run_nc:

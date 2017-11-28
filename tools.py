@@ -169,15 +169,24 @@ def plot_2D_data(data, labels, title="", fp=""):
         class_data = np.asarray([x for j, x in enumerate(data) if labels[j]==label])
         x = class_data[:,0]
         y = class_data[:,1]
-        plots.append(plt.scatter(x,y,color=colors[i],s=0.5))
+
+        # Reduce marker size if number of samples is high
+        if len(data) > 1000:
+            plots.append(plt.scatter(x,y,color=colors[i],s=0.5))
+        else:
+            plots.append(plt.scatter(x, y, color=colors[i]))
 
     # Add legend
-    plt.legend(plots,
+    lgnd = plt.legend(plots,
                classes,
                scatterpoints=1,
                loc='upper right',
                ncol=2,
                fontsize=8)
+
+    for handle in lgnd.legendHandles:
+        handle._sizes = [5]
+
     if fp != "":
         plt.savefig(fp)
     plt.draw()
@@ -213,15 +222,24 @@ def subplot_2D_data(data, dataset_labels, title="", subplot_titles=[],  fp=""):
             class_data = np.asarray([x for j, x in enumerate(data) if labels[j] == label])
             x = class_data[:, 0]
             y = class_data[:, 1]
-            plots.append(plt.scatter(x, y, color=colors[i],s=0.5))
+
+            # Reduce marker size if number of samples is high
+            if len(data) > 1000:
+                plots.append(plt.scatter(x, y, color=colors[i], s=0.5))
+            else:
+                plots.append(plt.scatter(x, y, color=colors[i]))
 
         # Add legend
-        plt.legend(plots,
+        lgnd = plt.legend(plots,
                    classes,
                    scatterpoints=1,
                    loc='upper right',
                    ncol=2,
                    fontsize=8)
+
+        for handle in lgnd.legendHandles:
+            handle._sizes = [5]
+
     if fp != "":
         plt.savefig(fp)
     plt.draw()
