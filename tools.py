@@ -6,6 +6,8 @@ from sklearn.neighbors import NearestCentroid
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.manifold import TSNE
+from sklearn.metrics import confusion_matrix
+import itertools
 
 """ 
 Load MNIST dataset from directory
@@ -243,6 +245,39 @@ def subplot_2D_data(data, dataset_labels, title="", subplot_titles=[],  fp=""):
         for handle in lgnd.legendHandles:
             handle._sizes = [5]
 
+    if fp != "":
+        plt.savefig(fp)
+    plt.draw()
+
+
+def plot_confusion_matrix(pred_labels, true_labels, normalize=False, title="", fp=""):
+    classes = list(set(true_labels))
+    conf_mat = confusion_matrix(pred_labels, true_labels)
+    np.set_printoptions(precision=2)
+    cmap = plt.cm.Blues
+
+    if normalize:
+        conf_mat = conf_mat.astype('float') / conf_mat.sum(axis=1)[:, np.newaxis]
+
+    plt.figure()
+    plt.imshow(conf_mat, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+
+    fmt = '.2f' if normalize else 'd'
+    thresh = conf_mat.max() / 2.
+    for i, j in itertools.product(range(conf_mat.shape[0]), range(conf_mat.shape[1])):
+        plt.text(j, i, format(conf_mat[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if conf_mat[i, j] > thresh else "black")
+
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    np.set_printoptions()
     if fp != "":
         plt.savefig(fp)
     plt.draw()
