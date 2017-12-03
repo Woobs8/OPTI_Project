@@ -31,7 +31,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
         orl_train_images, orl_train_lbls, orl_test_images, orl_test_lbls = loadORL(ORL_PATH)
         # Apply PCA to ORL samples
         pca_orl_train_images, pca_orl_test_images = pca(orl_train_images, orl_test_images)
-        # Apply TSNE to MNIST samples
+        # Apply TSNE to ORL samples
         #tsne_orl_train_images, tsne_orl_test_images = tsne(orl_train_images, orl_test_images)
 
 
