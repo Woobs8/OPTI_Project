@@ -29,11 +29,14 @@ param:
 returns:
     train_data, train_lbls, test_data, test_lbls
 """
-def loadORL(fp, test_size=0.3):
+def loadORL(fp, test_size=0.3, seed=None):
     data = np.array(scio.loadmat(fp + '/orl_data.mat')['data']).transpose()
     lbls = np.array(scio.loadmat(fp + '/orl_lbls.mat')['lbls']).ravel()
     # Split data into training and testing datasets
-    train_data, test_data, train_lbls, test_lbls = train_test_split(data, lbls, test_size=test_size,stratify=lbls)
+    if seed != None:
+        train_data, test_data, train_lbls, test_lbls = train_test_split(data, lbls, test_size=test_size,stratify=lbls, random_state=seed)
+    else:
+        train_data, test_data, train_lbls, test_lbls = train_test_split(data, lbls, test_size=test_size,stratify=lbls)
 
     return train_data, train_lbls, test_data, test_lbls
 

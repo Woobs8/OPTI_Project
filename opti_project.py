@@ -147,11 +147,11 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
         # Backpropagation Perceptron
         if run_perc_bp:
             # 1200D data
-            W = perceptron_bp(orl_train_images, orl_train_lbls,eta=0.01, max_iter=100)
+            W = perceptron_bp(orl_train_images, orl_train_lbls,eta=0.01, max_iter=80)
             perc_bp_orl_class, perc_bp_orl_score = perceptron_classify(W, orl_test_images, orl_test_lbls)
 
             # PCA data
-            W = perceptron_bp(pca_orl_train_images, orl_train_lbls,eta=0.01, max_iter=100)
+            W = perceptron_bp(pca_orl_train_images, orl_train_lbls,eta=0.01, max_iter=80)
             pca_perc_bp_orl_class, pca_perc_bp_orl_score = perceptron_classify(W, pca_orl_test_images, orl_test_lbls)
 
 
@@ -239,7 +239,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                     makedirs(nn_dir)
 
                 # PCA data scatterplot
-                plot_2D_data(pca_mnist_test_images, pca_nc_mnist_class, 'NN Classified MNIST PCA Test Data',
+                plot_2D_data(pca_mnist_test_images, pca_nn_mnist_class, 'NN Classified MNIST PCA Test Data',
                              nn_dir + 'pca_nc_class.png')
                 # Class mean vectors of classified test data
                 plot_mnist_centroids(mnist_test_images, nn_mnist_class, 'NN Classified MNIST Test Data Centroids',
