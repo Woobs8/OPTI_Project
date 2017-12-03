@@ -1,14 +1,14 @@
 import os
 import sys
 from tools import loadMNIST, loadORL, pca, tsne, plot_mnist_centroids, plot_orl_centroids, plot_2D_data, subplot_2D_data
-from classify import nc, nsc, nn, perceptron_bp, perceptron_classify, perceptron_lms
+from classify import nc, nsc, nn, perceptron_bp, perceptron_classify, perceptron_mse
 import matplotlib.pyplot as plt
 import multiprocessing
 from os.path import exists
 from os import makedirs
 
 
-def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, run_perc_bp=True, run_perc_lms=True, cpus=1):
+def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, run_perc_bp=True, run_perc_mse=True, cpus=1):
 
     """ ********* Loading MNIST samples ********* """
     if run_mnist:
@@ -70,7 +70,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
             nsc_5_mnist_class, nsc_5_mnist_score = nsc(mnist_train_images, mnist_train_lbls, mnist_test_images,
                                                        mnist_test_lbls, 5)
             # 5 subclasses, PCA data
-        pca_nsc_5_mnist_class, pca_nsc_5_mnist_score = nsc(pca_mnist_train_images, mnist_train_lbls,
+            pca_nsc_5_mnist_class, pca_nsc_5_mnist_score = nsc(pca_mnist_train_images, mnist_train_lbls,
                                                            pca_mnist_test_images, mnist_test_lbls, 5)
 
         # Nearest Neighbor
@@ -93,14 +93,14 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
 
 
         # MSE Perceptron
-        if run_perc_lms:
+        if run_perc_mse:
             # 1200D data
-            W = perceptron_lms(mnist_train_images, mnist_train_lbls, epsilon=10**-6)
-            perc_lms_mnist_class, perc_lms_mnist_score = perceptron_classify(W, mnist_test_images, mnist_test_lbls)
+            W = perceptron_mse(mnist_train_images, mnist_train_lbls, epsilon=10 ** -6)
+            perc_mse_mnist_class, perc_mse_mnist_score = perceptron_classify(W, mnist_test_images, mnist_test_lbls)
 
             # PCA data
-            W = perceptron_lms(pca_mnist_train_images, mnist_train_lbls, epsilon=10**-6)
-            pca_perc_lms_mnist_class, pca_perc_lms_mnist_score = perceptron_classify(W, pca_mnist_test_images,
+            W = perceptron_mse(pca_mnist_train_images, mnist_train_lbls, epsilon=10 ** -6)
+            pca_perc_mse_mnist_class, pca_perc_mse_mnist_score = perceptron_classify(W, pca_mnist_test_images,
                                                                                      mnist_test_lbls)
 
 
@@ -156,27 +156,27 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
 
 
         # MSE Perceptron
-        if run_perc_lms:
+        if run_perc_mse:
             # 1200D data
-            W = perceptron_lms(orl_train_images, orl_train_lbls,epsilon=10**-4)
-            perc_lms_orl_class, perc_lms_orl_score = perceptron_classify(W, orl_test_images, orl_test_lbls)
+            W = perceptron_mse(orl_train_images, orl_train_lbls, epsilon=10 ** -4)
+            perc_mse_orl_class, perc_mse_orl_score = perceptron_classify(W, orl_test_images, orl_test_lbls)
 
             # PCA data
-            W = perceptron_lms(pca_orl_train_images, orl_train_lbls,epsilon=10**-3)
-            pca_perc_lms_orl_class, pca_perc_lms_orl_score = perceptron_classify(W, pca_orl_test_images, orl_test_lbls)
+            W = perceptron_mse(pca_orl_train_images, orl_train_lbls, epsilon=10 ** -3)
+            pca_perc_mse_orl_class, pca_perc_mse_orl_score = perceptron_classify(W, pca_orl_test_images, orl_test_lbls)
 
 
     """ ********* Data Visualization ********* """
     if show_figs:
         dir = 'figures/'
         if not exists(dir):
-            os.makedirs(dir)
+            makedirs(dir)
 
         """ ********* MNIST ********* """
         if run_mnist:
             mnist_dir = dir + 'mnist/'
             if not exists(mnist_dir):
-                os.makedirs(mnist_dir)
+                makedirs(mnist_dir)
 
             # Training data
             plot_mnist_centroids(mnist_train_images, mnist_train_lbls, 'MNIST Training Data Centroids',
@@ -205,7 +205,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
             if run_nc:
                 nc_dir = mnist_dir + 'nc/'
                 if not exists(nc_dir):
-                    os.makedirs(nc_dir)
+                    makedirs(nc_dir)
 
                 # PCA data scatterplot
                 plot_2D_data(pca_mnist_test_images, pca_nc_mnist_class, 'NC Classified MNIST PCA Test Data',
@@ -220,7 +220,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
             if run_nsc:
                 nsc_dir = mnist_dir + 'nsc/'
                 if not exists(nsc_dir):
-                    os.makedirs(nsc_dir)
+                    makedirs(nsc_dir)
 
                 # PCA data scatterplots
                 subplot_2D_data(pca_mnist_test_images,
@@ -236,7 +236,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
             if run_nn:
                 nn_dir = mnist_dir + 'nn/'
                 if not exists(nn_dir):
-                    os.makedirs(nn_dir)
+                    makedirs(nn_dir)
 
                 # PCA data scatterplot
                 plot_2D_data(pca_mnist_test_images, pca_nc_mnist_class, 'NN Classified MNIST PCA Test Data',
@@ -250,7 +250,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
             if run_perc_bp:
                 perc_bp_dir = mnist_dir + 'perc-bp/'
                 if not exists(perc_bp_dir):
-                    os.makedirs(perc_bp_dir)
+                    makedirs(perc_bp_dir)
 
                 # PCA data scatterplot
                 plot_2D_data(pca_mnist_test_images, pca_perc_bp_mnist_class,
@@ -263,28 +263,28 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                                      'Backpropagation Perceptron Classified MNIST PCA Test Data Centroids',
                                      perc_bp_dir + 'pca_nc_class_cent.png')
 
-            if run_perc_lms:
-                perc_lms_dir = mnist_dir + 'perc-lms/'
-                if not exists(perc_lms_dir):
-                    os.makedirs(perc_lms_dir)
+            if run_perc_mse:
+                perc_mse_dir = mnist_dir + 'perc-mse/'
+                if not exists(perc_mse_dir):
+                    makedirs(perc_mse_dir)
 
                 # PCA data scatterplot
-                plot_2D_data(pca_orl_test_images, pca_perc_lms_mnist_class,
-                             'MSE Perceptron Classified MNIST PCA Test Data', perc_lms_dir + 'pca_nc_class_cent.png')
+                plot_2D_data(pca_orl_test_images, pca_perc_mse_mnist_class,
+                             'MSE Perceptron Classified MNIST PCA Test Data', perc_mse_dir + 'pca_nc_class_cent.png')
                 # Class mean vectors of classified test data
-                plot_mnist_centroids(orl_test_images, perc_lms_mnist_class,
+                plot_mnist_centroids(orl_test_images, perc_mse_mnist_class,
                                      'MSE Perceptron Classified MNIST Test Data Centroids',
-                                     perc_lms_dir + 'pca_nc_class_cent.png')
-                plot_mnist_centroids(orl_test_images, pca_perc_lms_mnist_class,
+                                     perc_mse_dir + 'pca_nc_class_cent.png')
+                plot_mnist_centroids(orl_test_images, pca_perc_mse_mnist_class,
                                      'MSE Perceptron Classified MNIST PCA Test Data Centroids',
-                                     perc_lms_dir + 'pca_nc_class_cent.png')
+                                     perc_mse_dir + 'pca_nc_class_cent.png')
 
 
         """ ********* ORL ********* """
         if run_orl:
             orl_dir = dir + 'orl/'
             if not exists(orl_dir):
-                os.makedirs(orl_dir)
+                makedirs(orl_dir)
 
             # Training data
             plot_orl_centroids(orl_train_images, orl_train_lbls, 'ORL Training Data Centroids',
@@ -309,7 +309,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
             if run_nc:
                 nc_dir = orl_dir+'nc/'
                 if not exists(nc_dir):
-                    os.makedirs(nc_dir)
+                    makedirs(nc_dir)
 
                 # PCA data scatterplot
                 plot_2D_data(pca_orl_test_images, pca_nc_orl_class, 'NC Classified ORL PCA Test Data',
@@ -323,7 +323,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
             if run_nsc:
                 nsc_dir = orl_dir+'nsc/'
                 if not exists(nsc_dir):
-                    os.makedirs(nsc_dir)
+                    makedirs(nsc_dir)
 
                 # PCA data scatterplots
                 subplot_2D_data(pca_orl_test_images, [pca_nsc_2_orl_class, pca_nsc_3_orl_class, pca_nsc_5_orl_class],
@@ -338,7 +338,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
             if run_nn:
                 nn_dir = orl_dir+'nn/'
                 if not exists(nn_dir):
-                    os.makedirs(nn_dir)
+                    makedirs(nn_dir)
 
                 # PCA data scatterplot
                 plot_2D_data(pca_orl_test_images, pca_nn_orl_class, 'NN Classified ORL PCA Test Data',
@@ -352,7 +352,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
             if run_perc_bp:
                 perc_bp_dir = orl_dir+'perc-bp/'
                 if not exists(perc_bp_dir):
-                    os.makedirs(perc_bp_dir)
+                    makedirs(perc_bp_dir)
 
                 # PCA data scatterplot
                 plot_2D_data(pca_orl_test_images, pca_perc_bp_orl_class,
@@ -365,21 +365,21 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                                    'Backpropagation Perceptron Classified ORL PCA Test Data Centroids',
                                    perc_bp_dir + 'pca_nsc_class_cent.png')
 
-            if run_perc_lms:
-                perc_lms_dir = orl_dir + 'perc-lms/'
-                if not exists(perc_lms_dir):
-                    os.makedirs(perc_lms_dir)
+            if run_perc_mse:
+                perc_mse_dir = orl_dir + 'perc-mse/'
+                if not exists(perc_mse_dir):
+                    makedirs(perc_mse_dir)
 
                 # PCA data scatterplot
-                plot_2D_data(pca_orl_test_images, pca_perc_lms_orl_class,
-                             'MSE Perceptron Classified ORL PCA Test Data', perc_lms_dir + 'pca_nsc_class.png')
+                plot_2D_data(pca_orl_test_images, pca_perc_mse_orl_class,
+                             'MSE Perceptron Classified ORL PCA Test Data', perc_mse_dir + 'pca_nsc_class.png')
                 # Class mean vectors of classified test data
-                plot_orl_centroids(orl_test_images, perc_lms_orl_class,
+                plot_orl_centroids(orl_test_images, perc_mse_orl_class,
                                    'MSE Perceptron Classified ORL Test Data Centroids',
-                                   perc_lms_dir + 'nsc_class_cent.png')
-                plot_orl_centroids(orl_test_images, pca_perc_lms_orl_class,
+                                   perc_mse_dir + 'nsc_class_cent.png')
+                plot_orl_centroids(orl_test_images, pca_perc_mse_orl_class,
                                    'MSE Perceptron Classified ORL PCA Test Data Centroids',
-                                   perc_lms_dir + 'pca_nsc_class_cent.png')
+                                   perc_mse_dir + 'pca_nsc_class_cent.png')
 
     """ ********* Classification scores ********* """
     print("*** Classification Scores ***\n")
@@ -409,10 +409,10 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
             print("\tBackpropagation Perceptron: " + str(perc_bp_mnist_score))
             print("\tBackpropagation Perceptron w/ PCA: " + str(pca_perc_bp_mnist_score))
 
-        # LMS Perceptron
-        if run_perc_lms:
-            print("\tLMS Perceptron: " + str(perc_lms_mnist_score))
-            print("\tLMS Perceptron w/ PCA: " + str(pca_perc_lms_mnist_score))
+        # MSE Perceptron
+        if run_perc_mse:
+            print("\tMSE Perceptron: " + str(perc_mse_mnist_score))
+            print("\tMSE Perceptron w/ PCA: " + str(pca_perc_mse_mnist_score))
 
     if run_orl:
         print("*** ORL ***")
@@ -440,10 +440,10 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
             print("\tBackpropagation Perceptron: " + str(perc_bp_orl_score))
             print("\tBackpropagation Perceptron w/ PCA: " + str(pca_perc_bp_orl_score))
 
-        # LMS Perceptron
-        if run_perc_lms:
-            print("\tLMS Perceptron: " + str(perc_lms_orl_score))
-            print("\tLMS Perceptron w/ PCA: " + str(pca_perc_lms_orl_score))
+        # MSE Perceptron
+        if run_perc_mse:
+            print("\tMSE Perceptron: " + str(perc_mse_orl_score))
+            print("\tMSE Perceptron w/ PCA: " + str(pca_perc_mse_orl_score))
 
     # Flush results to stdout
     sys.stdout.flush()
@@ -460,17 +460,17 @@ if __name__ == "__main__":
     run_mnist = False
     run_orl = False
     run_perc_bp = False
-    run_perc_lms = False
+    run_perc_mse = False
     cpus = 1
     if len(sys.argv) > 1:
         if sys.argv[1] == 'help':
             print("Usage:")
-            print("\topti_project.py [<mnist> <orl>] [<nc> <nsc> <nn> <perc-np> <perc-lms>] [no-figs] [cpus=<int>]\n")
+            print("\topti_project.py [<mnist> <orl>] [<nc> <nsc> <nn> <perc-np> <perc-mse>] [no-figs] [cpus=<int>]\n")
             print('[Optional Parameters]:')
             help_text = [['Description', 'Usage', 'Default'],
                          ['-----------','-----------','-----------'],
                          ['Specify Dataset:', 'mnist, orl', 'both'],
-                         ['Specify Algorithm:', 'nc, nsc, nn, perc-bp, perc-lms', 'all'],
+                         ['Specify Algorithm:', 'nc, nsc, nn, perc-bp, perc-mse', 'all'],
                          ['Disable figures:', 'no-figs', 'enabled'],
                          ['CPU cores:', 'cpus=[int]', '1\n']]
             col_width = max(len(word) for row in help_text for word in row) + 2  # padding
@@ -495,8 +495,8 @@ if __name__ == "__main__":
                 run_orl = True
             elif arg == 'perc-bp':
                 run_perc_bp = True
-            elif arg == 'perc-lms':
-                run_perc_lms = True
+            elif arg == 'perc-mse':
+                run_perc_mse = True
             elif 'cpus=' in arg:
                 cpus = int(arg[arg.find('=')+1:])
     else:
@@ -506,17 +506,17 @@ if __name__ == "__main__":
         run_mnist = True
         run_orl = True
         run_perc_bp = True
-        run_perc_lms = True
+        run_perc_mse = True
 
     if (not run_mnist) and (not run_orl):
         run_mnist = True
         run_orl = True
 
-    if (not run_nc) and (not run_nsc) and (not run_nn) and (not run_perc_bp) and (not run_perc_lms):
+    if (not run_nc) and (not run_nsc) and (not run_nn) and (not run_perc_bp) and (not run_perc_mse):
         run_nc = True
         run_nsc = True
         run_nn = True
         run_perc_bp = True
-        run_perc_lms = True
+        run_perc_mse = True
 
-    main(run_mnist, run_orl, run_nc, run_nsc, run_nn, run_perc_bp, run_perc_lms, cpus=cpus)
+    main(run_mnist, run_orl, run_nc, run_nsc, run_nn, run_perc_bp, run_perc_mse, cpus=cpus)
