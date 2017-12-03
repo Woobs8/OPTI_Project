@@ -195,7 +195,7 @@ param:
 returns:
     @W: trained OVR weight matrix
 """
-def perceptron_lms(train_data, train_lbls, eta=1, max_iter=1000):
+def perceptron_lms(train_data, train_lbls, epsilon):
     # Create set of training classes
     classes = list(set(train_lbls))
     class_count = len(classes)
@@ -204,29 +204,43 @@ def perceptron_lms(train_data, train_lbls, eta=1, max_iter=1000):
     aug_train_data = add_dummy_feature(train_data)
     aug_feature_count = len(aug_train_data[0])
 
-    # Initialize theta
-    theta = np.zeros(aug_feature_count)
-
     # Determine discriminant hyperplane for each OVR binary classification
     W = np.zeros((class_count,aug_feature_count))
     label_offset = classes[0]   # Account for classifications which doesn't start at 0
     for label in classes:
-        # Initialize w
-        w = np.zeros(aug_feature_count)
+        X = aug_train_data.transpose()
 
         # Initialize OVR (One vs Rest) binary classification
-        ovr_lbls = np.array([1 if lbl == label else -1 for lbl in train_lbls])
+        b = np.array([1 if lbl == label else -1 for lbl in train_lbls])
 
-        # Batch perceptron training
-        for t in range(max_iter):
-            delta = np.dot(aug_train_data.transpose(),(np.dot(aug_train_data,w) - ovr_lbls))
-            w = w - eta*delta
-            if np.all(np.abs(delta) < theta):
-                break
+        X_reg = np.dot(np.linalg.inv(np.dot(X,X.transpose())+epsilon*np.identity(aug_feature_count)), X)
+        #X_reg = np.linalg.pinv(X.transpose())
+        w = np.dot(X_reg, b)
 
         # Assign w to label-based index
         index = label - label_offset
         W[index] = w
+
+    # Determine discriminant hyperplane for each OVR binary classification
+    # W = np.zeros((class_count,aug_feature_count))
+    # label_offset = classes[0]   # Account for classifications which doesn't start at 0
+    # for label in classes:
+    #     # Initialize w
+    #     w = np.zeros(aug_feature_count)
+    #
+    #     # Initialize OVR (One vs Rest) binary classification
+    #     ovr_lbls = np.array([1 if lbl == label else -1 for lbl in train_lbls])
+    #
+    #     # Batch perceptron training
+    #     for t in range(max_iter):
+    #         delta = np.dot(aug_train_data.transpose(),(np.dot(aug_train_data,w) - ovr_lbls))
+    #         w = w - eta*delta
+    #         if np.all(np.abs(delta) < theta):
+    #             break
+    #
+    #     # Assign w to label-based index
+    #     index = label - label_offset
+    #     W[index] = w
 
 
     # # Determine discriminant hyperplane for each OVR binary classification

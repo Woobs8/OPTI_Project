@@ -95,11 +95,11 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
         # MSE Perceptron
         if run_perc_lms:
             # 1200D data
-            W = perceptron_lms(mnist_train_images, mnist_train_lbls, eta=0.01, max_iter=100)
+            W = perceptron_lms(mnist_train_images, mnist_train_lbls, epsilon=10**-6)
             perc_lms_mnist_class, perc_lms_mnist_score = perceptron_classify(W, mnist_test_images, mnist_test_lbls)
 
             # PCA data
-            W = perceptron_lms(pca_mnist_train_images, mnist_train_lbls, eta=0.01, max_iter=100)
+            W = perceptron_lms(pca_mnist_train_images, mnist_train_lbls, epsilon=10**-6)
             pca_perc_lms_mnist_class, pca_perc_lms_mnist_score = perceptron_classify(W, pca_mnist_test_images,
                                                                                      mnist_test_lbls)
 
@@ -158,11 +158,11 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
         # MSE Perceptron
         if run_perc_lms:
             # 1200D data
-            W = perceptron_lms(orl_train_images, orl_train_lbls,eta=0.01, max_iter=100)
+            W = perceptron_lms(orl_train_images, orl_train_lbls,epsilon=10**-4)
             perc_lms_orl_class, perc_lms_orl_score = perceptron_classify(W, orl_test_images, orl_test_lbls)
 
             # PCA data
-            W = perceptron_lms(pca_orl_train_images, orl_train_lbls,eta=0.01, max_iter=100)
+            W = perceptron_lms(pca_orl_train_images, orl_train_lbls,epsilon=10**-3)
             pca_perc_lms_orl_class, pca_perc_lms_orl_score = perceptron_classify(W, pca_orl_test_images, orl_test_lbls)
 
 
