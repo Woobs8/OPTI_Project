@@ -88,6 +88,7 @@ param:
     @data: MNIST data
     @labels: data labels
     @tile: plot title
+    @fp: path to store file in
 """
 def plot_mnist_centroids(data, labels, title="", fp=""):
     # Create set of classes in data set
@@ -122,6 +123,7 @@ param:
     @data: ORL data
     @labels: data labels
     @tile: plot title
+    @fp: path to store file in
 """
 def plot_orl_centroids(data, labels, title="", fp=""):
     # Create set of classes in data set
@@ -155,6 +157,7 @@ param:
     @data: 2D data
     @labels: list of data labels
     @tile: plot title
+    @fp: path to store file in
 """
 def plot_2D_data(data, labels, title="", fp=""):
     # Create set of classes in data set
@@ -204,6 +207,7 @@ param:
     @labels: list of data labels 
     @tile: plot title
     @subplot_titles: list of titles of subplots
+    @fp: path to store file in
 """
 def subplot_2D_data(data, dataset_labels, title="", subplot_titles=[],  fp=""):
     plt.figure()
@@ -250,6 +254,15 @@ def subplot_2D_data(data, dataset_labels, title="", subplot_titles=[],  fp=""):
     plt.draw()
 
 
+""" 
+Plots a confusion matrix for the classified and labeled data
+param:
+    @pred_labels: classified data labels
+    @true_labels: actual data labels
+    @normalize: normalize data if True
+    @tile: plot title
+    @fp: path to store file in
+"""
 def plot_confusion_matrix(pred_labels, true_labels, normalize=False, title="", fp=""):
     classes = list(set(true_labels))
     conf_mat = confusion_matrix(pred_labels, true_labels)
