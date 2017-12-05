@@ -1,7 +1,7 @@
 import os
 import sys
 from tools import loadMNIST, loadORL, pca, tsne, plot_mnist_centroids, plot_orl_centroids, plot_2D_data, subplot_2D_data, plot_confusion_matrix, plot_decision_boundary
-from classify import nc, nsc, nn, perceptron_bp, perceptron_classify, perceptron_mse
+from classify import NC, NSC, NN, BP_Perceptron, perceptron_classify, MSE_Perceptron
 import matplotlib.pyplot as plt
 import multiprocessing
 from os.path import exists
@@ -45,125 +45,143 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
     if run_mnist:
         # Nearest Centroid
         if run_nc:
+            mnist_nc = NC()
             # 784D data
-            nc_mnist_class, nc_mnist_score = nc(mnist_train_images, mnist_train_lbls, mnist_test_images,
-                                                mnist_test_lbls)
+            mnist_nc.fit(mnist_train_images, mnist_train_lbls)
+            nc_mnist_class, nc_mnist_score = mnist_nc.predict(mnist_test_images, mnist_test_lbls)
             # PCA data
-            pca_nc_mnist_class, pca_nc_mnist_score = nc(pca_mnist_train_images, mnist_train_lbls, pca_mnist_test_images,
-                                                        mnist_test_lbls)
+            mnist_nc.fit(pca_mnist_train_images, mnist_train_lbls)
+            pca_nc_mnist_class, pca_nc_mnist_score = mnist_nc.predict(pca_mnist_test_images, mnist_test_lbls)
 
         # Nearest Subclass Centroid
         if run_nsc:
             # 2 subclasses, 784D data
-            nsc_2_mnist_class, nsc_2_mnist_score = nsc(mnist_train_images, mnist_train_lbls, mnist_test_images,
-                                                       mnist_test_lbls, 2)
+            mnist_nsc2 = NSC(2)
+            mnist_nsc2.fit(mnist_train_images, mnist_train_lbls)
+            nsc_2_mnist_class, nsc_2_mnist_score = mnist_nsc2.predict(mnist_test_images, mnist_test_lbls)
             # 2 subclasses, PCA data
-            pca_nsc_2_mnist_class, pca_nsc_2_mnist_score = nsc(pca_mnist_train_images, mnist_train_lbls,
-                                                               pca_mnist_test_images, mnist_test_lbls, 2)
+            mnist_nsc2.fit(pca_mnist_train_images, mnist_train_lbls)
+            pca_nsc_2_mnist_class, pca_nsc_2_mnist_score = mnist_nsc2.predict(pca_mnist_test_images, mnist_test_lbls)
+
             # 3 subclasses, 784D data
-            nsc_3_mnist_class, nsc_3_mnist_score = nsc(mnist_train_images, mnist_train_lbls, mnist_test_images,
-                                                       mnist_test_lbls, 3)
+            mnist_nsc3 = NSC(3)
+            mnist_nsc3.fit(mnist_train_images, mnist_train_lbls)
+            nsc_3_mnist_class, nsc_3_mnist_score = mnist_nsc3.predict(mnist_test_images, mnist_test_lbls)
             # 3 subclasses, PCA data
-            pca_nsc_3_mnist_class, pca_nsc_3_mnist_score = nsc(pca_mnist_train_images, mnist_train_lbls,
-                                                               pca_mnist_test_images, mnist_test_lbls, 3)
+            mnist_nsc3.fit(pca_mnist_train_images, mnist_train_lbls)
+            pca_nsc_3_mnist_class, pca_nsc_3_mnist_score = mnist_nsc3.predict(pca_mnist_test_images, mnist_test_lbls)
+
             # 5 subclasses, 784D data
-            nsc_5_mnist_class, nsc_5_mnist_score = nsc(mnist_train_images, mnist_train_lbls, mnist_test_images,
-                                                       mnist_test_lbls, 5)
+            mnist_nsc5 = NSC(5)
+            mnist_nsc5.fit(mnist_train_images, mnist_train_lbls)
+            nsc_5_mnist_class, nsc_5_mnist_score = mnist_nsc5.predict(mnist_test_images, mnist_test_lbls)
             # 5 subclasses, PCA data
-            pca_nsc_5_mnist_class, pca_nsc_5_mnist_score = nsc(pca_mnist_train_images, mnist_train_lbls,
-                                                           pca_mnist_test_images, mnist_test_lbls, 5)
+            mnist_nsc5.fit(pca_mnist_train_images, mnist_train_lbls)
+            pca_nsc_5_mnist_class, pca_nsc_5_mnist_score = mnist_nsc5.predict(pca_mnist_test_images, mnist_test_lbls)
 
         # Nearest Neighbor
         if run_nn:
-            nn_mnist_class, nn_mnist_score = nn(mnist_train_images, mnist_train_lbls, mnist_test_images,
-                                                mnist_test_lbls, 1, 'uniform', cpus, 'hard')
-            pca_nn_mnist_class, pca_nn_mnist_score = nn(pca_mnist_train_images, mnist_train_lbls,
-                                                        pca_mnist_test_images, mnist_test_lbls, 1,
-                                                        'uniform', cpus, 'hard')
+            mnist_nn = NN(1,'uniform',cpus)
+            # 784D data
+            mnist_nn.fit(mnist_train_images, mnist_train_lbls)
+            nn_mnist_class, nn_mnist_score = mnist_nn.predict(mnist_test_images, mnist_test_lbls, 'hard')
+            # PCA data
+            mnist_nn.fit(pca_mnist_train_images, mnist_train_lbls)
+            pca_nn_mnist_class, pca_nn_mnist_score = mnist_nn.predict(pca_mnist_test_images, mnist_test_lbls, 'hard')
 
         # Backpropagation Perceptron
         if run_perc_bp:
+            mnist_perc_bp = BP_Perceptron()
             # 784D data
-            W = perceptron_bp(mnist_train_images, mnist_train_lbls, eta=0.01, max_iter=100)
-            perc_bp_mnist_class, perc_bp_mnist_score = perceptron_classify(W, mnist_test_images,mnist_test_lbls)
+            mnist_perc_bp.fit(mnist_train_images, mnist_train_lbls, eta=0.01, max_iter=100)
+            perc_bp_mnist_class, perc_bp_mnist_score = mnist_perc_bp.predict(mnist_test_images, mnist_test_lbls)
 
             # PCA data
-            W = perceptron_bp(pca_mnist_train_images, mnist_train_lbls, eta=0.01, max_iter=100)
-            pca_perc_bp_mnist_class, pca_perc_bp_mnist_score = perceptron_classify(W, pca_mnist_test_images,mnist_test_lbls)
-
+            mnist_perc_bp.fit(pca_mnist_train_images, mnist_train_lbls, eta=0.01, max_iter=100)
+            pca_perc_bp_mnist_class, pca_perc_bp_mnist_score = mnist_perc_bp.predict(pca_mnist_test_images, mnist_test_lbls)
 
         # MSE Perceptron
         if run_perc_mse:
-            # 1200D data
-            W = perceptron_mse(mnist_train_images, mnist_train_lbls, epsilon=10 ** -6)
-            perc_mse_mnist_class, perc_mse_mnist_score = perceptron_classify(W, mnist_test_images, mnist_test_lbls)
+            mnist_perc_mse = MSE_Perceptron()
+            # 784D data
+            mnist_perc_mse.fit(mnist_train_images, mnist_train_lbls, epsilon=10 ** -6)
+            perc_mse_mnist_class, perc_mse_mnist_score = mnist_perc_mse.predict(mnist_test_images, mnist_test_lbls)
 
             # PCA data
-            W = perceptron_mse(pca_mnist_train_images, mnist_train_lbls, epsilon=10 ** -6)
-            pca_perc_mse_mnist_class, pca_perc_mse_mnist_score = perceptron_classify(W, pca_mnist_test_images,
-                                                                                     mnist_test_lbls)
-
+            mnist_perc_mse.fit(pca_mnist_train_images, mnist_train_lbls, epsilon=10 ** -6)
+            pca_perc_mse_mnist_class, pca_perc_mse_mnist_score = mnist_perc_mse.predict(pca_mnist_test_images, mnist_test_lbls)
 
 
     """ ********* Classifying ORL samples ********* """
     if run_orl:
         # Nearest Centroid
         if run_nc:
-            # 784D data
-            nc_orl_class, nc_orl_score = nc(orl_train_images, orl_train_lbls, orl_test_images, orl_test_lbls)
+            orl_nc = NC()
+            # 1200D data
+            orl_nc.fit(orl_train_images, orl_train_lbls)
+            nc_orl_class, nc_orl_score = orl_nc.predict(orl_test_images, orl_test_lbls)
             # PCA data
-            pca_nc_orl_class, pca_nc_orl_score = nc(pca_orl_train_images, orl_train_lbls, pca_orl_test_images,
-                                                    orl_test_lbls)
+            orl_nc.fit(pca_orl_train_images, orl_train_lbls)
+            pca_nc_orl_class, pca_nc_orl_score = orl_nc.predict(pca_orl_test_images, orl_test_lbls)
 
         # Nearest Subclass Centroid
         if run_nsc:
             # 2 subclasses, 1200D data
-            nsc_2_orl_class, nsc_2_orl_score = nsc(orl_train_images, orl_train_lbls, orl_test_images,
-                                                   orl_test_lbls, 2)
+            orl_nsc2 = NSC(2)
+            orl_nsc2.fit(orl_train_images, orl_train_lbls)
+            nsc_2_orl_class, nsc_2_orl_score = orl_nsc2.predict(orl_test_images, orl_test_lbls)
             # 2 subclasses, PCA data
-            pca_nsc_2_orl_class, pca_nsc_2_orl_score = nsc(pca_orl_train_images, orl_train_lbls,
-                                                           pca_orl_test_images, orl_test_lbls, 2)
+            orl_nsc2.fit(pca_orl_train_images, orl_train_lbls)
+            pca_nsc_2_orl_class, pca_nsc_2_orl_score = orl_nsc2.predict(pca_orl_test_images, orl_test_lbls)
+
             # 3 subclasses, 1200D data
-            nsc_3_orl_class, nsc_3_orl_score = nsc(orl_train_images, orl_train_lbls, orl_test_images,
-                                                   orl_test_lbls, 3)
+            orl_nsc3 = NSC(3)
+            orl_nsc3.fit(orl_train_images, orl_train_lbls)
+            nsc_3_orl_class, nsc_3_orl_score = orl_nsc3.predict(orl_test_images, orl_test_lbls)
             # 3 subclasses, PCA data
-            pca_nsc_3_orl_class, pca_nsc_3_orl_score = nsc(pca_orl_train_images, orl_train_lbls,
-                                                           pca_orl_test_images, orl_test_lbls, 3)
+            orl_nsc3.fit(pca_orl_train_images, orl_train_lbls)
+            pca_nsc_3_orl_class, pca_nsc_3_orl_score = orl_nsc3.predict(pca_orl_test_images, orl_test_lbls)
+
             # 5 subclasses, 1200D data
-            nsc_5_orl_class, nsc_5_orl_score = nsc(orl_train_images, orl_train_lbls,
-                                                           orl_test_images, orl_test_lbls, 5)
+            orl_nsc5 = NSC(5)
+            orl_nsc5.fit(orl_train_images, orl_train_lbls)
+            nsc_5_orl_class, nsc_5_orl_score = orl_nsc5.predict(orl_test_images, orl_test_lbls)
             # 5 subclasses, PCA data
-            pca_nsc_5_orl_class, pca_nsc_5_orl_score = nsc(pca_orl_train_images, orl_train_lbls,
-                                                           pca_orl_test_images, orl_test_lbls, 5)
+            orl_nsc5.fit(pca_orl_train_images, orl_train_lbls)
+            pca_nsc_5_orl_class, pca_nsc_5_orl_score = orl_nsc5.predict(pca_orl_test_images, orl_test_lbls)
 
         # Nearest Neighbor
         if run_nn:
-            nn_orl_class, nn_orl_score = nn(orl_train_images, orl_train_lbls, orl_test_images,
-                                                         orl_test_lbls, 1, 'uniform', cpus, 'hard')
-            pca_nn_orl_class, pca_nn_orl_score = nn(pca_orl_train_images, orl_train_lbls,
-                                                                     pca_orl_test_images, orl_test_lbls, 1, 'uniform',
-                                                                     cpus,'hard')
+            orl_nn = NN(1,'uniform',cpus)
+            # 1200D data
+            orl_nn.fit(orl_train_images, orl_train_lbls)
+            nn_orl_class, nn_orl_score = orl_nn.predict(orl_test_images, orl_test_lbls, 'hard')
+            # PCA data
+            orl_nn.fit(pca_orl_train_images, orl_train_lbls)
+            pca_nn_orl_class, pca_nn_orl_score = orl_nn.predict(pca_orl_test_images, orl_test_lbls, 'hard')
 
         # Backpropagation Perceptron
         if run_perc_bp:
+            orl_perc_bp = BP_Perceptron()
             # 1200D data
-            W = perceptron_bp(orl_train_images, orl_train_lbls,eta=0.01, max_iter=80)
-            perc_bp_orl_class, perc_bp_orl_score = perceptron_classify(W, orl_test_images, orl_test_lbls)
+            orl_perc_bp.fit(orl_train_images, orl_train_lbls, eta=0.01, max_iter=100)
+            perc_bp_orl_class, perc_bp_orl_score = orl_perc_bp.predict(orl_test_images, orl_test_lbls)
 
             # PCA data
-            W = perceptron_bp(pca_orl_train_images, orl_train_lbls,eta=0.01, max_iter=80)
-            pca_perc_bp_orl_class, pca_perc_bp_orl_score = perceptron_classify(W, pca_orl_test_images, orl_test_lbls)
+            orl_perc_bp.fit(pca_orl_train_images, orl_train_lbls, eta=0.01, max_iter=100)
+            pca_perc_bp_orl_class, pca_perc_bp_orl_score = orl_perc_bp.predict(pca_orl_test_images, orl_test_lbls)
 
 
         # MSE Perceptron
         if run_perc_mse:
+            orl_perc_mse = MSE_Perceptron()
             # 1200D data
-            W = perceptron_mse(orl_train_images, orl_train_lbls, epsilon=10 ** 2)
-            perc_mse_orl_class, perc_mse_orl_score = perceptron_classify(W, orl_test_images, orl_test_lbls)
+            orl_perc_mse.fit(orl_train_images, orl_train_lbls, epsilon=10 ** 2)
+            perc_mse_orl_class, perc_mse_orl_score = orl_perc_mse.predict(orl_test_images, orl_test_lbls)
 
             # PCA data
-            W = perceptron_mse(pca_orl_train_images, orl_train_lbls, epsilon=10 ** 2)
-            pca_perc_mse_orl_class, pca_perc_mse_orl_score = perceptron_classify(W, pca_orl_test_images, orl_test_lbls)
+            orl_perc_mse.fit(pca_orl_train_images, orl_train_lbls, epsilon=10 ** 2)
+            pca_perc_mse_orl_class, pca_perc_mse_orl_score = orl_perc_mse.predict(pca_orl_test_images, orl_test_lbls)
 
 
     """ ********* Data Visualization ********* """
@@ -222,8 +240,8 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                 plot_mnist_centroids(mnist_test_images, pca_nc_mnist_class,
                                      'NC Classified MNIST PCA Test Data Centroids', nc_dir + 'pca_nc_class_cent.png')
                 # Plot decision boundary
-                plot_decision_boundary(nc, pca_mnist_train_images, pca_mnist_test_images, mnist_train_lbls,
-                                       mnist_test_lbls, 'Nearest Centroid MNIST PCA Decision Boundary')
+                #plot_decision_boundary(nc, pca_mnist_train_images, pca_mnist_test_images, mnist_train_lbls,
+                #                       mnist_test_lbls, 'Nearest Centroid MNIST PCA Decision Boundary')
 
 
             if run_nsc:
