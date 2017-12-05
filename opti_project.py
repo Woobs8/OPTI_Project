@@ -1,6 +1,6 @@
 import os
 import sys
-from tools import loadMNIST, loadORL, pca, tsne, plot_mnist_centroids, plot_orl_centroids, plot_2D_data, subplot_2D_data, plot_confusion_matrix
+from tools import loadMNIST, loadORL, pca, tsne, plot_mnist_centroids, plot_orl_centroids, plot_2D_data, subplot_2D_data, plot_confusion_matrix, plot_decision_boundary
 from classify import nc, nsc, nn, perceptron_bp, perceptron_classify, perceptron_mse
 import matplotlib.pyplot as plt
 import multiprocessing
@@ -221,6 +221,9 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                                      nc_dir + 'nc_class_cent.png')
                 plot_mnist_centroids(mnist_test_images, pca_nc_mnist_class,
                                      'NC Classified MNIST PCA Test Data Centroids', nc_dir + 'pca_nc_class_cent.png')
+                # Plot decision boundary
+                plot_decision_boundary(nc, pca_mnist_train_images, pca_mnist_test_images, mnist_train_lbls,
+                                       mnist_test_lbls, 'Nearest Centroid MNIST PCA Decision Boundary')
 
 
             if run_nsc:

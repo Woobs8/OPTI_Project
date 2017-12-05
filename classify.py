@@ -21,7 +21,11 @@ def nc(train_data, train_lbls, test_data, test_lbls):
     clf = NearestCentroid()
     clf.fit(train_data, train_lbls)
     classification = clf.predict(test_data)
-    score = accuracy_score(test_lbls, classification)
+    try:
+        score = accuracy_score(test_lbls, classification)
+    except ValueError:
+        score = 0
+
     return classification, score
 
 

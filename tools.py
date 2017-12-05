@@ -294,3 +294,80 @@ def plot_confusion_matrix(pred_labels, true_labels, normalize=False, title="", f
     if fp != "":
         plt.savefig(fp)
     plt.draw()
+
+
+""" 
+Plots the decision boundaries of the @clf classifer function, and overlays a scatter plot of the training and 
+testing data
+param:
+    @clf: classifier function
+    @train_data: training data
+    @train_lbls: training labels
+    @test_data: testing data
+    @test_lbls: testing labels
+    @tile: plot title
+    @fp: path to store file in
+"""
+def plot_decision_boundary(clf, train_data, test_data, train_lbls, test_lbls, title, fp=""):
+    # Generate figure and color map
+    color_map = plt.cm.RdBu
+    fig, axarr = plt.subplots(2, 2)
+    plt.suptitle(title)
+
+    # Plot training data
+    axarr[0,0].set_title("Training data")
+    # Separate data into features and construct meshgrid
+    X0_train, X1_train = train_data[:, 0], train_data[:, 1]
+    x_min, x_max = X0_train.min() - 1, X0_train.max() + 1
+    y_min, y_max = X1_train.min() - 1, X1_train.max() + 1
+    xx_train, yy_train = np.meshgrid(np.arange(x_min, x_max),
+                         np.arange(y_min, y_max))
+    # Scatterplot data
+    axarr[0,0].scatter(X0_train, X1_train, c=train_lbls, cmap=color_map, alpha=0.6,
+               edgecolors='k', lw=0.5)
+    axarr[0,0].set_xlim(xx_train.min(), xx_train.max())
+    axarr[0,0].set_ylim(yy_train.min(), yy_train.max())
+    axarr[0,0].set_xticks(())
+    axarr[0,0].set_yticks(())
+
+    # Plot testing data
+    axarr[0,1].set_title("Test data")
+    # Separate data into features and construct meshgrid
+    X0_test, X1_test = test_data[:, 0], test_data[:, 1]
+    x_min, x_max = X0_test.min() - 1, X0_test.max() + 1
+    y_min, y_max = X1_test.min() - 1, X1_test.max() + 1
+    xx_test, yy_test = np.meshgrid(np.arange(x_min, x_max),
+                         np.arange(y_min, y_max))
+    # Scatterplot data
+    axarr[0,1].scatter(X0_test, X1_test, c=test_lbls, cmap=color_map, alpha=0.6,
+               edgecolors='k', lw=0.5)
+    axarr[0,1].set_xlim(xx_test.min(), xx_test.max())
+    axarr[0,1].set_ylim(yy_test.min(), yy_test.max())
+    axarr[0,1].set_xticks(())
+    axarr[0,1].set_yticks(())
+
+    # Classify testing data using @clf classifier function
+    Z, score = clf(train_data, train_lbls, np.c_[xx_test.ravel(), yy_test.ravel()], test_lbls)
+    classes = list(set(Z))
+    Z = Z.reshape(xx_test.shape)    # Reshape into meshgrid shape
+
+    # Plot decision boundary with training data
+    axarr[1,0].contourf(xx_test, yy_test, Z, len(classes)+1, cmap=color_map, alpha=0.8)
+    axarr[1,0].scatter(X0_train, X1_train, c=train_lbls, cmap=color_map, s=5, edgecolors='k', lw=0.5)
+    # Limit axes according to testing data, since we're using the testing contours
+    axarr[1,1].set_xlim(xx_test.min(), xx_test.max())
+    axarr[1,1].set_ylim(yy_test.min(), yy_test.max())
+    axarr[1,0].set_xticks(())
+    axarr[1,0].set_yticks(())
+
+    # Plot decision boundary with testing data
+    axarr[1,1].contourf(xx_test, yy_test, Z, len(classes)+1, cmap=color_map, alpha=0.8)
+    axarr[1,1].scatter(X0_test, X1_test, c=test_lbls, cmap=color_map, s=5, edgecolors='k', lw=0.5)
+    axarr[1,1].set_xlim(xx_test.min(), xx_test.max())
+    axarr[1,1].set_ylim(yy_test.min(), yy_test.max())
+    axarr[1,1].set_xticks(())
+    axarr[1,1].set_yticks(())
+
+    if fp != "":
+        plt.savefig(fp)
+    plt.show()
