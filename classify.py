@@ -152,19 +152,22 @@ def perceptron_bp(train_data, train_lbls, eta=1, max_iter=1000):
     classes = list(set(train_lbls))
     class_count = len(classes)
 
+    # Convert samples to float for faster numpy processing
+    train_data = train_data.astype(float)
+
     # Augment data with bias to simplify linear discriminant function
     aug_train_data = add_dummy_feature(train_data)
     aug_feature_count = len(aug_train_data[0])
 
     # Determine discriminant hyperplane for each OVR binary classification
-    W = np.zeros((class_count,aug_feature_count))
+    W = np.zeros((class_count,aug_feature_count), dtype=np.float)
     label_offset = classes[0]   # Account for classifications which doesn't start at 0
     for label in classes:
         # Initialize w
-        w = np.zeros(aug_feature_count)
+        w = np.zeros(aug_feature_count, dtype=np.float)
 
         # Initialize OVR (One vs Rest) binary classification
-        ovr_lbls = [1 if lbl == label else -1 for lbl in train_lbls]
+        ovr_lbls = np.array([1 if lbl == label else -1 for lbl in train_lbls], dtype=np.float)
 
         # Batch perceptron training
         for t in range(max_iter):
@@ -203,21 +206,25 @@ def perceptron_mse(train_data, train_lbls, epsilon):
     classes = list(set(train_lbls))
     class_count = len(classes)
 
+    # Convert samples to float for faster numpy processing
+    train_data = train_data.astype(float)
+
     # Augment data with bias to simplify linear discriminant function
     aug_train_data = add_dummy_feature(train_data)
     aug_feature_count = len(aug_train_data[0])
+    X = aug_train_data.transpose()
+
+    # Calculate regularized pseudo-inverse of X
+    X_reg = np.dot(np.linalg.inv(np.dot(X, X.transpose()) + epsilon * np.identity(aug_feature_count)), X)
 
     # Determine discriminant hyperplane for each OVR binary classification
-    W = np.zeros((class_count,aug_feature_count))
+    W = np.zeros((class_count,aug_feature_count), dtype=np.float)
     label_offset = classes[0]   # Account for classifications which doesn't start at 0
     for label in classes:
-        X = aug_train_data.transpose()
-
         # Initialize OVR (One vs Rest) binary classification
-        b = np.array([1 if lbl == label else -1 for lbl in train_lbls])
+        b = np.array([1 if lbl == label else -1 for lbl in train_lbls], dtype=np.float)
 
-        X_reg = np.dot(np.linalg.inv(np.dot(X,X.transpose())+epsilon*np.identity(aug_feature_count)), X)
-        #X_reg = np.linalg.pinv(X.transpose())
+        # Calculate optimized weight vector
         w = np.dot(X_reg, b)
 
         # Assign w to label-based index
@@ -239,23 +246,16 @@ returns:
 def perceptron_classify(W, test_data, test_lbls):
     # Create set of training classes
     classes = list(set(test_lbls))
-    class_count = len(classes)
     label_offset = classes[0]  # Account for classifications which doesn't start at 0
+
+    # Convert samples to float for faster numpy processing
+    test_data = test_data.astype(float)
 
     # Augment data with bias to simplify linear discriminant function
     aug_test_data = add_dummy_feature(test_data)
-    sample_count = len(aug_test_data)
 
-    # Iterate and classify samples
-    classification = np.zeros(sample_count)
-    for i, sample in enumerate(aug_test_data):
-        # Process K binary classifiers
-        decision = [None]*len(W)
-        for j, w in enumerate(W):
-            decision[j] = np.dot(sample,w)
-
-        # Classify as class furthest from the decision hyperplane (max decision response)
-        classification[i] = decision.index(max(decision))+label_offset
+    decision = np.dot(W,aug_test_data.transpose())
+    classification = np.argmax(decision,axis=0)+label_offset
 
     score = accuracy_score(test_lbls, classification)
     return classification, score

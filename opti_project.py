@@ -298,7 +298,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                     makedirs(perc_mse_dir)
 
                 # PCA data scatterplot
-                plot_2D_data(pca_orl_test_images, pca_perc_mse_mnist_class,
+                plot_2D_data(mnist_test_images, pca_perc_mse_mnist_class,
                              'MSE Perceptron Classified MNIST PCA Test Data', perc_mse_dir + 'pca_perc_mse_class_cent.png')
                 # Confusion matrix of classified test data
                 plot_confusion_matrix(perc_mse_mnist_class, mnist_test_lbls, True,
@@ -308,10 +308,10 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                                       'MSE Perceptron Classified MNIST PCA Test Data Confusion Matrix',
                                       perc_mse_dir + 'pca_perc_mse_conf_mat.png')
                 # Class mean vectors of classified test data
-                plot_mnist_centroids(orl_test_images, perc_mse_mnist_class,
+                plot_mnist_centroids(mnist_test_images, perc_mse_mnist_class,
                                      'MSE Perceptron Classified MNIST Test Data Centroids',
                                      perc_mse_dir + 'pca_perc_mse_class_cent.png')
-                plot_mnist_centroids(orl_test_images, pca_perc_mse_mnist_class,
+                plot_mnist_centroids(mnist_test_images, pca_perc_mse_mnist_class,
                                      'MSE Perceptron Classified MNIST PCA Test Data Centroids',
                                      perc_mse_dir + 'pca_perc_mse_class_cent.png')
 
