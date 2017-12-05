@@ -370,4 +370,4 @@ def plot_decision_boundary(clf, train_data, test_data, train_lbls, test_lbls, ti
 
     if fp != "":
         plt.savefig(fp)
-    plt.show()
+    plt.draw()
