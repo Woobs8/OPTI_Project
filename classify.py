@@ -24,7 +24,7 @@ def nc(train_data, train_lbls, test_data, test_lbls):
     try:
         score = accuracy_score(test_lbls, classification)
     except ValueError:
-        score = 0
+        score = None
 
     return classification, score
 
@@ -82,7 +82,10 @@ def nsc(train_data, train_lbls, test_data, test_lbls, subclass_count):
                         classification[i]=label
 
     # Determine classification errors by comparing classification with known labels
-    score = accuracy_score(test_lbls, classification)
+    try:
+        score = accuracy_score(test_lbls, classification)
+    except ValueError:
+        score = None
 
     return np.asarray(classification), score
 
@@ -109,7 +112,11 @@ def nn(train_data, train_lbls, test_data, test_lbls, neighbor_count, neighbor_we
         classification = clf.predict(test_data)
     elif classification =='soft':
         classification = clf.predict_proba(test_data)
-    score = accuracy_score(test_lbls, classification)
+
+    try:
+        score = accuracy_score(test_lbls, classification)
+    except ValueError:
+        score = None
     return classification, score
 
 
@@ -257,5 +264,8 @@ def perceptron_classify(W, test_data, test_lbls):
     decision = np.dot(W,aug_test_data.transpose())
     classification = np.argmax(decision,axis=0)+label_offset
 
-    score = accuracy_score(test_lbls, classification)
+    try:
+        score = accuracy_score(test_lbls, classification)
+    except ValueError:
+        score = None
     return classification, score
