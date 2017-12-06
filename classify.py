@@ -178,7 +178,7 @@ class BP_Perceptron:
         @eta: learning rate
         @max_iter: maximum training iterations 
     """
-    def fit(self, train_data, train_lbls, eta=1, max_iter=1000):
+    def fit(self, train_data, train_lbls, eta=1, max_iter=1000, annealing=True):
         # Create set of training classes
         classes = np.unique(train_lbls)
         class_count = len(classes)
@@ -187,62 +187,38 @@ class BP_Perceptron:
         train_data = train_data.astype(float)
 
         # Augment data with bias to simplify linear discriminant function
-        X = add_dummy_feature(train_data)
-        n_features = len(X[0])
+        X = add_dummy_feature(train_data).transpose()
+        n_features, n_samples = X.shape
 
         # Determine discriminant hyperplane for each OVR binary classification
         self.W = np.zeros((class_count, n_features), dtype=np.float)
-        label_offset = classes[0]  # Account for classifications which doesn't start at 0
-        for label in classes:
-            # Initialize w
-            w = np.zeros(n_features, dtype=np.float)
 
-            # Initialize OVR (One vs Rest) binary classification
-            ovr_lbls = np.array([1 if lbl == label else -1 for lbl in train_lbls], dtype=np.float)
+        # Initialize labels for OVR (One vs Rest) binary classification
+        ovr_lbls = np.where(train_lbls[np.newaxis, :] == classes[:, np.newaxis], 1, -1)
 
-            # Batch perceptron training
-            for t in range(max_iter):
-                delta = 0
-                chi = []
-                for i, x in enumerate(X):
-                    # Evaluate perceptron criterion function
-                    if (np.dot(x, w) * ovr_lbls[i]) <= 0:
-                        chi.append(x)
-                        # Sum error terms of misclassified samples
-                        delta += x * ovr_lbls[i]
+        for t in range(max_iter):
+            # Evaluate perceptron criterion function
+            F = np.multiply(ovr_lbls, np.dot(self.W, X))
 
-                # No classification errors, algorithm is done
-                if len(chi) == 0:
-                    break
+            # Create set of misclassified samples (1 = misclassification, 0 = good classification)
+            Chi = np.array(np.where(F <= 0,1 ,0)).astype(float)
 
-                # Update w
-                w = w + eta * delta
+            # Calculate the delta summation of all misclassified samples
+            delta = np.multiply(Chi,ovr_lbls).dot(X.transpose())
 
-            # Assign w to label-based index
-            index = label - label_offset
-            self.W[index] = w
+            # Exponential decay of epsilon
+            if annealing:
+                anneal = np.exp(-0.01*t)
+            else:
+                anneal = 1
 
-        # # Create set of training classes
-        # classes = np.unique(train_lbls)
-        # class_count = len(classes)
-        #
-        # # Convert samples to float for faster numpy processing
-        # train_data = train_data.astype(float)
+            # Update W
+            self.W += eta*anneal*delta
 
-        # # Augment data with bias to simplify linear discriminant function
-        # X = add_dummy_feature(train_data).transpose()
-        # n_features, n_samples = X.shape
-        #
-        # # Determine discriminant hyperplane for each OVR binary classification
-        # self.W = np.zeros((class_count, n_features), dtype=np.float)
-        #
-        # # Initialize labels for OVR (One vs Rest) binary classification
-        # ovr_lbls = np.where(train_lbls[np.newaxis, :] == classes[:, np.newaxis], 1, -1)
-        # print(self.W.shape)
-        # print(X.shape)
-        # # Evaluate perceptron criterion function
-        # test = np.multiply(ovr_lbls, np.dot(self.W, X))
-        # print(test.shape)
+            # Evaluate stopping criterion => no errors = stop
+            Chi_sum = np.sum(Chi, axis=1)
+            if np.count_nonzero(Chi_sum)==0:
+                break
 
         return self
 
@@ -290,7 +266,7 @@ class MSE_Perceptron:
         X_pinv = np.dot(np.linalg.inv(np.dot(X, X.transpose()) + epsilon * np.identity(n_features)), X)
 
         # Determine discriminant hyperplane for each OVR binary classification
-        self.W = np.zeros((class_count, n_features), dtype=np.float)
+        #self.W = np.zeros((class_count, n_features), dtype=np.float)
 
         # Initialize target matrix B for OVR (One vs Rest) binary classification
         B = np.where(train_lbls[np.newaxis, :] == classes[:, np.newaxis], 1, -1)

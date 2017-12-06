@@ -93,11 +93,11 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
         if run_perc_bp:
             mnist_perc_bp = BP_Perceptron()
             # 784D data
-            mnist_perc_bp.fit(mnist_train_images, mnist_train_lbls, eta=0.01, max_iter=100)
+            mnist_perc_bp.fit(mnist_train_images, mnist_train_lbls, eta=1, max_iter=100, annealing=True)
             perc_bp_mnist_class, perc_bp_mnist_score = mnist_perc_bp.predict(mnist_test_images, mnist_test_lbls)
 
             # PCA data
-            mnist_perc_bp.fit(pca_mnist_train_images, mnist_train_lbls, eta=0.01, max_iter=100)
+            mnist_perc_bp.fit(pca_mnist_train_images, mnist_train_lbls, eta=1, max_iter=100, annealing=True)
             pca_perc_bp_mnist_class, pca_perc_bp_mnist_score = mnist_perc_bp.predict(pca_mnist_test_images, mnist_test_lbls)
 
         # MSE Perceptron
@@ -164,11 +164,11 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
         if run_perc_bp:
             orl_perc_bp = BP_Perceptron()
             # 1200D data
-            orl_perc_bp.fit(orl_train_images, orl_train_lbls, eta=0.01, max_iter=100)
+            orl_perc_bp.fit(orl_train_images, orl_train_lbls, eta=0.01, max_iter=100, annealing=True)
             perc_bp_orl_class, perc_bp_orl_score = orl_perc_bp.predict(orl_test_images, orl_test_lbls)
 
             # PCA data
-            orl_perc_bp.fit(pca_orl_train_images, orl_train_lbls, eta=0.01, max_iter=100)
+            orl_perc_bp.fit(pca_orl_train_images, orl_train_lbls, eta=0.01, max_iter=100, annealing=True)
             pca_perc_bp_orl_class, pca_perc_bp_orl_score = orl_perc_bp.predict(pca_orl_test_images, orl_test_lbls)
 
 
