@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.manifold import TSNE
 from sklearn.metrics import confusion_matrix
 import itertools
+from math import ceil
 
 """ 
 Load MNIST dataset from directory
@@ -112,10 +113,38 @@ def plot_mnist_centroids(data, labels, title="", fp=""):
         plt.subplot(2,5,i+1)
         plt.title('Label: {label}'.format(label=classes[i]))
         plt.imshow(pixels, cmap='gray')
+        plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
     if fp != "":
         plt.savefig(fp)
     plt.draw()
 
+
+""" 
+Plots the MNIST mean vectors of subclasses
+param:
+    @centroids: sublcass centroids to plot
+    @tile: plot title
+    @fp: path to store file in
+"""
+
+def plot_mnist_subclass_centroids(centroids, title="", fp=""):
+    n_centers, n_features = centroids.shape
+    # https://stackoverflow.com/questions/37228371/visualize-mnist-dataset-using-opencv-or-matplotlib-pyplot
+    plt.figure()
+    plt.suptitle(title, fontsize=14)
+    for i, class_center in enumerate(centroids):
+        pixels = np.array(class_center, dtype='uint8')
+
+        # Reshape the array into 28 x 28 array (2-dimensional array)
+        pixels = pixels.reshape((28, 28))
+
+        # Plot each mean vector as a gray scale image in a subplot
+        plt.subplot(1,n_centers,i+1)
+        plt.imshow(pixels, cmap='gray')
+        plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
+    if fp != "":
+        plt.savefig(fp)
+    plt.draw()
 
 """ 
 Plots the class mean vectors of supplied ORL data
@@ -145,6 +174,31 @@ def plot_orl_centroids(data, labels, title="", fp=""):
         # Plot each mean vector as a gray scale image in a subplot
         plt.subplot(4,10,i+1)
         plt.title('Label: {label}'.format(label=classes[i]))
+        plt.imshow(pixels, cmap='gray')
+        plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
+    if fp != "":
+        plt.savefig(fp)
+    plt.draw()
+
+
+""" 
+Plots the ORL mean vectors of subclasses
+param:
+    @centroids: sublcass centroids to plot
+    @tile: plot title
+    @fp: path to store file in
+"""
+def plot_orl_subclass_centroids(centroids, title="", fp=""):
+    n_centers, n_features = centroids.shape
+    plt.suptitle(title, fontsize=14)
+    for i, class_center in enumerate(centroids):
+        pixels = np.array(class_center, dtype='float')
+
+        # Reshape the array into 40 x 30 array (2-dimensional array)
+        pixels = pixels.reshape((30, 40)).transpose()   # image vectors are sideways
+
+        # Plot each mean vector as a gray scale image in a subplot
+        plt.subplot(1,n_centers,i+1)
         plt.imshow(pixels, cmap='gray')
         plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
     if fp != "":
@@ -184,20 +238,22 @@ def plot_2D_data(data, labels, title="", fp=""):
             plots.append(plt.scatter(x,y,color=colors[i],s=0.5))
         else:
             plots.append(plt.scatter(x, y, color=colors[i]))
+        plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
 
     # Add legend
+    col = ceil(class_count / 20)
     lgnd = plt.legend(plots,
-               classes,
-               scatterpoints=1,
-               loc='upper right',
-               ncol=2,
-               fontsize=8)
+                classes,
+                loc='center left',
+                bbox_to_anchor=(1, 0.5),
+                ncol=col,
+                fontsize=8)
 
     for handle in lgnd.legendHandles:
-        handle._sizes = [5]
+        handle._sizes = [10]
 
     if fp != "":
-        plt.savefig(fp)
+        plt.savefig(fp, bbox_extra_artists=(lgnd,), bbox_inches='tight')
     plt.draw()
 
 
@@ -213,6 +269,7 @@ param:
 def subplot_2D_data(data, dataset_labels, title="", subplot_titles=[],  fp=""):
     plt.figure()
     plt.suptitle(title)
+    plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
     for i,labels in enumerate(dataset_labels):
         plt.subplot(len(dataset_labels), 1, i + 1)
         # Create set of classes in data set
@@ -238,20 +295,22 @@ def subplot_2D_data(data, dataset_labels, title="", subplot_titles=[],  fp=""):
                 plots.append(plt.scatter(x, y, color=colors[i], s=0.5))
             else:
                 plots.append(plt.scatter(x, y, color=colors[i]))
+            plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
 
         # Add legend
+        col = ceil(class_count/20)
         lgnd = plt.legend(plots,
-                   classes,
-                   scatterpoints=1,
-                   loc='upper right',
-                   ncol=2,
-                   fontsize=8)
+                    classes,
+                    loc='center left',
+                    bbox_to_anchor=(1, 0.5),
+                    ncol=col,
+                    fontsize=8)
 
         for handle in lgnd.legendHandles:
-            handle._sizes = [5]
+            handle._sizes = [10]
 
     if fp != "":
-        plt.savefig(fp)
+        plt.savefig(fp, bbox_extra_artists=(lgnd,), bbox_inches='tight')
     plt.draw()
 
 
@@ -311,32 +370,57 @@ param:
     @tile: plot title
     @fp: path to store file in
 """
-def plot_decision_boundary(clf, test_data, test_lbls, title, fp="", *args):
+def plot_decision_boundary(clf, test_data, test_lbls, title, fp=""):
     # Generate figure and color map
     color_map = plt.cm.RdBu
     plt.figure()
     plt.title(title)
+    plots = []
 
     # Separate data into features and construct meshgrid
     X0_test, X1_test = test_data[:, 0], test_data[:, 1]
     x_min, x_max = X0_test.min() - 1, X0_test.max() + 1
     y_min, y_max = X1_test.min() - 1, X1_test.max() + 1
-    xx_test, yy_test = np.meshgrid(np.arange(x_min, x_max),
-                         np.arange(y_min, y_max))
+    # Ensure proper resolution of contours by varying step size based on sample spread
+    x_step_size = (x_max-x_min)/1500
+    y_step_size = (y_max-y_min)/1500
+    xx_test, yy_test = np.meshgrid(np.arange(x_min, x_max,x_step_size),
+                         np.arange(y_min, y_max,y_step_size))
 
     # Classify testing data using @clf classifier function
-    Z, score = clf.predict(np.c_[xx_test.ravel(), yy_test.ravel()], test_lbls)
+    mesh_data = np.c_[xx_test.ravel(), yy_test.ravel()]
+    Z, score = clf.predict(mesh_data, test_lbls)
     classes = np.unique(Z)
+    class_count = len(classes)
     Z = Z.reshape(xx_test.shape)    # Reshape into meshgrid shape
 
     # Plot decision boundary with testing data
-    plt.contourf(xx_test, yy_test, Z, len(classes)+1, cmap=color_map, alpha=0.8)
-    plt.scatter(X0_test, X1_test, c=test_lbls, cmap=color_map, s=5, edgecolors='k', lw=0.5)
+    cont = plt.contourf(xx_test, yy_test, Z, class_count+1, cmap=color_map, alpha=0.8)
+    plots = []
+    colors = color_map(np.linspace(0, 1.0, class_count))
+    for i, label in enumerate(classes):
+        # Group data into numpy arrays for each class
+        class_data = np.asarray([x for j, x in enumerate(test_data) if test_lbls[j] == label])
+        x = class_data[:, 0]
+        y = class_data[:, 1]
+        plots.append(plt.scatter(x, y, color=colors[i], cmap=color_map, s=10, edgecolors='k', lw=0.5))
+
+    #scatter = plt.scatter(X0_test, X1_test, c=test_lbls, cmap=color_map, s=10, edgecolors='k', lw=0.5)
     plt.xlim(xx_test.min(), xx_test.max())
     plt.ylim(yy_test.min(), yy_test.max())
     plt.xticks(())
     plt.yticks(())
 
+    # Add legend
+    col = ceil(class_count / 20)
+    lgnd = plt.legend(plots,
+               classes,
+               loc='center left',
+               bbox_to_anchor=(1, 0.5),
+               fontsize = 8,
+               ncol=col,
+               markerscale=2.)
+
     if fp != "":
-        plt.savefig(fp)
+        plt.savefig(fp, bbox_extra_artists=(lgnd,), bbox_inches='tight')
     plt.draw()
