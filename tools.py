@@ -307,13 +307,12 @@ param:
     @tile: plot title
     @fp: path to store file in
 """
-def plot_decision_boundary(clf, train_data, test_data, train_lbls, test_lbls, title, fp="", **args):
+def plot_decision_boundary(clf, test_data, test_lbls, title, fp="", *args):
     # Generate figure and color map
     color_map = plt.cm.RdBu
     plt.figure()
     plt.title(title)
 
-    # Plot testing data and decision contours
     # Separate data into features and construct meshgrid
     X0_test, X1_test = test_data[:, 0], test_data[:, 1]
     x_min, x_max = X0_test.min() - 1, X0_test.max() + 1
@@ -322,11 +321,8 @@ def plot_decision_boundary(clf, train_data, test_data, train_lbls, test_lbls, ti
                          np.arange(y_min, y_max))
 
     # Classify testing data using @clf classifier function
-    if len(args) > 0:
-        Z, score = clf(train_data, train_lbls, np.c_[xx_test.ravel(), yy_test.ravel()], test_lbls, args)
-    else:
-        Z, score = clf(train_data, train_lbls, np.c_[xx_test.ravel(), yy_test.ravel()], test_lbls)
-    classes = list(set(Z))
+    Z, score = clf.predict(np.c_[xx_test.ravel(), yy_test.ravel()], test_lbls)
+    classes = np.unique(Z)
     Z = Z.reshape(xx_test.shape)    # Reshape into meshgrid shape
 
     # Plot decision boundary with testing data
