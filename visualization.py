@@ -1,7 +1,7 @@
 import os
 import sys
 from tools import loadMNIST, loadORL, pca, tsne, plot_mnist_centroids, plot_orl_centroids, plot_2D_data, subplot_2D_data, plot_confusion_matrix, plot_decision_boundary, plot_orl_subclass_centroids, plot_mnist_subclass_centroids
-from classify import NC, NSC, NN, BP_Perceptron, perceptron_classify, MSE_Perceptron
+from classify import NC, NSC, NN, BP_Perceptron, MSE_Perceptron
 import matplotlib.pyplot as plt
 import multiprocessing
 from os.path import exists
@@ -94,11 +94,11 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
         if run_perc_bp:
             mnist_perc_bp = BP_Perceptron()
             # 784D data
-            mnist_perc_bp.fit(mnist_train_images, mnist_train_lbls, eta=1, max_iter=100, annealing=True)
+            mnist_perc_bp.fit(mnist_train_images, mnist_train_lbls, eta=1, eta_decay=0.01, max_iter=100, annealing=True)
             perc_bp_mnist_class, perc_bp_mnist_score = mnist_perc_bp.predict(mnist_test_images, mnist_test_lbls)
 
             # PCA data
-            mnist_perc_bp.fit(pca_mnist_train_images, mnist_train_lbls, eta=1, max_iter=100, annealing=True)
+            mnist_perc_bp.fit(pca_mnist_train_images, mnist_train_lbls, eta=1, eta_decay=0.01, max_iter=100, annealing=True)
             pca_perc_bp_mnist_class, pca_perc_bp_mnist_score = mnist_perc_bp.predict(pca_mnist_test_images, mnist_test_lbls)
 
         # MSE Perceptron
@@ -127,8 +127,8 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
 
         # Nearest Subclass Centroid
         if run_nsc:
-            # 2 subclasses, 1200D data
             orl_nsc2 = NSC(2)
+            # 2 subclasses, 1200D data
             orl_nsc2.fit(orl_train_images, orl_train_lbls)
             nsc_2_orl_class, nsc_2_orl_score = orl_nsc2.predict(orl_test_images, orl_test_lbls)
             # 2 subclasses, PCA data

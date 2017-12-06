@@ -180,7 +180,7 @@ class BP_Perceptron:
         @eta: learning rate
         @max_iter: maximum training iterations 
     """
-    def fit(self, train_data, train_lbls, eta=1, max_iter=1000, annealing=True):
+    def fit(self, train_data, train_lbls, eta=1, eta_decay=0.01, max_iter=1000, annealing=True):
         # Create set of training classes
         classes = np.unique(train_lbls)
         class_count = len(classes)
@@ -205,22 +205,22 @@ class BP_Perceptron:
             # Create set of misclassified samples (1 = misclassification, 0 = good classification)
             Chi = np.array(np.where(F <= 0,1 ,0)).astype(float)
 
+            # Evaluate stopping criterion => no errors = stop
+            Chi_sum = np.sum(Chi, axis=1)
+            if np.count_nonzero(Chi_sum)==0:
+                break
+
             # Calculate the delta summation of all misclassified samples
             delta = np.multiply(Chi,ovr_lbls).dot(X.transpose())
 
             # Exponential decay of epsilon
             if annealing:
-                anneal = np.exp(-0.01*t)
+                anneal = np.exp(-eta_decay*t)
             else:
                 anneal = 1
 
             # Update W
             self.W += eta*anneal*delta
-
-            # Evaluate stopping criterion => no errors = stop
-            Chi_sum = np.sum(Chi, axis=1)
-            if np.count_nonzero(Chi_sum)==0:
-                break
 
         return self
 
