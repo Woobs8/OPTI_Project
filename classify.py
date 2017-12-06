@@ -11,6 +11,7 @@ Nearest Centroid Algorithm
 class NC:
     def __init__(self):
         self.clf = NearestCentroid()
+        self.centroids = []
 
     """ 
     Calculates the mean of each class in the training data. 
@@ -20,6 +21,7 @@ class NC:
     """
     def fit(self, train_data, train_lbls):
         self.clf.fit(train_data, train_lbls)
+        self.centroids = self.clf.centroids_
         return self
 
     """ 
@@ -42,7 +44,7 @@ class NC:
 
 
 """ 
-Nearest Sublcass Centroid
+Nearest Subclass Centroid
 """
 class NSC:
     """
@@ -264,9 +266,6 @@ class MSE_Perceptron:
 
         # Calculate regularized pseudo-inverse of X
         X_pinv = np.dot(np.linalg.inv(np.dot(X, X.transpose()) + epsilon * np.identity(n_features)), X)
-
-        # Determine discriminant hyperplane for each OVR binary classification
-        #self.W = np.zeros((class_count, n_features), dtype=np.float)
 
         # Initialize target matrix B for OVR (One vs Rest) binary classification
         B = np.where(train_lbls[np.newaxis, :] == classes[:, np.newaxis], 1, -1)

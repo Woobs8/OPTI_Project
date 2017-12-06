@@ -1,6 +1,6 @@
 import os
 import sys
-from tools import loadMNIST, loadORL, pca, tsne, plot_mnist_centroids, plot_orl_centroids, plot_2D_data, subplot_2D_data, plot_confusion_matrix, plot_decision_boundary
+from tools import loadMNIST, loadORL, pca, tsne, plot_mnist_centroids, plot_orl_centroids, plot_2D_data, subplot_2D_data, plot_confusion_matrix, plot_decision_boundary, plot_orl_subclass_centroids, plot_mnist_subclass_centroids
 from classify import NC, NSC, NN, BP_Perceptron, perceptron_classify, MSE_Perceptron
 import matplotlib.pyplot as plt
 import multiprocessing
@@ -75,6 +75,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
             mnist_nsc5 = NSC(5)
             mnist_nsc5.fit(mnist_train_images, mnist_train_lbls)
             nsc_5_mnist_class, nsc_5_mnist_score = mnist_nsc5.predict(mnist_test_images, mnist_test_lbls)
+            mnist_nsc5_centroids = mnist_nsc5.subclass_centers  # For visualization purposes
             # 5 subclasses, PCA data
             mnist_nsc5.fit(pca_mnist_train_images, mnist_train_lbls)
             pca_nsc_5_mnist_class, pca_nsc_5_mnist_score = mnist_nsc5.predict(pca_mnist_test_images, mnist_test_lbls)
@@ -146,6 +147,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
             orl_nsc5 = NSC(5)
             orl_nsc5.fit(orl_train_images, orl_train_lbls)
             nsc_5_orl_class, nsc_5_orl_score = orl_nsc5.predict(orl_test_images, orl_test_lbls)
+            orl_nsc5_centroids = orl_nsc5.subclass_centers  # For visualization purposes
             # 5 subclasses, PCA data
             orl_nsc5.fit(pca_orl_train_images, orl_train_lbls)
             pca_nsc_5_orl_class, pca_nsc_5_orl_score = orl_nsc5.predict(pca_orl_test_images, orl_test_lbls)
@@ -241,7 +243,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                                      'NC Classified MNIST PCA Test Data Centroids', nc_dir + 'pca_nc_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(mnist_nc, pca_mnist_test_images, mnist_test_lbls,
-                                       'Nearest Centroid MNIST PCA Decision Boundary', nc_dir + 'pca_nc_dec_bounds.png')
+                                       'Nearest Centroid MNIST PCA Decision Boundaries', nc_dir + 'pca_nc_dec_bounds.png')
 
 
             if run_nsc:
@@ -267,8 +269,10 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                                      'NSC Classified MNIST PCA Test Data Centroids', nsc_dir + 'pca_nsc_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(mnist_nsc5, pca_mnist_test_images, mnist_test_lbls,
-                                       'Nearest Subclass Centroid (5) MNIST PCA Decision Boundary',
+                                       'Nearest Subclass Centroid (5) MNIST PCA Decision Boundaries',
                                        nsc_dir + 'pca_nsc_dec_bounds.png')
+                # Plot the centroids of the clustered subclasses
+                plot_mnist_subclass_centroids(mnist_nsc5_centroids[9],"MNIST (9) Subclasses", nsc_dir + 'nsc_subclasses.png')
 
             if run_nn:
                 nn_dir = mnist_dir + 'nn/'
@@ -291,7 +295,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                                      'NN Classified MNIST PCA Test Data Centroids', nn_dir + 'pca_nn_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(mnist_nn, pca_mnist_test_images, mnist_test_lbls,
-                                       'Nearest Neighbor MNIST PCA Decision Boundary', nn_dir + 'pca_nn_dec_bounds.png')
+                                       'Nearest Neighbor MNIST PCA Decision Boundaries', nn_dir + 'pca_nn_dec_bounds.png')
 
             if run_perc_bp:
                 perc_bp_dir = mnist_dir + 'perc-bp/'
@@ -318,7 +322,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                                      perc_bp_dir + 'pca_perc_bp_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(mnist_perc_bp, pca_mnist_test_images, mnist_test_lbls,
-                                       'Backpropagation Perceptron MNIST PCA Decision Boundary',
+                                       'Backpropagation Perceptron MNIST PCA Decision Boundaries',
                                        perc_bp_dir + 'pca_perc_bp_dec_bounds.png')
 
             if run_perc_mse:
@@ -345,7 +349,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                                      perc_mse_dir + 'pca_perc_mse_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(mnist_perc_mse, pca_mnist_test_images, mnist_test_lbls,
-                                       'MSE Perceptron MNIST PCA Decision Boundary',
+                                       'MSE Perceptron MNIST PCA Decision Boundaries',
                                        perc_mse_dir + 'pca_perc_mse_dec_bounds.png')
 
 
@@ -396,7 +400,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                                    nc_dir + 'pca_nc_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(orl_nc, pca_orl_test_images, orl_test_lbls,
-                                       'Nearest Centroid ORL PCA Decision Boundary', nc_dir + 'pca_nc_dec_bounds.png')
+                                       'Nearest Centroid ORL PCA Decision Boundaries', nc_dir + 'pca_nc_dec_bounds.png')
 
             if run_nsc:
                 nsc_dir = orl_dir+'nsc/'
@@ -420,8 +424,10 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                                    nsc_dir + 'pca_nsc_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(orl_nsc5, pca_orl_test_images, orl_test_lbls,
-                                       'Nearest Subclass Centroid (5) ORL PCA Decision Boundary',
+                                       'Nearest Subclass Centroid (5) ORL PCA Decision Boundaries',
                                        nsc_dir + 'pca_nsc_dec_bounds.png')
+                # Plot the centroids of the clustered subclasses
+                plot_orl_subclass_centroids(orl_nsc5_centroids[22],"ORL (23) Subclasses", nsc_dir + 'nsc_subclasses.png')
 
             if run_nn:
                 nn_dir = orl_dir+'nn/'
@@ -444,7 +450,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                                    nn_dir + 'pca_nn_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(orl_nn, pca_orl_test_images, orl_test_lbls,
-                                       'Nearest Neighbor ORL PCA Decision Boundary', nn_dir + 'pca_nn_dec_bounds.png')
+                                       'Nearest Neighbor ORL PCA Decision Boundaries', nn_dir + 'pca_nn_dec_bounds.png')
 
             if run_perc_bp:
                 perc_bp_dir = orl_dir+'perc-bp/'
@@ -471,7 +477,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                                    perc_bp_dir + 'pca_perc_bp_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(orl_perc_bp, pca_orl_test_images, orl_test_lbls,
-                                       'Backpropagation Perceptron ORL PCA Decision Boundary',
+                                       'Backpropagation Perceptron ORL PCA Decision Boundaries',
                                        perc_bp_dir + 'pca_perc_bp_dec_bounds.png')
 
             if run_perc_mse:
@@ -498,7 +504,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                                    perc_mse_dir + 'pca_perc_mse_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(orl_perc_mse, pca_orl_test_images, orl_test_lbls,
-                                       'MSE Perceptron ORL PCA Decision Boundary',
+                                       'MSE Perceptron ORL PCA Decision Boundaries',
                                        perc_mse_dir + 'pca_perc_mse_dec_bounds.png')
 
     """ ********* Classification scores ********* """
