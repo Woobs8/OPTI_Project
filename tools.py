@@ -146,6 +146,7 @@ def plot_orl_centroids(data, labels, title="", fp=""):
         plt.subplot(4,10,i+1)
         plt.title('Label: {label}'.format(label=classes[i]))
         plt.imshow(pixels, cmap='gray')
+        plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
     if fp != "":
         plt.savefig(fp)
     plt.draw()
@@ -264,7 +265,7 @@ param:
     @fp: path to store file in
 """
 def plot_confusion_matrix(pred_labels, true_labels, normalize=False, title="", fp=""):
-    classes = list(set(true_labels))
+    classes = np.unique(true_labels)
     conf_mat = confusion_matrix(pred_labels, true_labels)
     np.set_printoptions(precision=2)
     cmap = plt.cm.Blues
@@ -279,13 +280,16 @@ def plot_confusion_matrix(pred_labels, true_labels, normalize=False, title="", f
     tick_marks = np.arange(len(classes))
     plt.xticks(tick_marks, classes, rotation=45)
     plt.yticks(tick_marks, classes)
+    plt.tick_params(labelsize=8)
 
-    fmt = '.2f' if normalize else 'd'
-    thresh = conf_mat.max() / 2.
-    for i, j in itertools.product(range(conf_mat.shape[0]), range(conf_mat.shape[1])):
-        plt.text(j, i, format(conf_mat[i, j], fmt),
-                 horizontalalignment="center",
-                 color="white" if conf_mat[i, j] > thresh else "black")
+    # Only plot text for small confusion matrices
+    if len(classes) <= 10:
+        fmt = '.2f' if normalize else 'd'
+        thresh = conf_mat.max() / 2.
+        for i, j in itertools.product(range(conf_mat.shape[0]), range(conf_mat.shape[1])):
+            plt.text(j, i, format(conf_mat[i, j], fmt),
+                     horizontalalignment="center",
+                     color="white" if conf_mat[i, j] > thresh else "black")
 
     plt.tight_layout()
     plt.ylabel('True label')
