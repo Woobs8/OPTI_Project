@@ -20,6 +20,7 @@ class NC:
     """
     def fit(self, train_data, train_lbls):
         self.clf.fit(train_data, train_lbls)
+        return self
 
     """ 
     Classifies test data using the class means of the training and Nearest Centroid algorithm.
@@ -53,6 +54,8 @@ class NSC:
         self.kmeans = KMeans(n_clusters=subclass_count)
         self.subclass_centers = []
         self.label_offset = 0
+        self.classes = []
+        self.subclass_count = subclass_count
 
     """ 
     Applies K-means clustering algorithm, to cluster each class in the training data into N subclasses. 
@@ -62,14 +65,15 @@ class NSC:
     """
     def fit(self, train_data, train_lbls):
         # Create set of training classes
-        classes = list(set(train_lbls))
-        class_count = len(classes)
+        self.classes = list(set(train_lbls))
+        class_count = len(self.classes)
+        n_samples, n_features = train_data.shape
 
         # Iterate classes and apply K-means to find subclasses of each class
         grouped_train_data = [None] * class_count
-        self.subclass_centers = [None] * class_count
-        self.label_offset = classes[0]   # Account for classifications which doesn't start at 0
-        for label in classes:
+        self.subclass_centers = np.zeros((class_count, self.subclass_count, n_features))
+        self.label_offset = self.classes[0]   # Account for classifications which doesn't start at 0
+        for label in self.classes:
             index = label - self.label_offset
 
             # Group training samples into lists for each class
@@ -78,6 +82,7 @@ class NSC:
             # Apply K-means clustering algorithm to find subclasses
             self.kmeans.fit(grouped_train_data[index])
             self.subclass_centers[index] = self.kmeans.cluster_centers_
+        return self
 
     """ 
     Classifies test samples to the classes corresponding to the nearest subclass.
@@ -89,24 +94,17 @@ class NSC:
         @score: the mean accuracy classifications
     """
     def predict(self, test_data, test_lbls):
-        # Iterate samples and calculate distance to subclass cluster centers
-        test_sample_count = len(test_data)
-        classification = [None]*test_sample_count
-        for i, sample in enumerate(test_data):
-            min = None
-            # Iterate base classes
-            for j, class_centers in enumerate(self.subclass_centers):
-                label = j + self.label_offset
-                if class_centers is not None:
-                    # Iterate centroids of subclasses
-                    for subclass_center in class_centers:
-                        # Calculate distance to centroid
-                        dist = np.linalg.norm(subclass_center-sample)
+        class_count = len(self.classes)
+        n_samples, n_features = test_data.shape
+        distances = np.zeros((class_count, n_samples))
 
-                        # Classify sample as class corresponding to subclass if distance is lowest encountered
-                        if((min is None) or (dist < min)):
-                            min = dist
-                            classification[i]=label
+        # Iterate classes and calculate distances to each subclass centroid
+        for k in range(class_count):
+            class_distances = np.sqrt(((test_data - (self.subclass_centers[k,:,:])[:,np.newaxis,:]) ** 2).sum(axis=2))
+            distances[k] = np.min(class_distances, axis=0)
+
+        # Classify samples to class with closes subclass centroid
+        classification = np.argmin(distances,axis=0) + self.label_offset
 
         # Determine classification errors by comparing classification with known labels
         try:
@@ -139,6 +137,7 @@ class NN:
     """
     def fit(self, train_data, train_lbls):
         self.clf.fit(train_data, train_lbls)
+        return self
 
     """
     Classifies the test data using a Nearest Neighbor algorithm
@@ -181,22 +180,22 @@ class BP_Perceptron:
     """
     def fit(self, train_data, train_lbls, eta=1, max_iter=1000):
         # Create set of training classes
-        classes = list(set(train_lbls))
+        classes = np.unique(train_lbls)
         class_count = len(classes)
 
         # Convert samples to float for faster numpy processing
         train_data = train_data.astype(float)
 
         # Augment data with bias to simplify linear discriminant function
-        aug_train_data = add_dummy_feature(train_data)
-        aug_feature_count = len(aug_train_data[0])
+        X = add_dummy_feature(train_data)
+        n_features = len(X[0])
 
         # Determine discriminant hyperplane for each OVR binary classification
-        self.W = np.zeros((class_count, aug_feature_count), dtype=np.float)
+        self.W = np.zeros((class_count, n_features), dtype=np.float)
         label_offset = classes[0]  # Account for classifications which doesn't start at 0
         for label in classes:
             # Initialize w
-            w = np.zeros(aug_feature_count, dtype=np.float)
+            w = np.zeros(n_features, dtype=np.float)
 
             # Initialize OVR (One vs Rest) binary classification
             ovr_lbls = np.array([1 if lbl == label else -1 for lbl in train_lbls], dtype=np.float)
@@ -204,14 +203,16 @@ class BP_Perceptron:
             # Batch perceptron training
             for t in range(max_iter):
                 delta = 0
-                for i, x in enumerate(aug_train_data):
+                chi = []
+                for i, x in enumerate(X):
                     # Evaluate perceptron criterion function
                     if (np.dot(x, w) * ovr_lbls[i]) <= 0:
+                        chi.append(x)
                         # Sum error terms of misclassified samples
                         delta += x * ovr_lbls[i]
 
-                # No classification error, algorithm is done
-                if not np.count_nonzero(delta):
+                # No classification errors, algorithm is done
+                if len(chi) == 0:
                     break
 
                 # Update w
@@ -220,6 +221,30 @@ class BP_Perceptron:
             # Assign w to label-based index
             index = label - label_offset
             self.W[index] = w
+
+        # # Create set of training classes
+        # classes = np.unique(train_lbls)
+        # class_count = len(classes)
+        #
+        # # Convert samples to float for faster numpy processing
+        # train_data = train_data.astype(float)
+
+        # # Augment data with bias to simplify linear discriminant function
+        # X = add_dummy_feature(train_data).transpose()
+        # n_features, n_samples = X.shape
+        #
+        # # Determine discriminant hyperplane for each OVR binary classification
+        # self.W = np.zeros((class_count, n_features), dtype=np.float)
+        #
+        # # Initialize labels for OVR (One vs Rest) binary classification
+        # ovr_lbls = np.where(train_lbls[np.newaxis, :] == classes[:, np.newaxis], 1, -1)
+        # print(self.W.shape)
+        # print(X.shape)
+        # # Evaluate perceptron criterion function
+        # test = np.multiply(ovr_lbls, np.dot(self.W, X))
+        # print(test.shape)
+
+        return self
 
     """ 
     Classifies test data using a linear discriminant function and the trained weight matrix
@@ -251,33 +276,28 @@ class MSE_Perceptron:
     """
     def fit(self, train_data, train_lbls, epsilon):
         # Create set of training classes
-        classes = list(set(train_lbls))
+        classes = np.unique(train_lbls)
         class_count = len(classes)
 
         # Convert samples to float for faster numpy processing
         train_data = train_data.astype(float)
 
         # Augment data with bias to simplify linear discriminant function
-        aug_train_data = add_dummy_feature(train_data)
-        aug_feature_count = len(aug_train_data[0])
-        X = aug_train_data.transpose()
+        X = add_dummy_feature(train_data).transpose()
+        n_features, n_samples = X.shape
 
         # Calculate regularized pseudo-inverse of X
-        X_reg = np.dot(np.linalg.inv(np.dot(X, X.transpose()) + epsilon * np.identity(aug_feature_count)), X)
+        X_pinv = np.dot(np.linalg.inv(np.dot(X, X.transpose()) + epsilon * np.identity(n_features)), X)
 
         # Determine discriminant hyperplane for each OVR binary classification
-        self.W = np.zeros((class_count, aug_feature_count), dtype=np.float)
-        label_offset = classes[0]  # Account for classifications which doesn't start at 0
-        for label in classes:
-            # Initialize OVR (One vs Rest) binary classification
-            b = np.array([1 if lbl == label else -1 for lbl in train_lbls], dtype=np.float)
+        self.W = np.zeros((class_count, n_features), dtype=np.float)
 
-            # Calculate optimized weight vector
-            w = np.dot(X_reg, b)
+        # Initialize target matrix B for OVR (One vs Rest) binary classification
+        B = np.where(train_lbls[np.newaxis, :] == classes[:, np.newaxis], 1, -1)
 
-            # Assign w to label-based index
-            index = label - label_offset
-            self.W[index] = w
+        # Calculate optimized weight vectors
+        self.W = np.dot(B, X_pinv.transpose())
+        return self
 
     """ 
     Classifies test data using a linear discriminant function and the trained weight matrix
@@ -304,16 +324,16 @@ returns:
 """
 def perceptron_classify(W, test_data, test_lbls):
     # Create set of training classes
-    classes = list(set(test_lbls))
+    classes = np.unique(test_lbls)
     label_offset = classes[0]  # Account for classifications which doesn't start at 0
 
     # Convert samples to float for faster numpy processing
     test_data = test_data.astype(float)
 
     # Augment data with bias to simplify linear discriminant function
-    aug_test_data = add_dummy_feature(test_data)
+    X = add_dummy_feature(test_data).transpose()
 
-    decision = np.dot(W,aug_test_data.transpose())
+    decision = np.dot(W,X)
     classification = np.argmax(decision,axis=0)+label_offset
 
     try:
