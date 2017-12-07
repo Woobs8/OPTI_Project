@@ -467,7 +467,7 @@ Plots the boxplot comparison of classifiers
 param:
     @data: classification scores for all classifiers in @classifier
     @classifiers: list of classifier names
-    @tile: plot title
+    @title: plot title
     @fp: path to store file in
 """
 def plot_classifier_boxplot(data, classifiers, title="", fp=""):
