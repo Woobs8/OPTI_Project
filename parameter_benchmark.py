@@ -1,15 +1,14 @@
 import os
 import sys
-from tools import loadMNIST, loadORL, pca, plot_mnist_centroids, plot_orl_centroids, plot_2D_data, subplot_2D_data
-from classify import NC, NSC, NN, BP_Perceptron, perceptron_classify, MSE_Perceptron
+from tools import loadMNIST, loadORL, pca
+from classify import NC, NSC, NN, BP_Perceptron, MSE_Perceptron
 import matplotlib.pyplot as plt
 import multiprocessing
-from os.path import exists
-from os import makedirs
 import numpy as np
 
 
 def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=True, run_perc_mse=True, cpus=1, file=None):
+    print("!!!!! Running Parameter Benchmarking !!!!!")
 
     """ ********* Loading MNIST samples ********* """
     if run_mnist:
@@ -37,7 +36,7 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
     print("Utilizing " + str(cpus) + "/" + str(avail_cpus) + " CPU cores for parallel execution.")
 
 
-    """ ********* Benchmarking classification algorithms for MNIST data ********* """
+    """ ********* Benchmarking algorithm hyperparameters for MNIST data ********* """
     if run_mnist:
         # Nearest Subclass Centroid
         if run_nsc:
@@ -64,8 +63,7 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
                 classification, nn_mnist_scores[i,0] = mnist_nn.predict(mnist_test_images, mnist_test_lbls, 'hard')
                 # PCA data
                 mnist_nn.fit(pca_mnist_train_images, mnist_train_lbls)
-                classification, nn_mnist_scores[i,1] = mnist_nn.predict(pca_mnist_test_images, mnist_test_lbls,
-                                                                          'hard')
+                classification, nn_mnist_scores[i,1] = mnist_nn.predict(pca_mnist_test_images, mnist_test_lbls,'hard')
                 nn_mnist_scores[i,2] = neighbor_count
 
         # Backpropagation Perceptron
@@ -83,8 +81,7 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
                 classification, perc_bp_mnist_scores[i,0] = mnist_perc_bp.predict(mnist_test_images, mnist_test_lbls)
                 # PCA data
                 mnist_perc_bp.fit(pca_mnist_train_images, mnist_train_lbls, eta=eta, max_iter=100, annealing=False)
-                classification, perc_bp_mnist_scores[i,1] = mnist_perc_bp.predict(pca_mnist_test_images,
-                                                                                         mnist_test_lbls)
+                classification, perc_bp_mnist_scores[i,1] = mnist_perc_bp.predict(pca_mnist_test_images,mnist_test_lbls)
                 perc_bp_mnist_scores[i,2] = eta
 
                 # With annealing
@@ -93,8 +90,7 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
                 classification, perc_bp_anneal_mnist_scores[i,0] = mnist_perc_bp.predict(mnist_test_images, mnist_test_lbls)
                 # PCA data
                 mnist_perc_bp.fit(pca_mnist_train_images, mnist_train_lbls, eta=1, eta_decay=decay, max_iter=100, annealing=True)
-                classification, perc_bp_anneal_mnist_scores[i,1] = mnist_perc_bp.predict(pca_mnist_test_images,
-                                                                                         mnist_test_lbls)
+                classification, perc_bp_anneal_mnist_scores[i,1] = mnist_perc_bp.predict(pca_mnist_test_images,mnist_test_lbls)
                 perc_bp_anneal_mnist_scores[i,2] = decay
 
 
@@ -111,13 +107,12 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
 
                 # PCA data
                 mnist_perc_mse.fit(pca_mnist_train_images, mnist_train_lbls, epsilon=epsilon)
-                classification, perc_mse_mnist_scores[i,1] = mnist_perc_mse.predict(pca_mnist_test_images,
-                                                                                            mnist_test_lbls)
+                classification, perc_mse_mnist_scores[i,1] = mnist_perc_mse.predict(pca_mnist_test_images,mnist_test_lbls)
                 perc_mse_mnist_scores[i,2] = epsilon_exp
 
 
 
-    """ ********* Benchmarking classification algorithms for ORL data ********* """
+    """ ********* Benchmarking algorithms hyperparameters for ORL data ********* """
     if run_orl:
         # Nearest Subclass Centroid
         if run_nsc:
@@ -188,8 +183,7 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
 
                 # PCA data
                 orl_perc_mse.fit(pca_orl_train_images, orl_train_lbls, epsilon=epsilon)
-                classification, perc_mse_orl_scores[i,1] = orl_perc_mse.predict(pca_orl_test_images,
-                                                                                      orl_test_lbls)
+                classification, perc_mse_orl_scores[i,1] = orl_perc_mse.predict(pca_orl_test_images,orl_test_lbls)
                 perc_mse_orl_scores[i,2] = epsilon_exp
 
     """ ********* Benchmark scores ********* """
@@ -206,47 +200,47 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
         if run_nsc:
             print("\t*** Original Data ***")
             for score in nsc_mnist_scores:
-                print("\tNearest Subclass Centroid ({}): {}".format(str(score[0]), str(score[0])))
+                print("\tNearest Subclass Centroid ({}): {}".format(str(score[0]), score[0]))
 
             print("\n\t*** PCA Data ***")
             for score in nsc_mnist_scores:
-                print("\tNearest Subclass Centroid ({}) w/ PCA: {}".format(int(score[2]), str(score[1])))
+                print("\tNearest Subclass Centroid ({}) w/ PCA: {}".format(int(score[2]), score[1]))
 
         # Nearest Neighbor
         if run_nn:
             print("\t*** Original Data ***")
             for score in nn_mnist_scores:
-                print("\tNearest Neighbor ({}): {}".format(int(score[2]),str(score[0])))
+                print("\tNearest Neighbor ({}): {}".format(int(score[2]),score[0]))
 
             print("\n\t*** PCA Data ***")
             for score in nn_mnist_scores:
-                print("\tNearest Neighbor ({}) w/ PCA: {}".format(int(score[2]),str(score[1])))
+                print("\tNearest Neighbor ({}) w/ PCA: {}".format(int(score[2]),score[1]))
 
         # Backpropagation Perceptron
         if run_perc_bp:
             print("\t*** Original Data ***")
             for score in perc_bp_mnist_scores:
-                print("\tBackpropagation Perceptron (eta={0:.3f}): {1:}".format(score[2], str(score[0])))
+                print("\tBackpropagation Perceptron (eta={0:.3f}): {1:}".format(score[2], score[0]))
             print("\n\t*** Original Data w/ Annealing ***")
             for score in perc_bp_anneal_mnist_scores:
-                print("\tBackpropagation Perceptron (annealing) (eta=1, k={0:.3f}): {1:}".format(score[2],str(score[0])))
+                print("\tBackpropagation Perceptron (annealing) (eta=1, k={0:.3f}): {1:}".format(score[2],score[0]))
 
             print("\n\t*** PCA Data ***")
             for score in perc_bp_mnist_scores:
-                print("\tBackpropagation Perceptron w/ PCA (eta={0:.3f}): {1:}".format(score[2], str(score[1])))
+                print("\tBackpropagation Perceptron w/ PCA (eta={0:.3f}): {1:}".format(score[2], score[1]))
             print("\n\t*** PCA Data w/ Annealing ***")
             for score in perc_bp_anneal_mnist_scores:
-                print("\tBackpropagation Perceptron (annealing) w/ PCA (eta=1, k={0:.3f}): {1:}".format(score[2],str(score[1])))
+                print("\tBackpropagation Perceptron (annealing) w/ PCA (eta=1, k={0:.3f}): {1:}".format(score[2],score[1]))
 
         # MSE Perceptron
         if run_perc_mse:
             print("\t*** Original Data ***")
             for score in perc_mse_mnist_scores:
-                print("\tMSE Perceptron (epsilon=10**{}): {}".format(int(score[2]),str(score[0])))
+                print("\tMSE Perceptron (epsilon=10**{}): {}".format(int(score[2]),score[0]))
 
             print("\n\t*** PCA Data ***")
             for score in perc_mse_mnist_scores:
-                print("\tMSE Perceptron (epsilon=10**{}) w/ PCA: {}".format(int(score[2]),str(score[1])))
+                print("\tMSE Perceptron (epsilon=10**{}) w/ PCA: {}".format(int(score[2]),score[1]))
 
     if run_orl:
         print("*** ORL ***")
@@ -254,11 +248,11 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
         if run_nsc:
             print("\t*** Original Data ***")
             for score in nsc_orl_scores:
-                print("\tNearest Subclass Centroid ({}): {}".format(int(score[2]),str(score[0])))
+                print("\tNearest Subclass Centroid ({}): {}".format(int(score[2]),score[0]))
 
             print("\n\t*** PCA Data ***")
             for score in nsc_orl_scores:
-                print("\tNearest Subclass Centroid ({}) w/ PCA: {}".format(int(score[2]),str(score[1])))
+                print("\tNearest Subclass Centroid ({}) w/ PCA: {}".format(int(score[2]),score[1]))
 
         # Nearest Neighbor
         if run_nn:
@@ -292,11 +286,11 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
         if run_perc_mse:
             print("\t*** Original Data ***")
             for score in perc_mse_orl_scores:
-                print("\tMSE Perceptron (epsilon=10**{}): {}".format(int(score[2]),str(score[0])))
+                print("\tMSE Perceptron (epsilon=10**{}): {}".format(int(score[2]),score[0]))
 
             print("\n\t*** PCA Data ***")
             for score in perc_mse_orl_scores:
-                print("\tMSE Perceptron (epsilon=10**{}) w/ PCA: {}".format(int(score[2]),str(score[1])))
+                print("\tMSE Perceptron (epsilon=10**{}) w/ PCA: {}".format(int(score[2]),score[1]))
 
     # Flush results to stdout
     sys.stdout.flush()
@@ -335,7 +329,7 @@ if __name__ == "__main__":
                 print("".join(word.ljust(col_width) for word in row))
 
             print("Example:")
-            print("\topti_project.py mnist nc nn cpus=2 file=benchmark.txt")
+            print("\topti_project.py mnist nc nn cpus=2 file=param_benchmark.txt")
             exit(0)
         for arg in sys.argv:
             if arg == 'nsc' or arg == 'NSC':
