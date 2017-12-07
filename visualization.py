@@ -9,7 +9,7 @@ from os import makedirs
 
 
 def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, run_perc_bp=True, run_perc_mse=True, cpus=1, show_figs=False):
-    print("!!!!! Running Classifier Visualization !!!!!")
+    print("!!!!! Running Classifier Visualization !!!!!", flush=True)
 
     """ ********* Loading MNIST samples ********* """
     if run_mnist:

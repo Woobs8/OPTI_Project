@@ -8,7 +8,7 @@ import numpy as np
 
 
 def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=True, run_perc_mse=True, cpus=1, file=None):
-    print("!!!!! Running Parameter Benchmarking !!!!!")
+    print("!!!!! Running Parameter Benchmarking !!!!!", flush=True)
 
     """ ********* Loading MNIST samples ********* """
     if run_mnist:
