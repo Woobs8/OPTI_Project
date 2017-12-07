@@ -9,6 +9,9 @@ from sklearn.manifold import TSNE
 from sklearn.metrics import confusion_matrix
 import itertools
 from math import ceil
+import seaborn as sns
+import pandas as pd
+
 
 """ 
 Load MNIST dataset from directory
@@ -35,7 +38,7 @@ returns:
 def loadORL(fp, test_size=0.3, seed=None):
     data = np.array(scio.loadmat(fp + '/orl_data.mat')['data']).transpose()
     lbls = np.array(scio.loadmat(fp + '/orl_lbls.mat')['lbls']).ravel()
-    # Split data into training and testing datasets
+    # Split data into training and testing datasets with equal distribution of classes
     if seed != None:
         train_data, test_data, train_lbls, test_lbls = train_test_split(data, lbls, test_size=test_size,stratify=lbls, random_state=seed)
     else:
@@ -187,7 +190,7 @@ def plot_orl_centroids(data, labels, title="", fp=""):
     for i, class_center in enumerate(centroids):
         pixels = np.array(class_center, dtype='float')
 
-        # Reshape the array into 40 x 30 array (2-dimensional array)
+        # Reshape the array into 30 x 40 array (2-dimensional array)
         pixels = pixels.reshape((30, 40)).transpose()   # image vectors are sideways
 
         # Plot each mean vector as a gray scale image in a subplot
@@ -213,7 +216,7 @@ def plot_orl_subclass_centroids(centroids, title="", fp=""):
     for i, class_center in enumerate(centroids):
         pixels = np.array(class_center, dtype='float')
 
-        # Reshape the array into 40 x 30 array (2-dimensional array)
+        # Reshape the array into 30 x 40 array (2-dimensional array)
         pixels = pixels.reshape((30, 40)).transpose()   # image vectors are sideways
 
         # Plot each mean vector as a gray scale image in a subplot
@@ -394,7 +397,6 @@ def plot_decision_boundary(clf, test_data, test_lbls, title, scatter=False, fp="
     color_map = plt.cm.RdBu
     plt.figure()
     plt.title(title)
-    plots = []
 
     # Separate data into features and construct meshgrid
     X0_test, X1_test = test_data[:, 0], test_data[:, 1]
@@ -457,4 +459,29 @@ def plot_decision_boundary(clf, test_data, test_lbls, title, scatter=False, fp="
 
     if fp != "":
         plt.savefig(fp, bbox_extra_artists=(lgnd,), bbox_inches='tight')
+    plt.draw()
+
+
+""" 
+Plots the boxplot comparison of classifiers
+param:
+    @data: classification scores for all classifiers in @classifier
+    @classifiers: list of classifier names
+    @tile: plot title
+    @fp: path to store file in
+"""
+def plot_classifier_boxplot(data, classifiers, title="", fp=""):
+    n_samples, n_classifiers = data.shape
+
+    # Create panda dataframe from data with indices and column names
+    dataframe = pd.DataFrame(data=data[0:, 0:],         # values
+                            index = range(n_samples),   # row indices
+                            columns = classifiers)      # column names
+
+    # Create boxplot from dataframe
+    plt.figure()
+    ax = sns.boxplot(data=dataframe, palette="Set2")
+    ax.set(xlabel='Classifiers', ylabel='Classification Score', title=title)
+    if fp != "":
+        plt.savefig(fp)
     plt.draw()
