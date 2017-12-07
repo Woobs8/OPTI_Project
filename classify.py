@@ -192,8 +192,8 @@ class BP_Perceptron:
         X = add_dummy_feature(train_data).transpose()
         n_features, n_samples = X.shape
 
-        # Determine discriminant hyperplane for each OVR binary classification
-        self.W = np.zeros((class_count, n_features), dtype=np.float)
+        # Initialize weight matrix to random values
+        self.W = np.random.rand(class_count, n_features)
 
         # Initialize labels for OVR (One vs Rest) binary classification
         ovr_lbls = np.where(train_lbls[np.newaxis, :] == classes[:, np.newaxis], 1, -1)
@@ -255,7 +255,6 @@ class MSE_Perceptron:
     def fit(self, train_data, train_lbls, epsilon):
         # Create set of training classes
         classes = np.unique(train_lbls)
-        class_count = len(classes)
 
         # Convert samples to float for faster numpy processing
         train_data = train_data.astype(float)
