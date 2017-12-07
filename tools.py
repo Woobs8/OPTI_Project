@@ -45,6 +45,25 @@ def loadORL(fp, test_size=0.3, seed=None):
 
 
 """ 
+Create a new training/test split from an exisiting set 
+param:
+    @train_data: training data
+    @train_lbls: training labels
+    @test_data: training data
+    @test_lbls: testing labels
+returns:
+    train_data, train_lbls, test_data, test_lbls
+"""
+def new_train_test_split(train_data, train_lbls, test_data, test_lbls, test_size):
+    # Concatenate training and testing sets
+    data = np.concatenate((train_data,test_data))
+    lbls = np.concatenate((train_lbls,test_lbls))
+
+    train_data, test_data, train_lbls, test_lbls = train_test_split(data, lbls, test_size=test_size, stratify=lbls)
+    return train_data, train_lbls, test_data, test_lbls
+
+
+""" 
 Apply PCA to training and testing data samples
 param:
     @train_data: training data
