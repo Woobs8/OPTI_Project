@@ -244,7 +244,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                                      'NC Classified MNIST PCA Test Data Centroids', nc_dir + 'pca_nc_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(mnist_nc, pca_mnist_test_images, mnist_test_lbls,
-                                       'Nearest Centroid MNIST PCA Decision Boundaries', nc_dir + 'pca_nc_dec_bounds.png')
+                                       'Nearest Centroid MNIST PCA Decision Boundaries', fp=nc_dir + 'pca_nc_dec_bounds.png')
 
 
             if run_nsc:
@@ -271,7 +271,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                 # Plot decision boundary
                 plot_decision_boundary(mnist_nsc5, pca_mnist_test_images, mnist_test_lbls,
                                        'Nearest Subclass Centroid (5) MNIST PCA Decision Boundaries',
-                                       nsc_dir + 'pca_nsc_dec_bounds.png')
+                                       fp=nsc_dir + 'pca_nsc_dec_bounds.png')
                 # Plot the centroids of the clustered subclasses
                 plot_mnist_subclass_centroids(mnist_nsc5_centroids[9],"MNIST (9) Subclasses", nsc_dir + 'nsc_subclasses.png')
 
@@ -296,7 +296,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                                      'NN Classified MNIST PCA Test Data Centroids', nn_dir + 'pca_nn_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(mnist_nn, pca_mnist_test_images, mnist_test_lbls,
-                                       'Nearest Neighbor MNIST PCA Decision Boundaries', nn_dir + 'pca_nn_dec_bounds.png')
+                                       'Nearest Neighbor MNIST PCA Decision Boundaries', fp=nn_dir + 'pca_nn_dec_bounds.png')
 
             if run_perc_bp:
                 perc_bp_dir = mnist_dir + 'perc-bp/'
@@ -324,7 +324,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                 # Plot decision boundary
                 plot_decision_boundary(mnist_perc_bp, pca_mnist_test_images, mnist_test_lbls,
                                        'Backpropagation Perceptron MNIST PCA Decision Boundaries',
-                                       perc_bp_dir + 'pca_perc_bp_dec_bounds.png')
+                                       fp=perc_bp_dir + 'pca_perc_bp_dec_bounds.png')
 
             if run_perc_mse:
                 perc_mse_dir = mnist_dir + 'perc-mse/'
@@ -351,7 +351,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                 # Plot decision boundary
                 plot_decision_boundary(mnist_perc_mse, pca_mnist_test_images, mnist_test_lbls,
                                        'MSE Perceptron MNIST PCA Decision Boundaries',
-                                       perc_mse_dir + 'pca_perc_mse_dec_bounds.png')
+                                       fp=perc_mse_dir + 'pca_perc_mse_dec_bounds.png')
 
 
         """ ********* ORL ********* """
@@ -401,7 +401,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                                    nc_dir + 'pca_nc_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(orl_nc, pca_orl_test_images, orl_test_lbls,
-                                       'Nearest Centroid ORL PCA Decision Boundaries', nc_dir + 'pca_nc_dec_bounds.png')
+                                       'Nearest Centroid ORL PCA Decision Boundaries', fp=nc_dir + 'pca_nc_dec_bounds.png')
 
             if run_nsc:
                 nsc_dir = orl_dir+'nsc/'
@@ -426,7 +426,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                 # Plot decision boundary
                 plot_decision_boundary(orl_nsc5, pca_orl_test_images, orl_test_lbls,
                                        'Nearest Subclass Centroid (5) ORL PCA Decision Boundaries',
-                                       nsc_dir + 'pca_nsc_dec_bounds.png')
+                                       fp=nsc_dir + 'pca_nsc_dec_bounds.png')
                 # Plot the centroids of the clustered subclasses
                 plot_orl_subclass_centroids(orl_nsc5_centroids[22],"ORL (23) Subclasses", nsc_dir + 'nsc_subclasses.png')
 
@@ -451,7 +451,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                                    nn_dir + 'pca_nn_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(orl_nn, pca_orl_test_images, orl_test_lbls,
-                                       'Nearest Neighbor ORL PCA Decision Boundaries', nn_dir + 'pca_nn_dec_bounds.png')
+                                       'Nearest Neighbor ORL PCA Decision Boundaries', fp=nn_dir + 'pca_nn_dec_bounds.png')
 
             if run_perc_bp:
                 perc_bp_dir = orl_dir+'perc-bp/'
@@ -479,7 +479,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                 # Plot decision boundary
                 plot_decision_boundary(orl_perc_bp, pca_orl_test_images, orl_test_lbls,
                                        'Backpropagation Perceptron ORL PCA Decision Boundaries',
-                                       perc_bp_dir + 'pca_perc_bp_dec_bounds.png')
+                                       fp=perc_bp_dir + 'pca_perc_bp_dec_bounds.png')
 
             if run_perc_mse:
                 perc_mse_dir = orl_dir + 'perc-mse/'
@@ -506,7 +506,7 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                 # Plot decision boundary
                 plot_decision_boundary(orl_perc_mse, pca_orl_test_images, orl_test_lbls,
                                        'MSE Perceptron ORL PCA Decision Boundaries',
-                                       perc_mse_dir + 'pca_perc_mse_dec_bounds.png')
+                                       fp=perc_mse_dir + 'pca_perc_mse_dec_bounds.png')
 
     """ ********* Classification scores ********* """
     print("*** Classification Scores ***\n")

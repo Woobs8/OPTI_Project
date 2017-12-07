@@ -389,7 +389,7 @@ param:
     @tile: plot title
     @fp: path to store file in
 """
-def plot_decision_boundary(clf, test_data, test_lbls, title, fp=""):
+def plot_decision_boundary(clf, test_data, test_lbls, title, scatter=False, fp=""):
     # Generate figure and color map
     color_map = plt.cm.RdBu
     plt.figure()
@@ -411,34 +411,49 @@ def plot_decision_boundary(clf, test_data, test_lbls, title, fp=""):
     Z, score = clf.predict(mesh_data, test_lbls)
     classes = np.unique(Z)
     class_count = len(classes)
+    class_offset = classes[0]
     Z = Z.reshape(xx_test.shape)    # Reshape into meshgrid shape
 
     # Plot decision boundary with testing data
     cont = plt.contourf(xx_test, yy_test, Z, class_count+1, cmap=color_map, alpha=0.8)
-    plots = []
-    colors = color_map(np.linspace(0, 1.0, class_count))
-    for i, label in enumerate(classes):
-        # Group data into numpy arrays for each class
-        class_data = np.asarray([x for j, x in enumerate(test_data) if test_lbls[j] == label])
-        x = class_data[:, 0]
-        y = class_data[:, 1]
-        plots.append(plt.scatter(x, y, color=colors[i], cmap=color_map, s=10, edgecolors='k', lw=0.5))
 
-    #scatter = plt.scatter(X0_test, X1_test, c=test_lbls, cmap=color_map, s=10, edgecolors='k', lw=0.5)
-    plt.xlim(xx_test.min(), xx_test.max())
-    plt.ylim(yy_test.min(), yy_test.max())
-    plt.xticks(())
-    plt.yticks(())
+    # Add scatter plot overlay
+    if scatter:
+        plots = []
+        colors = color_map(np.linspace(0, 1.0, class_count))
+        for i, label in enumerate(classes):
+            # Group data into numpy arrays for each class
+            class_data = np.asarray([x for j, x in enumerate(test_data) if test_lbls[j] == label])
+            x = class_data[:, 0]
+            y = class_data[:, 1]
+            plots.append(plt.scatter(x, y, color=colors[i], cmap=color_map, s=10, edgecolors='k', lw=0.5))
 
-    # Add legend
-    col = ceil(class_count / 20)
-    lgnd = plt.legend(plots,
-               classes,
-               loc='center left',
-               bbox_to_anchor=(1, 0.5),
-               fontsize = 8,
-               ncol=col,
-               markerscale=2.)
+        plt.xlim(xx_test.min(), xx_test.max())
+        plt.ylim(yy_test.min(), yy_test.max())
+        plt.xticks(())
+        plt.yticks(())
+
+        # Create legend for scatter plot
+        col = ceil(class_count / 20)
+        lgnd = plt.legend(plots,
+                   classes,
+                   loc='center left',
+                   bbox_to_anchor=(1, 0.5),
+                   fontsize = 8,
+                   ncol=col,
+                   markerscale=2.)
+    # Don't add scatter plot overlay -> add legend for contour
+    else:
+        # Create legend for contour plot
+        proxy = [plt.Rectangle((0, 0), 1, 1, fc=pc.get_facecolor()[0])
+                 for pc in cont.collections]
+        col = ceil(class_count / 20)
+        lgnd = plt.legend(proxy,
+                            range(class_count+1)+class_offset,
+                            loc='center left',
+                            bbox_to_anchor=(1, 0.5),
+                            fontsize = 8,
+                            ncol=col)
 
     if fp != "":
         plt.savefig(fp, bbox_extra_artists=(lgnd,), bbox_inches='tight')
