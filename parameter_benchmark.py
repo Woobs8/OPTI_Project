@@ -68,8 +68,8 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
 
         # Backpropagation Perceptron
         if run_perc_bp:
-            anneal_decay = np.concatenate((np.arange(0.001, 0.01, 0.001), np.arange(0.01, 0.05, 0.01)))
-            eta_range = np.concatenate((np.arange(0.1, 1, 0.1), np.arange(10, 50, 10)))
+            anneal_decay = np.concatenate((np.arange(0.001, 0.01, 0.001), np.arange(0.01, 0.06, 0.01)))
+            eta_range = np.concatenate((np.arange(0.1, 1.1, 0.1), np.arange(10, 50, 10)))
             perc_bp_mnist_scores = np.zeros((len(eta_range),3))
             perc_bp_anneal_mnist_scores = np.zeros((len(anneal_decay),3))
             mnist_perc_bp = BP_Perceptron()
@@ -144,8 +144,8 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
 
         # Backpropagation Perceptron
         if run_perc_bp:
-            anneal_decay = np.concatenate((np.arange(0.001, 0.01, 0.001), np.arange(0.01, 0.05, 0.01)))
-            eta_range = np.concatenate((np.arange(0.1, 1, 0.1), np.arange(10, 50, 10)))
+            anneal_decay = np.concatenate((np.arange(0.001, 0.01, 0.001), np.arange(0.01, 0.06, 0.01)))
+            eta_range = np.concatenate((np.arange(0.1, 1.1, 0.1), np.arange(10, 50, 10)))
             perc_bp_orl_scores = np.zeros((len(eta_range),3))
             perc_bp_anneal_orl_scores = np.zeros((len(anneal_decay),3))
             orl_perc_bp = BP_Perceptron()
