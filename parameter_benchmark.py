@@ -1,7 +1,7 @@
 import os
 import sys
 from tools import loadMNIST, loadORL, pca
-from classify import NC, NSC, NN, BP_Perceptron, MSE_Perceptron
+from classify import NSC, NN, BP_Perceptron, MSE_Perceptron
 import matplotlib.pyplot as plt
 import multiprocessing
 import numpy as np
@@ -198,6 +198,7 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
         print("*** MNIST ***")
         # Nearest Subclass Centroid
         if run_nsc:
+            print("\n\t*** Nearest Subclass Centroid ***")
             print("\t*** Original Data ***")
             for score in nsc_mnist_scores:
                 print("\tNearest Subclass Centroid ({}): {}".format(str(score[0]), score[0]))
@@ -205,9 +206,11 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
             print("\n\t*** PCA Data ***")
             for score in nsc_mnist_scores:
                 print("\tNearest Subclass Centroid ({}) w/ PCA: {}".format(int(score[2]), score[1]))
+            print("\t-----------------------------------------------------\n")
 
         # Nearest Neighbor
         if run_nn:
+            print("\n\t*** Nearest Neighbor ***")
             print("\t*** Original Data ***")
             for score in nn_mnist_scores:
                 print("\tNearest Neighbor ({}): {}".format(int(score[2]),score[0]))
@@ -215,9 +218,11 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
             print("\n\t*** PCA Data ***")
             for score in nn_mnist_scores:
                 print("\tNearest Neighbor ({}) w/ PCA: {}".format(int(score[2]),score[1]))
+            print("\t-----------------------------------------------------\n")
 
         # Backpropagation Perceptron
         if run_perc_bp:
+            print("\n\t*** Backpropagation Perceptron ***")
             print("\t*** Original Data ***")
             for score in perc_bp_mnist_scores:
                 print("\tBackpropagation Perceptron (eta={0:.3f}): {1:}".format(score[2], score[0]))
@@ -231,9 +236,11 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
             print("\n\t*** PCA Data w/ Annealing ***")
             for score in perc_bp_anneal_mnist_scores:
                 print("\tBackpropagation Perceptron (annealing) w/ PCA (eta=1, k={0:.3f}): {1:}".format(score[2],score[1]))
+            print("\t-----------------------------------------------------\n")
 
         # MSE Perceptron
         if run_perc_mse:
+            print("\n\t*** MSE Perceptron ***")
             print("\t*** Original Data ***")
             for score in perc_mse_mnist_scores:
                 print("\tMSE Perceptron (epsilon=10**{}): {}".format(int(score[2]),score[0]))
@@ -241,11 +248,13 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
             print("\n\t*** PCA Data ***")
             for score in perc_mse_mnist_scores:
                 print("\tMSE Perceptron (epsilon=10**{}) w/ PCA: {}".format(int(score[2]),score[1]))
+            print("\t-----------------------------------------------------\n")
 
     if run_orl:
         print("*** ORL ***")
         # Nearest Subclass Centroid
         if run_nsc:
+            print("\n\t*** Nearest Subclass Centroid ***")
             print("\t*** Original Data ***")
             for score in nsc_orl_scores:
                 print("\tNearest Subclass Centroid ({}): {}".format(int(score[2]),score[0]))
@@ -253,9 +262,11 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
             print("\n\t*** PCA Data ***")
             for score in nsc_orl_scores:
                 print("\tNearest Subclass Centroid ({}) w/ PCA: {}".format(int(score[2]),score[1]))
+            print("\t-----------------------------------------------------\n")
 
         # Nearest Neighbor
         if run_nn:
+            print("\n\t*** Nearest Neighbor ***")
             print("\t*** Original Data ***")
             for score in nn_orl_scores:
                 print("\tNearest Neighbor ({}): {}".format(int(score[2]),str(score[0])))
@@ -263,9 +274,11 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
             print("\n\t*** PCA Data ***")
             for score in nn_orl_scores:
                 print("\tNearest Neighbor ({}) w/ PCA: {}".format(int(score[2]),str(score[1])))
+            print("\t-----------------------------------------------------\n")
 
         # Backpropagation Perceptron
         if run_perc_bp:
+            print("\n\t*** Backpropagation Perceptron ***")
             print("\t*** Original Data ***")
             for score in perc_bp_orl_scores:
                 print("\tBackpropagation Perceptron (eta={0:.3f}): {1:}".format(score[2], score[0]))
@@ -281,9 +294,11 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
             print("\n\t*** PCA Data w/ Annealing ***")
             for score in perc_bp_anneal_orl_scores:
                 print("\tBackpropagation Perceptron (annealing) w/ PCA (eta=1, k={0:.3f}): {1:}".format(score[2], score[1]))
+            print("-----------------------------------------------\n")
 
         # MSE Perceptron
         if run_perc_mse:
+            print("\n\t*** MSE Perceptron ***")
             print("\t*** Original Data ***")
             for score in perc_mse_orl_scores:
                 print("\tMSE Perceptron (epsilon=10**{}): {}".format(int(score[2]),score[0]))
@@ -291,6 +306,7 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
             print("\n\t*** PCA Data ***")
             for score in perc_mse_orl_scores:
                 print("\tMSE Perceptron (epsilon=10**{}) w/ PCA: {}".format(int(score[2]),score[1]))
+            print("\t-----------------------------------------------------\n")
 
     # Flush results to stdout
     sys.stdout.flush()

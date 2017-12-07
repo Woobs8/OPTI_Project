@@ -137,7 +137,7 @@ def plot_mnist_centroids(data, labels, title="", fp=""):
         plt.imshow(pixels, cmap='gray')
         plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
     if fp != "":
-        plt.savefig(fp)
+        plt.savefig(fp, bbox_inches='tight', pad_inches=0)
     plt.draw()
 
 
@@ -165,7 +165,7 @@ def plot_mnist_subclass_centroids(centroids, title="", fp=""):
         plt.imshow(pixels, cmap='gray')
         plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
     if fp != "":
-        plt.savefig(fp)
+        plt.savefig(fp, bbox_inches='tight', pad_inches=0)
     plt.draw()
 
 """ 
@@ -199,7 +199,7 @@ def plot_orl_centroids(data, labels, title="", fp=""):
         plt.imshow(pixels, cmap='gray')
         plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
     if fp != "":
-        plt.savefig(fp)
+        plt.savefig(fp, bbox_inches='tight', pad_inches=0)
     plt.draw()
 
 
@@ -224,7 +224,7 @@ def plot_orl_subclass_centroids(centroids, title="", fp=""):
         plt.imshow(pixels, cmap='gray')
         plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
     if fp != "":
-        plt.savefig(fp)
+        plt.savefig(fp, bbox_inches='tight', pad_inches=0)
     plt.draw()
 
 
@@ -249,6 +249,7 @@ def plot_2D_data(data, labels, title="", fp=""):
     plots = []
     plt.figure()
     plt.title(title)
+    plt.tight_layout()
     for i, label in enumerate(classes):
         # Group data into numpy arrays for each class
         class_data = np.asarray([x for j, x in enumerate(data) if labels[j]==label])
@@ -275,7 +276,7 @@ def plot_2D_data(data, labels, title="", fp=""):
         handle._sizes = [10]
 
     if fp != "":
-        plt.savefig(fp, bbox_extra_artists=(lgnd,), bbox_inches='tight')
+        plt.savefig(fp, bbox_extra_artists=(lgnd,), bbox_inches='tight', pad_inches=0)
     plt.draw()
 
 
@@ -292,6 +293,7 @@ def subplot_2D_data(data, dataset_labels, title="", subplot_titles=[],  fp=""):
     plt.figure()
     plt.suptitle(title)
     plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
+    plt.tight_layout()
     for i,labels in enumerate(dataset_labels):
         plt.subplot(len(dataset_labels), 1, i + 1)
         # Create set of classes in data set
@@ -332,7 +334,7 @@ def subplot_2D_data(data, dataset_labels, title="", subplot_titles=[],  fp=""):
             handle._sizes = [10]
 
     if fp != "":
-        plt.savefig(fp, bbox_extra_artists=(lgnd,), bbox_inches='tight')
+        plt.savefig(fp, bbox_extra_artists=(lgnd,), bbox_inches='tight', pad_inches=0)
     plt.draw()
 
 
@@ -377,7 +379,7 @@ def plot_confusion_matrix(pred_labels, true_labels, normalize=False, title="", f
     plt.xlabel('Predicted label')
     np.set_printoptions()
     if fp != "":
-        plt.savefig(fp)
+        plt.savefig(fp, bbox_inches='tight', pad_inches=0)
     plt.draw()
 
 
@@ -446,19 +448,20 @@ def plot_decision_boundary(clf, test_data, test_lbls, title, scatter=False, fp="
                    markerscale=2.)
     # Don't add scatter plot overlay -> add legend for contour
     else:
+        print(len(cont.collections))
         # Create legend for contour plot
         proxy = [plt.Rectangle((0, 0), 1, 1, fc=pc.get_facecolor()[0])
                  for pc in cont.collections]
         col = ceil(class_count / 20)
         lgnd = plt.legend(proxy,
-                            range(class_count+1)+class_offset,
+                            range(class_count)+class_offset,
                             loc='center left',
                             bbox_to_anchor=(1, 0.5),
                             fontsize = 8,
                             ncol=col)
-
+    plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
     if fp != "":
-        plt.savefig(fp, bbox_extra_artists=(lgnd,), bbox_inches='tight')
+        plt.savefig(fp, bbox_extra_artists=(lgnd,), bbox_inches='tight',pad_inches=0)
     plt.draw()
 
 
@@ -480,8 +483,9 @@ def plot_classifier_boxplot(data, classifiers, title="", fp=""):
 
     # Create boxplot from dataframe
     plt.figure()
+    plt.tight_layout()
     ax = sns.boxplot(data=dataframe, palette="Set2")
     ax.set(xlabel='Classifiers', ylabel='Classification Score', title=title)
     if fp != "":
-        plt.savefig(fp)
+        plt.savefig(fp, bbox_inches='tight', pad_inches=0)
     plt.draw()

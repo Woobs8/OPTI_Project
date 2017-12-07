@@ -208,19 +208,19 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                                  mnist_dir + 'test_cent.png')
 
             # PCA Training data
-            plot_2D_data(pca_mnist_train_images, mnist_train_lbls, 'MNIST PCA Training Data',
+            plot_2D_data(pca_mnist_train_images, mnist_train_lbls, 'PCA MNIST Training Data',
                          mnist_dir + 'pca_train.png')
 
             # PCA test data
-            plot_2D_data(pca_mnist_test_images, mnist_test_lbls, 'MNIST PCA Test Data',
+            plot_2D_data(pca_mnist_test_images, mnist_test_lbls, 'PCA MNIST Test Data',
                          mnist_dir + 'pca_test.png')
 
             # TSNE Training data
-            #plot_2D_data(tsne_mnist_train_images, mnist_train_lbls, 'MNIST TSNE Training Data',
+            #plot_2D_data(tsne_mnist_train_images, mnist_train_lbls, 'TSNE MNIST Training Data',
             #             mnist_dir + 'tsne_train.png')
 
             # TSNE test data
-            #plot_2D_data(tsne_mnist_test_images, mnist_test_lbls, 'MNIST TSNE Test Data', mnist_dir + 'tsne_test.png')
+            #plot_2D_data(tsne_mnist_test_images, mnist_test_lbls, 'TSNE MNIST Test Data', mnist_dir + 'tsne_test.png')
 
             # Classified test data
             if run_nc:
@@ -229,22 +229,22 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                     makedirs(nc_dir)
 
                 # PCA data scatterplot
-                plot_2D_data(pca_mnist_test_images, pca_nc_mnist_class, 'NC Classified MNIST PCA Test Data',
+                plot_2D_data(pca_mnist_test_images, pca_nc_mnist_class, 'NC PCA MNIST Test Data',
                              nc_dir + 'pca_nc_class.png')
                 # Confusion matrix of classified test data
                 plot_confusion_matrix(nc_mnist_class, mnist_test_lbls, True,
-                                      'NC Classified MNIST Test Data Confusion Matrix', nc_dir + 'nc_conf_mat.png')
+                                      'NC MNIST Confusion Matrix', nc_dir + 'nc_conf_mat.png')
                 plot_confusion_matrix(pca_nc_mnist_class, mnist_test_lbls, True,
-                                      'NC Classified MNIST PCA Test Data Confusion Matrix',
+                                      'NC PCA MNIST Confusion Matrix',
                                       nc_dir + 'pca_nc_conf_mat.png')
                 # Class mean vectors of classified test data
-                plot_mnist_centroids(mnist_test_images, nc_mnist_class, 'NC Classified MNIST Test Data Centroids',
+                plot_mnist_centroids(mnist_test_images, nc_mnist_class, 'NC MNIST Classified Centroids',
                                      nc_dir + 'nc_class_cent.png')
                 plot_mnist_centroids(mnist_test_images, pca_nc_mnist_class,
-                                     'NC Classified MNIST PCA Test Data Centroids', nc_dir + 'pca_nc_class_cent.png')
+                                     'NC PCA MNIST Classified Centroids', nc_dir + 'pca_nc_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(mnist_nc, pca_mnist_test_images, mnist_test_lbls,
-                                       'Nearest Centroid MNIST PCA Decision Boundaries', fp=nc_dir + 'pca_nc_dec_bounds.png')
+                                       'NC PCA MNIST Decision Boundaries', fp=nc_dir + 'pca_nc_dec_bounds.png')
 
 
             if run_nsc:
@@ -255,25 +255,31 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                 # PCA data scatterplots
                 subplot_2D_data(pca_mnist_test_images,
                                 [pca_nsc_2_mnist_class, pca_nsc_3_mnist_class, pca_nsc_5_mnist_class],
-                                'NSC Classified MNIST PCA Test Data', ['2 Subclasses', '3 Subclasses', '5 Subclasses'],
+                                'NSC PCA MNIST Test Data', ['2 Subclasses', '3 Subclasses', '5 Subclasses'],
                                 nsc_dir + 'pca_nsc_class.png')
                 # Confusion matrix of classified test data
                 plot_confusion_matrix(nsc_5_mnist_class, mnist_test_lbls, True,
-                                      'NSC Classified MNIST Test Data Confusion Matrix', nsc_dir + 'nsc_conf_mat.png')
+                                      'NSC MNIST Confusion Matrix', nsc_dir + 'nsc_conf_mat.png')
                 plot_confusion_matrix(pca_nsc_5_mnist_class, mnist_test_lbls, True,
-                                      'NSC Classified MNIST PCA Test Data Confusion Matrix',
+                                      'NSC PCA MNIST Confusion Matrix',
                                       nsc_dir + 'pca_nsc_conf_mat.png')
                 # Class mean vectors of classified test data
-                plot_mnist_centroids(mnist_test_images, nsc_5_mnist_class, 'NSC Classified MNIST Test Data Centroids',
+                plot_mnist_centroids(mnist_test_images, nsc_5_mnist_class, 'NSC MNIST Classified Centroids',
                                      nsc_dir + 'nsc_class_cent.png')
                 plot_mnist_centroids(mnist_test_images, pca_nsc_5_mnist_class,
-                                     'NSC Classified MNIST PCA Test Data Centroids', nsc_dir + 'pca_nsc_class_cent.png')
-                # Plot decision boundary
+                                     'NSC PCA MNIST PCA Classified Centroids', nsc_dir + 'pca_nsc_class_cent.png')
+                # Plot decision boundaries
+                plot_decision_boundary(mnist_nsc2, pca_mnist_test_images, mnist_test_lbls,
+                                       'NSC(2) PCA MNIST Decision Boundaries',
+                                       fp=nsc_dir + 'pca_nsc2_dec_bounds.png')
+                plot_decision_boundary(mnist_nsc3, pca_mnist_test_images, mnist_test_lbls,
+                                       'NSC(3) PCA MNIST Decision Boundaries',
+                                       fp=nsc_dir + 'pca_nsc3_dec_bounds.png')
                 plot_decision_boundary(mnist_nsc5, pca_mnist_test_images, mnist_test_lbls,
-                                       'Nearest Subclass Centroid (5) MNIST PCA Decision Boundaries',
-                                       fp=nsc_dir + 'pca_nsc_dec_bounds.png')
+                                       'NSC(5) PCA MNIST Decision Boundaries',
+                                       fp=nsc_dir + 'pca_nsc5_dec_bounds.png')
                 # Plot the centroids of the clustered subclasses
-                plot_mnist_subclass_centroids(mnist_nsc5_centroids[9],"MNIST (9) Subclasses", nsc_dir + 'nsc_subclasses.png')
+                plot_mnist_subclass_centroids(mnist_nsc5_centroids[9],"MNIST(9) Subclasses", nsc_dir + 'nsc_subclasses.png')
 
             if run_nn:
                 nn_dir = mnist_dir + 'nn/'
@@ -281,22 +287,22 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                     makedirs(nn_dir)
 
                 # PCA data scatterplot
-                plot_2D_data(pca_mnist_test_images, pca_nn_mnist_class, 'NN Classified MNIST PCA Test Data',
+                plot_2D_data(pca_mnist_test_images, pca_nn_mnist_class, 'NN PCA MNIST Test Data',
                              nn_dir + 'pca_nn_class.png')
                 # Confusion matrix of classified test data
                 plot_confusion_matrix(nn_mnist_class, mnist_test_lbls, True,
-                                      'NN Classified MNIST Test Data Confusion Matrix', nn_dir + 'nn_conf_mat.png')
+                                      'NN MNIST Confusion Matrix', nn_dir + 'nn_conf_mat.png')
                 plot_confusion_matrix(pca_nn_mnist_class, mnist_test_lbls, True,
-                                      'NN Classified MNIST PCA Test Data Confusion Matrix',
+                                      'NN PCA MNIST Confusion Matrix',
                                       nn_dir + 'pca_nn_conf_mat.png')
                 # Class mean vectors of classified test data
-                plot_mnist_centroids(mnist_test_images, nn_mnist_class, 'NN Classified MNIST Test Data Centroids',
+                plot_mnist_centroids(mnist_test_images, nn_mnist_class, 'NN MNIST Classified Centroids',
                                      nn_dir + 'nn_class_cent.png')
                 plot_mnist_centroids(mnist_test_images, pca_nn_mnist_class,
-                                     'NN Classified MNIST PCA Test Data Centroids', nn_dir + 'pca_nn_class_cent.png')
+                                     'NN PCA MNIST Classified Centroids', nn_dir + 'pca_nn_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(mnist_nn, pca_mnist_test_images, mnist_test_lbls,
-                                       'Nearest Neighbor MNIST PCA Decision Boundaries', fp=nn_dir + 'pca_nn_dec_bounds.png')
+                                       'NN PCA MNIST Decision Boundaries', fp=nn_dir + 'pca_nn_dec_bounds.png')
 
             if run_perc_bp:
                 perc_bp_dir = mnist_dir + 'perc-bp/'
@@ -305,25 +311,25 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
 
                 # PCA data scatterplot
                 plot_2D_data(pca_mnist_test_images, pca_perc_bp_mnist_class,
-                             'Backpropagation Perceptron Classified MNIST PCA Test Data',
+                             'BP Perceptron PCA MNIST Test Data',
                              perc_bp_dir + 'pca_perc_bp_class_cent.png')
                 # Confusion matrix of classified test data
                 plot_confusion_matrix(perc_bp_mnist_class, mnist_test_lbls, True,
-                                      'Backpropagation Perceptron Classified MNIST Test Data Confusion Matrix',
+                                      'BP Perceptron MNIST Confusion Matrix',
                                       perc_bp_dir + 'perc_bp_conf_mat.png')
                 plot_confusion_matrix(pca_perc_bp_mnist_class, mnist_test_lbls, True,
-                                      'Backpropagation Perceptron Classified MNIST PCA Test Data Confusion Matrix',
+                                      'BP Perceptron PCA MNIST Confusion Matrix',
                                       perc_bp_dir + 'pca_perc_bp_conf_mat.png')
                 # Class mean vectors of classified test data
                 plot_mnist_centroids(mnist_test_images, perc_bp_mnist_class,
-                                     'Backpropagation Perceptron Classified MNIST Test Data Centroids',
+                                     'BP Perceptron MNIST Classified Centroids',
                                      perc_bp_dir + 'pca_perc_bp_class_cent.png')
                 plot_mnist_centroids(mnist_test_images, pca_perc_bp_mnist_class,
-                                     'Backpropagation Perceptron Classified MNIST PCA Test Data Centroids',
+                                     'BP Perceptron PCA MNIST Classified Centroids',
                                      perc_bp_dir + 'pca_perc_bp_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(mnist_perc_bp, pca_mnist_test_images, mnist_test_lbls,
-                                       'Backpropagation Perceptron MNIST PCA Decision Boundaries',
+                                       'BP Perceptron PCA MNIST Decision Boundaries',
                                        fp=perc_bp_dir + 'pca_perc_bp_dec_bounds.png')
 
             if run_perc_mse:
@@ -333,24 +339,24 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
 
                 # PCA data scatterplot
                 plot_2D_data(mnist_test_images, pca_perc_mse_mnist_class,
-                             'MSE Perceptron Classified MNIST PCA Test Data', perc_mse_dir + 'pca_perc_mse_class_cent.png')
+                             'MSE Perceptron PCA MNIST Test Data', perc_mse_dir + 'pca_perc_mse_class_cent.png')
                 # Confusion matrix of classified test data
                 plot_confusion_matrix(perc_mse_mnist_class, mnist_test_lbls, True,
-                                      'MSE Perceptron Classified MNIST Test Data Confusion Matrix',
+                                      'MSE Perceptron MNIST Confusion Matrix',
                                       perc_mse_dir + 'perc_mse_conf_mat.png')
                 plot_confusion_matrix(pca_perc_mse_mnist_class, mnist_test_lbls, True,
-                                      'MSE Perceptron Classified MNIST PCA Test Data Confusion Matrix',
+                                      'MSE Perceptron PCA MNIST Classified Confusion Matrix',
                                       perc_mse_dir + 'pca_perc_mse_conf_mat.png')
                 # Class mean vectors of classified test data
                 plot_mnist_centroids(mnist_test_images, perc_mse_mnist_class,
-                                     'MSE Perceptron Classified MNIST Test Data Centroids',
+                                     'MSE Perceptron MNIST Classified Centroids',
                                      perc_mse_dir + 'pca_perc_mse_class_cent.png')
                 plot_mnist_centroids(mnist_test_images, pca_perc_mse_mnist_class,
-                                     'MSE Perceptron Classified MNIST PCA Test Data Centroids',
+                                     'MSE Perceptron PCA MNIST Classified Centroids',
                                      perc_mse_dir + 'pca_perc_mse_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(mnist_perc_mse, pca_mnist_test_images, mnist_test_lbls,
-                                       'MSE Perceptron MNIST PCA Decision Boundaries',
+                                       'MSE Perceptron PCA MNIST Decision Boundaries',
                                        fp=perc_mse_dir + 'pca_perc_mse_dec_bounds.png')
 
 
@@ -368,16 +374,16 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
             plot_orl_centroids(orl_test_images, orl_test_lbls, 'ORL Test Data Centroids', orl_dir+'test_cent.png')
 
             # PCA Training data
-            plot_2D_data(pca_orl_train_images, orl_train_lbls, 'ORL PCA Training Data', orl_dir+'pca_train.png')
+            plot_2D_data(pca_orl_train_images, orl_train_lbls, 'PCA ORL Training Data', orl_dir+'pca_train.png')
 
             # Labeled (actual) PCA test data
-            plot_2D_data(pca_orl_test_images, orl_test_lbls, 'ORL PCA Test Data', orl_dir+'pca_test.png')
+            plot_2D_data(pca_orl_test_images, orl_test_lbls, 'PCA ORL Test Data', orl_dir+'pca_test.png')
 
             # TSNE Training data
-            #plot_2D_data(tsne_orl_train_images, orl_train_lbls, 'ORL TSNE Training Data', orl_dir+'tsne_train.png')
+            #plot_2D_data(tsne_orl_train_images, orl_train_lbls, 'TSNE ORL Training Data', orl_dir+'tsne_train.png')
 
             # TSNE test data
-            #plot_2D_data(tsne_orl_test_images, orl_test_lbls, 'ORL TSNE Test Data', orl_dir+'tsne_test.png')
+            #plot_2D_data(tsne_orl_test_images, orl_test_lbls, 'TSNE ORL Test Data', orl_dir+'tsne_test.png')
 
             # Classified test data
             if run_nc:
@@ -386,22 +392,22 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                     makedirs(nc_dir)
 
                 # PCA data scatterplot
-                plot_2D_data(pca_orl_test_images, pca_nc_orl_class, 'NC Classified ORL PCA Test Data',
+                plot_2D_data(pca_orl_test_images, pca_nc_orl_class, 'NC PCA ORL Test Data',
                              nc_dir + 'pca_nc_class.png')
                 # Confusion matrix of classified test data
                 plot_confusion_matrix(nc_orl_class, orl_test_lbls, True,
-                                      'NC Classified ORL Test Data Confusion Matrix', nc_dir + 'nc_conf_mat.png')
+                                      'NC ORL Confusion Matrix', nc_dir + 'nc_conf_mat.png')
                 plot_confusion_matrix(pca_nc_orl_class, orl_test_lbls, True,
-                                      'NC Classified ORL PCA Test Data Confusion Matrix',
+                                      'NC PCA ORL Confusion Matrix',
                                       nc_dir + 'pca_nc_conf_mat.png')
                 # Class mean vectors of classified test data
-                plot_orl_centroids(orl_test_images, nc_orl_class, 'NC Classified ORL Test Data Centroids',
+                plot_orl_centroids(orl_test_images, nc_orl_class, 'NC ORL Classified Centroids',
                                    nc_dir + 'nc_class_cent.png')
-                plot_orl_centroids(orl_test_images, pca_nc_orl_class, 'NC Classified ORL PCA Test Data Centroids',
+                plot_orl_centroids(orl_test_images, pca_nc_orl_class, 'NC PCA ORL Classified Centroids',
                                    nc_dir + 'pca_nc_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(orl_nc, pca_orl_test_images, orl_test_lbls,
-                                       'Nearest Centroid ORL PCA Decision Boundaries', fp=nc_dir + 'pca_nc_dec_bounds.png')
+                                       'NC PCA ORL Decision Boundaries', fp=nc_dir + 'pca_nc_dec_bounds.png')
 
             if run_nsc:
                 nsc_dir = orl_dir+'nsc/'
@@ -410,25 +416,31 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
 
                 # PCA data scatterplots
                 subplot_2D_data(pca_orl_test_images, [pca_nsc_2_orl_class, pca_nsc_3_orl_class, pca_nsc_5_orl_class],
-                                'NSC Classified ORL PCA Test Data', ['2 Subclasses', '3 Subclasses', '5 subclasses'],
+                                'NSC Classified PCA ORL Test Data', ['2 Subclasses', '3 Subclasses', '5 subclasses'],
                                 nsc_dir + 'pca_nsc_class.png')
                 # Confusion matrix of classified test data
                 plot_confusion_matrix(nsc_5_orl_class, orl_test_lbls, True,
-                                      'NSC Classified ORL Test Data Confusion Matrix', nsc_dir + 'nsc_conf_mat.png')
+                                      'NSC ORL Confusion Matrix', nsc_dir + 'nsc_conf_mat.png')
                 plot_confusion_matrix(pca_nsc_5_orl_class, orl_test_lbls, True,
-                                      'NSC Classified ORL PCA Test Data Confusion Matrix',
+                                      'NSC PCA ORL Confusion Matrix',
                                       nsc_dir + 'pca_nsc_conf_mat.png')
                 # Class mean vectors of classified test data
-                plot_orl_centroids(orl_test_images, nsc_5_orl_class, 'NSC Classified ORL Test Data Centroids',
+                plot_orl_centroids(orl_test_images, nsc_5_orl_class, 'NSC ORL Classified Centroids',
                                    nsc_dir + 'nsc_class_cent.png')
-                plot_orl_centroids(orl_test_images, pca_nsc_5_orl_class, 'NSC Classified ORL PCA Test Data Centroids',
+                plot_orl_centroids(orl_test_images, pca_nsc_5_orl_class, 'NSC PCA ORL Classified Centroids',
                                    nsc_dir + 'pca_nsc_class_cent.png')
                 # Plot decision boundary
+                plot_decision_boundary(orl_nsc2, pca_orl_test_images, orl_test_lbls,
+                                       'NSC(2) PCA ORL Decision Boundaries',
+                                       fp=nsc_dir + 'pca_nsc2_dec_bounds.png')
+                plot_decision_boundary(orl_nsc3, pca_orl_test_images, orl_test_lbls,
+                                       'NSC(3) PCA ORL Decision Boundaries',
+                                       fp=nsc_dir + 'pca_nsc3_dec_bounds.png')
                 plot_decision_boundary(orl_nsc5, pca_orl_test_images, orl_test_lbls,
-                                       'Nearest Subclass Centroid (5) ORL PCA Decision Boundaries',
-                                       fp=nsc_dir + 'pca_nsc_dec_bounds.png')
+                                       'NSC(5) PCA ORL Decision Boundaries',
+                                       fp=nsc_dir + 'pca_nsc5_dec_bounds.png')
                 # Plot the centroids of the clustered subclasses
-                plot_orl_subclass_centroids(orl_nsc5_centroids[22],"ORL (23) Subclasses", nsc_dir + 'nsc_subclasses.png')
+                plot_orl_subclass_centroids(orl_nsc5_centroids[22],"ORL(23) Subclasses", nsc_dir + 'nsc_subclasses.png')
 
             if run_nn:
                 nn_dir = orl_dir+'nn/'
@@ -436,22 +448,22 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
                     makedirs(nn_dir)
 
                 # PCA data scatterplot
-                plot_2D_data(pca_orl_test_images, pca_nn_orl_class, 'NN Classified ORL PCA Test Data',
+                plot_2D_data(pca_orl_test_images, pca_nn_orl_class, 'NN PCA ORL Test Data',
                              nn_dir + 'pca_nn_class.png')
                 # Confusion matrix of classified test data
                 plot_confusion_matrix(nn_orl_class, orl_test_lbls, True,
-                                      'NN Classified ORL Test Data Confusion Matrix', nn_dir + 'nn_conf_mat.png')
+                                      'NN ORL Confusion Matrix', nn_dir + 'nn_conf_mat.png')
                 plot_confusion_matrix(pca_nn_orl_class, orl_test_lbls, True,
-                                      'NN Classified ORL PCA Test Data Confusion Matrix',
+                                      'NN PCA ORL Confusion Matrix',
                                       nn_dir + 'pca_nn_conf_mat.png')
                 # Class mean vectors of classified test data
-                plot_orl_centroids(orl_test_images, nn_orl_class, 'NN Classified ORL Test Data Centroids',
+                plot_orl_centroids(orl_test_images, nn_orl_class, 'NN ORL Classified Centroids',
                                    nn_dir + 'nn_class_cent.png')
-                plot_orl_centroids(orl_test_images, pca_nn_orl_class, 'NN Classified ORL PCA Test Data Centroids',
+                plot_orl_centroids(orl_test_images, pca_nn_orl_class, 'NN PCA ORL Classified Centroids',
                                    nn_dir + 'pca_nn_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(orl_nn, pca_orl_test_images, orl_test_lbls,
-                                       'Nearest Neighbor ORL PCA Decision Boundaries', fp=nn_dir + 'pca_nn_dec_bounds.png')
+                                       'NN PCA ORL Decision Boundaries', fp=nn_dir + 'pca_nn_dec_bounds.png')
 
             if run_perc_bp:
                 perc_bp_dir = orl_dir+'perc-bp/'
@@ -460,25 +472,25 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
 
                 # PCA data scatterplot
                 plot_2D_data(pca_orl_test_images, pca_perc_bp_orl_class,
-                             'Backpropagation Perceptron Classified ORL PCA Test Data',
+                             'BP Perceptron Classified PCA ORL Test Data',
                              perc_bp_dir + 'pca_perc_bp_class.png')
                 # Confusion matrix of classified test data
                 plot_confusion_matrix(perc_bp_orl_class, orl_test_lbls, True,
-                                      'Backpropagation Perceptron Classified ORL Test Data Confusion Matrix',
+                                      'BP Perceptron ORL Confusion Matrix',
                                       perc_bp_dir + 'perc_bp_conf_mat.png')
                 plot_confusion_matrix(pca_perc_bp_orl_class, orl_test_lbls, True,
-                                      'Backpropagation Perceptron Classified ORL PCA Test Data Confusion Matrix',
+                                      'BP Perceptron PCA ORL Confusion Matrix',
                                       perc_bp_dir + 'pca_perc_bp_conf_mat.png')
                 # Class mean vectors of classified test data
                 plot_orl_centroids(orl_test_images, perc_bp_orl_class,
-                                   'Backpropagation Perceptron Classified ORL Test Data Centroids',
+                                   'BP Perceptron ORL Classified Centroids',
                                    perc_bp_dir + 'perc_bp_class_cent.png')
                 plot_orl_centroids(orl_test_images, pca_perc_bp_orl_class,
-                                   'Backpropagation Perceptron Classified ORL PCA Test Data Centroids',
+                                   'BP Perceptron PCA ORL Classified Centroids',
                                    perc_bp_dir + 'pca_perc_bp_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(orl_perc_bp, pca_orl_test_images, orl_test_lbls,
-                                       'Backpropagation Perceptron ORL PCA Decision Boundaries',
+                                       'BP Perceptron PCA ORL Decision Boundaries',
                                        fp=perc_bp_dir + 'pca_perc_bp_dec_bounds.png')
 
             if run_perc_mse:
@@ -488,24 +500,24 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
 
                 # PCA data scatterplot
                 plot_2D_data(pca_orl_test_images, pca_perc_mse_orl_class,
-                             'MSE Perceptron Classified ORL PCA Test Data', perc_mse_dir + 'pca_perc_mse_class.png')
+                             'MSE Perceptron PCA ORL Test Data', perc_mse_dir + 'pca_perc_mse_class.png')
                 # Confusion matrix of classified test data
                 plot_confusion_matrix(perc_mse_orl_class, orl_test_lbls, True,
-                                      'MSE Perceptron Classified ORL Test Data Confusion Matrix',
+                                      'MSE Perceptron ORL Confusion Matrix',
                                       perc_mse_dir + 'perc_mse_conf_mat.png')
                 plot_confusion_matrix(pca_perc_mse_orl_class, orl_test_lbls, True,
-                                      'MSE Perceptron Classified ORL PCA Test Data Confusion Matrix',
+                                      'MSE Perceptron PCA ORL Confusion Matrix',
                                       perc_mse_dir + 'pca_perc_mse_conf_mat.png')
                 # Class mean vectors of classified test data
                 plot_orl_centroids(orl_test_images, perc_mse_orl_class,
-                                   'MSE Perceptron Classified ORL Test Data Centroids',
+                                   'MSE Perceptron ORL Classified Centroids',
                                    perc_mse_dir + 'perc_mse_class_cent.png')
                 plot_orl_centroids(orl_test_images, pca_perc_mse_orl_class,
-                                   'MSE Perceptron Classified ORL PCA Test Data Centroids',
+                                   'MSE Perceptron PCA ORL Classified Centroids',
                                    perc_mse_dir + 'pca_perc_mse_class_cent.png')
                 # Plot decision boundary
                 plot_decision_boundary(orl_perc_mse, pca_orl_test_images, orl_test_lbls,
-                                       'MSE Perceptron ORL PCA Decision Boundaries',
+                                       'MSE Perceptron PCA ORL Decision Boundaries',
                                        fp=perc_mse_dir + 'pca_perc_mse_dec_bounds.png')
 
     """ ********* Classification scores ********* """
