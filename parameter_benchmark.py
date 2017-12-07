@@ -322,19 +322,20 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         if sys.argv[1] == 'help':
             print("Usage:")
-            print("\topti_project.py [<mnist> <orl>] [<nsc> <nn> <perc-np> <perc-mse>] [cpus=<int>]\n")
+            print("\topti_project.py [<mnist> <orl>] [<nsc> <nn> <perc-np> <perc-mse>] [cpus=<int>] [file=<string>]\n")
             print('[Optional Parameters]:')
             help_text = [['Description', 'Usage', 'Default'],
                          ['-----------','-----------','-----------'],
                          ['Specify Dataset:', 'mnist, orl', 'both'],
                          ['Specify Algorithm:', 'nsc, nn, perc-bp, perc-mse', 'all'],
-                         ['CPU cores:', 'cpus=[int]', '1\n']]
+                         ['CPU cores:', 'cpus=[int]', '1'],
+                         ['Store results in file:', 'file=[string]', 'None\n']]
             col_width = max(len(word) for row in help_text for word in row) + 2  # padding
             for row in help_text:
                 print("".join(word.ljust(col_width) for word in row))
 
             print("Example:")
-            print("\topti_project.py mnist nc nn cpus=2")
+            print("\topti_project.py mnist nc nn cpus=2 file=benchmark.txt")
             exit(0)
         for arg in sys.argv:
             if arg == 'nsc' or arg == 'NSC':
