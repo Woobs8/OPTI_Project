@@ -66,9 +66,19 @@ def new_train_test_split(train_data, train_lbls, test_data, test_lbls, test_size
     return train_data, train_lbls, test_data, test_lbls
 
 
+""" 
+Filters the supplied dataset by the @filter_label param
+param:
+    @data: data points
+    @data_labels: data labels
+    @filter_label: label to filter by
+Returns:
+    filtered_data
+"""
 def filter_by(data, data_labels, filter_label):
-    filtered = np.asarray([x for j, x in enumerate(data) if data_labels[j] == filter_label])
-    return filtered
+    filtered_data = np.asarray([x for j, x in enumerate(data) if data_labels[j] == filter_label])
+    return filtered_data
+
 
 """ 
 Apply PCA to training and testing data samples
@@ -109,6 +119,15 @@ def tsne(train_data, test_data, n_components=2):
     return tsne_train_data, tsne_test_data
 
 
+""" 
+Plots the data vectors as MNIST images
+param:
+    @data: data points
+    @tile: plot title
+    @fp: path to store file in
+    @columns: number of column in figure
+    @draw: draw figure or not
+"""
 def plot_mnist(data, title="", fp="", columns=5, draw=False):
     n_samples = len(data)
     subplot_rows = ceil(n_samples/columns)
@@ -140,6 +159,7 @@ param:
     @labels: data labels
     @tile: plot title
     @fp: path to store file in
+    @draw: draw figure or not
 """
 def plot_mnist_centroids(data, labels, title="", fp="", draw=False):
     # Create set of classes in data set
@@ -176,6 +196,7 @@ param:
     @centroids: sublcass centroids to plot
     @tile: plot title
     @fp: path to store file in
+    @draw: draw figure or not
 """
 
 def plot_mnist_subclass_centroids(centroids, title="", fp="", draw=False):
@@ -199,6 +220,15 @@ def plot_mnist_subclass_centroids(centroids, title="", fp="", draw=False):
         plt.draw()
 
 
+""" 
+Plots the data vectors as ORL images
+param:
+    @data: data points
+    @tile: plot title
+    @fp: path to store file in
+    @columns: number of column in figure
+    @draw: draw figure or not
+"""
 def plot_orl(data, title="", fp="", columns=10, draw=False):
     n_samples = len(data)
     subplot_rows = ceil(n_samples / columns)
@@ -229,6 +259,7 @@ param:
     @labels: data labels
     @tile: plot title
     @fp: path to store file in
+    @draw: draw figure or not
 """
 def plot_orl_centroids(data, labels, title="", fp="", draw=False):
     # Create set of classes in data set
@@ -265,6 +296,7 @@ param:
     @centroids: sublcass centroids to plot
     @tile: plot title
     @fp: path to store file in
+    @draw: draw figure or not
 """
 def plot_orl_subclass_centroids(centroids, title="", fp="", draw=False):
     n_centers, n_features = centroids.shape
@@ -292,6 +324,7 @@ param:
     @labels: list of data labels
     @tile: plot title
     @fp: path to store file in
+    @draw: draw figure or not
 """
 def plot_2D_data(data, labels, title="", fp="", draw=False):
     # Create set of classes in data set
@@ -346,6 +379,7 @@ param:
     @tile: plot title
     @subplot_titles: list of titles of subplots
     @fp: path to store file in
+    @draw: draw figure or not
 """
 def subplot_2D_data(data, dataset_labels, title="", subplot_titles=[],  fp="", draw=False):
     plt.figure()
@@ -405,6 +439,7 @@ param:
     @normalize: normalize data if True
     @tile: plot title
     @fp: path to store file in
+    @draw: draw figure or not
 """
 def plot_confusion_matrix(pred_labels, true_labels, normalize=True, title="", fp="", draw=False):
     classes = np.unique(true_labels)
@@ -450,12 +485,12 @@ def plot_confusion_matrix(pred_labels, true_labels, normalize=True, title="", fp
 Plots the decision boundary of the @clf classifer function, and overlays a scatter plot of the testing data
 param:
     @clf: classifier function
-    @train_data: training data
-    @train_lbls: training labels
     @test_data: testing data
     @test_lbls: testing labels
     @tile: plot title
+    @scatter: overlay scatter plot of @test_data or not
     @fp: path to store file in
+    @draw: draw figure or not
 """
 def plot_decision_boundary(clf, test_data, test_lbls, title, scatter=False, fp="", draw=False):
     # Generate figure and color map
@@ -536,6 +571,7 @@ param:
     @classifiers: list of classifier names
     @title: plot title
     @fp: path to store file in
+    @draw: draw figure or not
 """
 def plot_classifier_boxplot(data, classifiers, title="", fp="", draw=False):
     n_samples, n_classifiers = data.shape
