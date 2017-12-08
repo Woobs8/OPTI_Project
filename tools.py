@@ -109,7 +109,7 @@ def tsne(train_data, test_data, n_components=2):
     return tsne_train_data, tsne_test_data
 
 
-def plot_mnist(data, title="", fp="", columns=5):
+def plot_mnist(data, title="", fp="", columns=5, draw=False):
     n_samples = len(data)
     subplot_rows = ceil(n_samples/columns)
 
@@ -128,7 +128,8 @@ def plot_mnist(data, title="", fp="", columns=5):
         plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
     if fp != "":
         plt.savefig(fp, bbox_inches='tight', pad_inches=0)
-    plt.draw()
+    if draw:
+        plt.draw()
 
 
 
@@ -140,7 +141,7 @@ param:
     @tile: plot title
     @fp: path to store file in
 """
-def plot_mnist_centroids(data, labels, title="", fp=""):
+def plot_mnist_centroids(data, labels, title="", fp="", draw=False):
     # Create set of classes in data set
     classes = list(set(labels))
 
@@ -165,7 +166,8 @@ def plot_mnist_centroids(data, labels, title="", fp=""):
         plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
     if fp != "":
         plt.savefig(fp, bbox_inches='tight', pad_inches=0)
-    plt.draw()
+    if draw:
+        plt.draw()
 
 
 """ 
@@ -176,7 +178,7 @@ param:
     @fp: path to store file in
 """
 
-def plot_mnist_subclass_centroids(centroids, title="", fp=""):
+def plot_mnist_subclass_centroids(centroids, title="", fp="", draw=False):
     n_centers, n_features = centroids.shape
     # https://stackoverflow.com/questions/37228371/visualize-mnist-dataset-using-opencv-or-matplotlib-pyplot
     plt.figure()
@@ -193,10 +195,11 @@ def plot_mnist_subclass_centroids(centroids, title="", fp=""):
         plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
     if fp != "":
         plt.savefig(fp, bbox_inches='tight', pad_inches=0)
-    plt.draw()
+    if draw:
+        plt.draw()
 
 
-def plot_orl(data, title="", fp="", columns=10):
+def plot_orl(data, title="", fp="", columns=10, draw=False):
     n_samples = len(data)
     subplot_rows = ceil(n_samples / columns)
 
@@ -215,7 +218,8 @@ def plot_orl(data, title="", fp="", columns=10):
     plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
     if fp != "":
         plt.savefig(fp, bbox_inches='tight', pad_inches=0)
-    plt.draw()
+    if draw:
+        plt.draw()
 
 
 """ 
@@ -226,7 +230,7 @@ param:
     @tile: plot title
     @fp: path to store file in
 """
-def plot_orl_centroids(data, labels, title="", fp=""):
+def plot_orl_centroids(data, labels, title="", fp="", draw=False):
     # Create set of classes in data set
     classes = list(set(labels))
 
@@ -251,7 +255,8 @@ def plot_orl_centroids(data, labels, title="", fp=""):
 
     if fp != "":
         plt.savefig(fp, bbox_inches='tight', pad_inches=0)
-    plt.draw()
+    if draw:
+        plt.draw()
 
 
 """ 
@@ -261,7 +266,7 @@ param:
     @tile: plot title
     @fp: path to store file in
 """
-def plot_orl_subclass_centroids(centroids, title="", fp=""):
+def plot_orl_subclass_centroids(centroids, title="", fp="", draw=False):
     n_centers, n_features = centroids.shape
     plt.suptitle(title, fontsize=14)
     for i, class_center in enumerate(centroids):
@@ -276,7 +281,8 @@ def plot_orl_subclass_centroids(centroids, title="", fp=""):
         plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
     if fp != "":
         plt.savefig(fp, bbox_inches='tight', pad_inches=0)
-    plt.draw()
+    if draw:
+        plt.draw()
 
 
 """ 
@@ -287,7 +293,7 @@ param:
     @tile: plot title
     @fp: path to store file in
 """
-def plot_2D_data(data, labels, title="", fp=""):
+def plot_2D_data(data, labels, title="", fp="", draw=False):
     # Create set of classes in data set
     classes = list(set(labels))
     class_count = len(classes)
@@ -328,7 +334,8 @@ def plot_2D_data(data, labels, title="", fp=""):
 
     if fp != "":
         plt.savefig(fp, bbox_extra_artists=(lgnd,), bbox_inches='tight', pad_inches=0)
-    plt.draw()
+    if draw:
+        plt.draw()
 
 
 """ 
@@ -340,7 +347,7 @@ param:
     @subplot_titles: list of titles of subplots
     @fp: path to store file in
 """
-def subplot_2D_data(data, dataset_labels, title="", subplot_titles=[],  fp=""):
+def subplot_2D_data(data, dataset_labels, title="", subplot_titles=[],  fp="", draw=False):
     plt.figure()
     plt.suptitle(title)
     plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
@@ -386,7 +393,8 @@ def subplot_2D_data(data, dataset_labels, title="", subplot_titles=[],  fp=""):
 
     if fp != "":
         plt.savefig(fp, bbox_extra_artists=(lgnd,), bbox_inches='tight', pad_inches=0)
-    plt.draw()
+    if draw:
+        plt.draw()
 
 
 """ 
@@ -398,14 +406,17 @@ param:
     @tile: plot title
     @fp: path to store file in
 """
-def plot_confusion_matrix(pred_labels, true_labels, normalize=True, title="", fp=""):
+def plot_confusion_matrix(pred_labels, true_labels, normalize=True, title="", fp="", draw=False):
     classes = np.unique(true_labels)
     conf_mat = confusion_matrix(pred_labels, true_labels)
     np.set_printoptions(precision=2)
     cmap = plt.cm.Blues
 
     if normalize:
+        # Hack to prevent a RuntimeWarning print to stdout in the case of division by 0 or NaN
+        np.seterr(divide='ignore')
         conf_mat = conf_mat.astype('float') / conf_mat.sum(axis=1)[:, np.newaxis]
+        np.seterr(divide='print')
 
     plt.figure()
     plt.imshow(conf_mat, interpolation='nearest', cmap=cmap)
@@ -431,7 +442,8 @@ def plot_confusion_matrix(pred_labels, true_labels, normalize=True, title="", fp
     np.set_printoptions()
     if fp != "":
         plt.savefig(fp, bbox_inches='tight', pad_inches=0)
-    plt.draw()
+    if draw:
+        plt.draw()
 
 
 """ 
@@ -445,7 +457,7 @@ param:
     @tile: plot title
     @fp: path to store file in
 """
-def plot_decision_boundary(clf, test_data, test_lbls, title, scatter=False, fp=""):
+def plot_decision_boundary(clf, test_data, test_lbls, title, scatter=False, fp="", draw=False):
     # Generate figure and color map
     color_map = plt.cm.RdBu
     fig = plt.figure()
@@ -513,7 +525,8 @@ def plot_decision_boundary(clf, test_data, test_lbls, title, scatter=False, fp="
     plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
     if fp != "":
         plt.savefig(fp, bbox_extra_artists=(lgnd,), bbox_inches='tight',pad_inches=0)
-    plt.draw()
+    if draw:
+        plt.draw()
 
 
 """ 
@@ -524,7 +537,7 @@ param:
     @title: plot title
     @fp: path to store file in
 """
-def plot_classifier_boxplot(data, classifiers, title="", fp=""):
+def plot_classifier_boxplot(data, classifiers, title="", fp="", draw=False):
     n_samples, n_classifiers = data.shape
 
     # Create panda dataframe from data with indices and column names
@@ -539,4 +552,5 @@ def plot_classifier_boxplot(data, classifiers, title="", fp=""):
     ax.set(xlabel='Classifiers', ylabel='Classification Score', title=title)
     if fp != "":
         plt.savefig(fp, bbox_inches='tight', pad_inches=0)
-    plt.draw()
+    if draw:
+        plt.draw()
