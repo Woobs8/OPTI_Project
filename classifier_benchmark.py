@@ -77,14 +77,12 @@ def main(run_mnist=True, run_orl=True, cpus=1, iter=1, file=None):
             classification, mnist_pca_scores[i,4] = mnist_nn.predict(pca_mnist_test_images, mnist_test_lbls,'hard')
 
             # Backpropagation Perceptron
-            anneal = 0.01
-            eta = 1
             mnist_perc_bp = BP_Perceptron()
             # 784D data
-            mnist_perc_bp.fit(mnist_train_images, mnist_train_lbls, eta=1, eta_decay=anneal, max_iter=100, annealing=True)
+            mnist_perc_bp.fit(mnist_train_images, mnist_train_lbls, eta=1, eta_decay=0.01, max_iter=100, annealing=True)
             classification, mnist_scores[i,5] = mnist_perc_bp.predict(mnist_test_images, mnist_test_lbls)
             # PCA data
-            mnist_perc_bp.fit(pca_mnist_train_images, mnist_train_lbls, eta=1, eta_decay=anneal, max_iter=100, annealing=True)
+            mnist_perc_bp.fit(pca_mnist_train_images, mnist_train_lbls, eta=1, eta_decay=0.005, max_iter=100, annealing=True)
             classification, mnist_pca_scores[i,5] = mnist_perc_bp.predict(pca_mnist_test_images,mnist_test_lbls)
 
             # MSE Perceptron
@@ -140,15 +138,13 @@ def main(run_mnist=True, run_orl=True, cpus=1, iter=1, file=None):
             classification, orl_pca_scores[i,4] = orl_nn.predict(pca_orl_test_images, orl_test_lbls, 'hard')
 
             # Backpropagation Perceptron
-            anneal = 0.01
-            eta = 1
             orl_perc_bp = BP_Perceptron()
             # 1200D data
-            orl_perc_bp.fit(orl_train_images, orl_train_lbls, eta=eta, eta_decay=anneal, max_iter=100, annealing=True)
+            orl_perc_bp.fit(orl_train_images, orl_train_lbls, eta=1, eta_decay=0.006, max_iter=100, annealing=True)
             classification, orl_scores[i,5] = orl_perc_bp.predict(orl_test_images, orl_test_lbls)
 
             # PCA data
-            orl_perc_bp.fit(pca_orl_train_images, orl_train_lbls, eta=eta, eta_decay=anneal, max_iter=100, annealing=True)
+            orl_perc_bp.fit(pca_orl_train_images, orl_train_lbls, eta=1, eta_decay=0.07, max_iter=100, annealing=True)
             classification, orl_pca_scores[i,5] = orl_perc_bp.predict(pca_orl_test_images, orl_test_lbls)
 
             # MSE Perceptron
