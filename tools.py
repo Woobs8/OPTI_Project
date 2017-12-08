@@ -66,6 +66,10 @@ def new_train_test_split(train_data, train_lbls, test_data, test_lbls, test_size
     return train_data, train_lbls, test_data, test_lbls
 
 
+def filter_by(data, data_labels, filter_label):
+    filtered = np.asarray([x for j, x in enumerate(data) if data_labels[j] == filter_label])
+    return filtered
+
 """ 
 Apply PCA to training and testing data samples
 param:
@@ -103,6 +107,29 @@ def tsne(train_data, test_data, n_components=2):
     tsne_train_data = tsne.fit_transform(pca_train_data)
     tsne_test_data = tsne.fit_transform(pca_test_data)
     return tsne_train_data, tsne_test_data
+
+
+def plot_mnist(data, title="", fp="", columns=5):
+    n_samples = len(data)
+    subplot_rows = ceil(n_samples/columns)
+
+    # https://stackoverflow.com/questions/37228371/visualize-mnist-dataset-using-opencv-or-matplotlib-pyplot
+    plt.figure()
+    plt.suptitle(title, fontsize=14)
+    for i, sample in enumerate(data):
+        pixels = np.array(sample, dtype='uint8')
+
+        # Reshape the array into 28 x 28 array (2-dimensional array)
+        pixels = pixels.reshape((28, 28))
+
+        # Plot each mean vector as a gray scale image in a subplot
+        plt.subplot(subplot_rows,columns,i+1)
+        plt.imshow(pixels, cmap='gray')
+        plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
+    if fp != "":
+        plt.savefig(fp, bbox_inches='tight', pad_inches=0)
+    plt.draw()
+
 
 
 """ 
@@ -168,6 +195,29 @@ def plot_mnist_subclass_centroids(centroids, title="", fp=""):
         plt.savefig(fp, bbox_inches='tight', pad_inches=0)
     plt.draw()
 
+
+def plot_orl(data, title="", fp="", columns=10):
+    n_samples = len(data)
+    subplot_rows = ceil(n_samples / columns)
+
+    plt.figure(figsize=(18, 12))
+    plt.suptitle(title, fontsize=14)
+    for i, sample in enumerate(data):
+        pixels = np.array(sample, dtype='float')
+
+        # Reshape the array into 30 x 40 array (2-dimensional array)
+        pixels = pixels.reshape((30, 40)).transpose()   # image vectors are sideways
+
+        # Plot each mean vector as a gray scale image in a subplot
+        plt.subplot(subplot_rows,columns,i+1)
+        plt.imshow(pixels, cmap='gray')
+        plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
+    plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
+    if fp != "":
+        plt.savefig(fp, bbox_inches='tight', pad_inches=0)
+    plt.draw()
+
+
 """ 
 Plots the class mean vectors of supplied ORL data
 param:
@@ -198,6 +248,7 @@ def plot_orl_centroids(data, labels, title="", fp=""):
         plt.title('Label: {label}'.format(label=classes[i]))
         plt.imshow(pixels, cmap='gray')
         plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
+
     if fp != "":
         plt.savefig(fp, bbox_inches='tight', pad_inches=0)
     plt.draw()

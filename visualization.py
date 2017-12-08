@@ -1,11 +1,12 @@
 import os
 import sys
-from tools import loadMNIST, loadORL, pca, tsne, plot_mnist_centroids, plot_orl_centroids, plot_2D_data, subplot_2D_data, plot_confusion_matrix, plot_decision_boundary, plot_orl_subclass_centroids, plot_mnist_subclass_centroids
+from tools import loadMNIST, loadORL, pca, tsne, plot_mnist_centroids, plot_orl_centroids, plot_2D_data, subplot_2D_data, plot_confusion_matrix, plot_decision_boundary, plot_orl_subclass_centroids, plot_mnist_subclass_centroids, plot_mnist, plot_orl, filter_by
 from classify import NC, NSC, NN, BP_Perceptron, MSE_Perceptron
 import matplotlib.pyplot as plt
 import multiprocessing
 from os.path import exists
 from os import makedirs
+import numpy as np
 
 
 def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, run_perc_bp=True, run_perc_mse=True, cpus=1, show_figs=False):
@@ -199,6 +200,13 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
             if not exists(mnist_dir):
                 makedirs(mnist_dir)
 
+            # Sample data
+            plot_mnist(mnist_train_images[:20],'',mnist_dir+'mnist_sample.png')
+
+            # Sample data for specific class
+            class9_samples = filter_by(mnist_train_images, mnist_train_lbls, 9)
+            plot_mnist(class9_samples[:20],fp=mnist_dir+'mnist_9_sample.png')
+
             # Training data
             plot_mnist_centroids(mnist_train_images, mnist_train_lbls, 'MNIST Training Data Centroids',
                                  mnist_dir + 'train_cent.png')
@@ -365,6 +373,13 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
             orl_dir = dir + 'orl/'
             if not exists(orl_dir):
                 makedirs(orl_dir)
+
+            # Sample data
+            plot_orl(orl_train_images[:40],'',orl_dir+'orl_sample.png')
+
+            # Sample data for specific class
+            class23_samples = filter_by(orl_train_images, orl_train_lbls, 23)
+            plot_orl(class23_samples[:7], '', orl_dir + 'orl_23_sample.png', columns=7)
 
             # Training data
             plot_orl_centroids(orl_train_images, orl_train_lbls, 'ORL Training Data Centroids',
