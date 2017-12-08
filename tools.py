@@ -242,7 +242,7 @@ def plot_2D_data(data, labels, title="", fp=""):
     class_count = len(classes)
 
     # Generate color map with unique color for each class
-    color_map = plt.get_cmap('rainbow')
+    color_map = plt.cm.RdBu
     colors = color_map(np.linspace(0, 1.0, class_count))
 
     # Generate scatter plots for each class
@@ -301,7 +301,7 @@ def subplot_2D_data(data, dataset_labels, title="", subplot_titles=[],  fp=""):
         class_count = len(classes)
 
         # Generate color map with unique color for each class
-        color_map = plt.get_cmap('rainbow')
+        color_map = plt.cm.RdBu
         colors = color_map(np.linspace(0, 1.0, class_count))
 
         # Generate scatter plots for each class
@@ -347,7 +347,7 @@ param:
     @tile: plot title
     @fp: path to store file in
 """
-def plot_confusion_matrix(pred_labels, true_labels, normalize=False, title="", fp=""):
+def plot_confusion_matrix(pred_labels, true_labels, normalize=True, title="", fp=""):
     classes = np.unique(true_labels)
     conf_mat = confusion_matrix(pred_labels, true_labels)
     np.set_printoptions(precision=2)
@@ -397,7 +397,7 @@ param:
 def plot_decision_boundary(clf, test_data, test_lbls, title, scatter=False, fp=""):
     # Generate figure and color map
     color_map = plt.cm.RdBu
-    plt.figure()
+    fig = plt.figure()
     plt.title(title)
 
     # Separate data into features and construct meshgrid
@@ -417,20 +417,20 @@ def plot_decision_boundary(clf, test_data, test_lbls, title, scatter=False, fp="
     class_count = len(classes)
     class_offset = classes[0]
     Z = Z.reshape(xx_test.shape)    # Reshape into meshgrid shape
+    colors = color_map(np.linspace(0, 1.0, class_count))
 
-    # Plot decision boundary with testing data
+    # Plot decision boundary
     cont = plt.contourf(xx_test, yy_test, Z, class_count+1, cmap=color_map, alpha=0.8)
 
     # Add scatter plot overlay
     if scatter:
         plots = []
-        colors = color_map(np.linspace(0, 1.0, class_count))
         for i, label in enumerate(classes):
             # Group data into numpy arrays for each class
             class_data = np.asarray([x for j, x in enumerate(test_data) if test_lbls[j] == label])
             x = class_data[:, 0]
             y = class_data[:, 1]
-            plots.append(plt.scatter(x, y, color=colors[i], cmap=color_map, s=10, edgecolors='k', lw=0.5))
+            plots.append(plt.scatter(x, y, color=colors[i], cmap=color_map, s=8, edgecolors='k', lw=0.5))
 
         plt.xlim(xx_test.min(), xx_test.max())
         plt.ylim(yy_test.min(), yy_test.max())
@@ -448,10 +448,9 @@ def plot_decision_boundary(clf, test_data, test_lbls, title, scatter=False, fp="
                    markerscale=2.)
     # Don't add scatter plot overlay -> add legend for contour
     else:
-        print(len(cont.collections))
         # Create legend for contour plot
-        proxy = [plt.Rectangle((0, 0), 1, 1, fc=pc.get_facecolor()[0])
-                 for pc in cont.collections]
+        proxy = [plt.Rectangle((0, 0), 1, 1, fc=color, alpha=0.8)
+                 for color in colors]
         col = ceil(class_count / 20)
         lgnd = plt.legend(proxy,
                             range(class_count)+class_offset,
@@ -459,6 +458,7 @@ def plot_decision_boundary(clf, test_data, test_lbls, title, scatter=False, fp="
                             bbox_to_anchor=(1, 0.5),
                             fontsize = 8,
                             ncol=col)
+
     plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
     if fp != "":
         plt.savefig(fp, bbox_extra_artists=(lgnd,), bbox_inches='tight',pad_inches=0)
