@@ -200,11 +200,11 @@ def main(run_mnist=True, run_orl=True, run_nc=True, run_nsc=True, run_nn=True, r
             makedirs(mnist_dir)
 
         # Sample data
-        plot_mnist(mnist_train_images[:20],'',mnist_dir+'mnist_sample.png', draw=show_figs)
+        plot_mnist(mnist_train_images[:35],'',mnist_dir+'mnist_sample.png', draw=show_figs, columns=7)
 
         # Sample data for specific class
         class9_samples = filter_by(mnist_train_images, mnist_train_lbls, 9)
-        plot_mnist(class9_samples[:20],fp=mnist_dir+'mnist_9_sample.png', draw=show_figs)
+        plot_mnist(class9_samples[5:12],fp=mnist_dir+'mnist_9_sample.png', draw=show_figs, columns=7)
 
         # Training data
         plot_mnist_centroids(mnist_train_images, mnist_train_lbls, 'MNIST Training Data Centroids',
