@@ -1,0 +1,19 @@
+*** Benchmark Scores ***
+*** MNIST ***
+	*** Original Data ***
+	NC: mean=0.81, var=0.00, std=0.01
+	NSC(2): mean=0.86, var=0.00, std=0.00
+	NSC(3): mean=0.88, var=0.00, std=0.00
+	NSC(5): mean=0.90, var=0.00, std=0.00
+	NN: mean=0.97, var=0.00, std=0.00
+	BP: mean=0.89, var=0.00, std=0.00
+	MSE: mean=0.85, var=0.00, std=0.01
+
+	*** PCA Data ***
+	NC: mean=0.43, var=0.00, std=0.00
+	NSC(2): mean=0.42, var=0.00, std=0.00
+	NSC(3): mean=0.42, var=0.00, std=0.00
+	NSC(5): mean=0.41, var=0.00, std=0.00
+	NN: mean=0.38, var=0.00, std=0.00
+	BP: mean=0.14, var=0.00, std=0.05
+	MSE: mean=0.33, var=0.00, std=0.00

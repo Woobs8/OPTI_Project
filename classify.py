@@ -1,5 +1,4 @@
 from sklearn.neighbors import NearestCentroid, KNeighborsClassifier
-from sklearn.linear_model import Perceptron
 from sklearn.cluster import KMeans
 from sklearn.metrics import accuracy_score
 import numpy as np

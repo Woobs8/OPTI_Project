@@ -57,7 +57,7 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
             nn_set = range(1,10)
             nn_mnist_scores = np.zeros((len(nn_set),3))
             for i, neighbor_count in enumerate(nn_set):
-                mnist_nn = NN(neighbor_count, 'uniform', cpus)
+                mnist_nn = NN(neighbor_count, 'distance', cpus)
                 # 784D data
                 mnist_nn.fit(mnist_train_images, mnist_train_lbls)
                 classification, nn_mnist_scores[i,0] = mnist_nn.predict(mnist_test_images, mnist_test_lbls, 'hard')
@@ -133,7 +133,7 @@ def main(run_mnist=True, run_orl=True, run_nsc=True, run_nn=True, run_perc_bp=Tr
             nn_set = range(1,11)
             nn_orl_scores = np.zeros((len(nn_set),3))
             for i, neighbor_count in enumerate(nn_set):
-                orl_nn = NN(neighbor_count, 'uniform', cpus)
+                orl_nn = NN(neighbor_count, 'distance', cpus)
                 # 1200D data
                 orl_nn.fit(orl_train_images, orl_train_lbls)
                 classification, nn_orl_scores[i,0] = orl_nn.predict(orl_test_images, orl_test_lbls, 'hard')
@@ -345,7 +345,7 @@ if __name__ == "__main__":
                 print("".join(word.ljust(col_width) for word in row))
 
             print("Example:")
-            print("\topti_project.py mnist nc nn cpus=2 file=param_benchmark.txt")
+            print("\tparameter_benchmark.py mnist nc nn cpus=2 file=param_benchmark.txt")
             exit(0)
         for arg in sys.argv:
             if arg == 'nsc' or arg == 'NSC':

@@ -1,0 +1,55 @@
+*** Benchmark Scores ***
+*** MNIST ***
+
+	*** Nearest Neighbor ***
+	*** Original Data ***
+	Nearest Neighbor (1): 0.9691
+	Nearest Neighbor (2): 0.9691
+	Nearest Neighbor (3): 0.9717
+	Nearest Neighbor (4): 0.9714
+	Nearest Neighbor (5): 0.9691
+	Nearest Neighbor (6): 0.9709
+	Nearest Neighbor (7): 0.97
+	Nearest Neighbor (8): 0.9706
+	Nearest Neighbor (9): 0.9673
+
+	*** PCA Data ***
+	Nearest Neighbor (1) w/ PCA: 0.39
+	Nearest Neighbor (2) w/ PCA: 0.39
+	Nearest Neighbor (3) w/ PCA: 0.4016
+	Nearest Neighbor (4) w/ PCA: 0.4038
+	Nearest Neighbor (5) w/ PCA: 0.413
+	Nearest Neighbor (6) w/ PCA: 0.4151
+	Nearest Neighbor (7) w/ PCA: 0.4193
+	Nearest Neighbor (8) w/ PCA: 0.4237
+	Nearest Neighbor (9) w/ PCA: 0.4259
+	-----------------------------------------------------
+
+*** ORL ***
+
+	*** Nearest Neighbor ***
+	*** Original Data ***
+	Nearest Neighbor (1): 0.958333333333
+	Nearest Neighbor (2): 0.958333333333
+	Nearest Neighbor (3): 0.933333333333
+	Nearest Neighbor (4): 0.941666666667
+	Nearest Neighbor (5): 0.908333333333
+	Nearest Neighbor (6): 0.908333333333
+	Nearest Neighbor (7): 0.9
+	Nearest Neighbor (8): 0.891666666667
+	Nearest Neighbor (9): 0.85
+	Nearest Neighbor (10): 0.858333333333
+
+	*** PCA Data ***
+	Nearest Neighbor (1) w/ PCA: 0.416666666667
+	Nearest Neighbor (2) w/ PCA: 0.416666666667
+	Nearest Neighbor (3) w/ PCA: 0.383333333333
+	Nearest Neighbor (4) w/ PCA: 0.358333333333
+	Nearest Neighbor (5) w/ PCA: 0.366666666667
+	Nearest Neighbor (6) w/ PCA: 0.341666666667
+	Nearest Neighbor (7) w/ PCA: 0.325
+	Nearest Neighbor (8) w/ PCA: 0.341666666667
+	Nearest Neighbor (9) w/ PCA: 0.341666666667
+	Nearest Neighbor (10) w/ PCA: 0.35
+	-----------------------------------------------------
+

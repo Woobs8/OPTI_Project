@@ -353,6 +353,13 @@ def plot_2D_data(data, labels, title="", fp="", draw=False):
             plots.append(plt.scatter(x, y, color=colors[i]))
         plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
 
+    if class_count > 10:
+        lgnd_marker_size=40
+        lgnd_font_size = 10
+    else:
+        lgnd_marker_size=100
+        lgnd_font_size = 15
+
     # Add legend
     col = ceil(class_count / 20)
     lgnd = plt.legend(plots,
@@ -360,10 +367,10 @@ def plot_2D_data(data, labels, title="", fp="", draw=False):
                 loc='center left',
                 bbox_to_anchor=(1, 0.5),
                 ncol=col,
-                fontsize=8)
+                fontsize=lgnd_font_size)
 
     for handle in lgnd.legendHandles:
-        handle._sizes = [10]
+        handle._sizes = [lgnd_marker_size]
 
     if fp != "":
         plt.savefig(fp, bbox_extra_artists=(lgnd,), bbox_inches='tight', pad_inches=0)
@@ -449,9 +456,9 @@ def plot_confusion_matrix(pred_labels, true_labels, normalize=True, title="", fp
 
     if normalize:
         # Hack to prevent a RuntimeWarning print to stdout in the case of division by 0 or NaN
-        np.seterr(divide='ignore')
+        np.seterr(divide='ignore', invalid='ignore')
         conf_mat = conf_mat.astype('float') / conf_mat.sum(axis=1)[:, np.newaxis]
-        np.seterr(divide='print')
+        np.seterr(divide='print', invalid='print')
 
     plt.figure()
     plt.imshow(conf_mat, interpolation='nearest', cmap=cmap)
@@ -492,7 +499,7 @@ param:
     @fp: path to store file in
     @draw: draw figure or not
 """
-def plot_decision_boundary(clf, test_data, test_lbls, title, scatter=False, fp="", draw=False):
+def plot_decision_boundary(clf, test_data, test_lbls, title="", scatter=False, fp="", draw=False):
     # Generate figure and color map
     color_map = plt.cm.RdBu
     fig = plt.figure()
@@ -554,7 +561,7 @@ def plot_decision_boundary(clf, test_data, test_lbls, title, scatter=False, fp="
                             range(class_count)+class_offset,
                             loc='center left',
                             bbox_to_anchor=(1, 0.5),
-                            fontsize = 8,
+                            fontsize = 15,
                             ncol=col)
 
     plt.tick_params(which='both', bottom='off', left='off', labelbottom='off', labelleft='off')
@@ -590,3 +597,9 @@ def plot_classifier_boxplot(data, classifiers, title="", fp="", draw=False):
         plt.savefig(fp, bbox_inches='tight', pad_inches=0)
     if draw:
         plt.draw()
+
+def plot_line(data,title="", fp="", draw=False):
+    print(data.shape)
+    #plt.figure(1)
+    #plt.subplot(211)
+    #plt.plot(t1, f(t1), 'bo', t2, f(t2), 'k')

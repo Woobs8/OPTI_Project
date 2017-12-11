@@ -1,0 +1,19 @@
+*** Benchmark Scores ***
+*** ORL ***
+	*** Original Data ***
+	NC: mean=0.93, var=0.00, std=0.03
+	NSC(2): mean=0.96, var=0.00, std=0.02
+	NSC(3): mean=0.96, var=0.00, std=0.02
+	NSC(5): mean=0.97, var=0.00, std=0.02
+	NN: mean=0.97, var=0.00, std=0.02
+	BP: mean=0.89, var=0.00, std=0.03
+	MSE: mean=0.94, var=0.00, std=0.02
+
+	*** PCA Data ***
+	NC: mean=0.36, var=0.00, std=0.04
+	NSC(2): mean=0.41, var=0.00, std=0.04
+	NSC(3): mean=0.40, var=0.00, std=0.04
+	NSC(5): mean=0.40, var=0.00, std=0.04
+	NN: mean=0.40, var=0.00, std=0.04
+	BP: mean=0.28, var=0.00, std=0.03
+	MSE: mean=0.16, var=0.00, std=0.02

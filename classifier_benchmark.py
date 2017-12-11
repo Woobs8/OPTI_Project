@@ -68,7 +68,7 @@ def main(run_mnist=True, run_orl=True, cpus=1, iter=1, file=None):
                 classification, mnist_pca_scores[i,j+1] = mnist_nsc.predict(pca_mnist_test_images, mnist_test_lbls)
 
             # Nearest Neighbor
-            mnist_nn = NN(1, 'uniform', cpus)
+            mnist_nn = NN(1, 'distance', cpus)
             # 784D data
             mnist_nn.fit(mnist_train_images, mnist_train_lbls)
             classification, mnist_scores[i,4] = mnist_nn.predict(mnist_test_images, mnist_test_lbls, 'hard')
@@ -129,7 +129,7 @@ def main(run_mnist=True, run_orl=True, cpus=1, iter=1, file=None):
                 classification, orl_pca_scores[i,j+1] = orl_nsc.predict(pca_orl_test_images, orl_test_lbls)
 
             # Nearest Neighbor
-            orl_nn = NN(1, 'uniform', cpus)
+            orl_nn = NN(1, 'distance', cpus)
             # 1200D data
             orl_nn.fit(orl_train_images, orl_train_lbls)
             classification, orl_scores[i,4] = orl_nn.predict(orl_test_images, orl_test_lbls, 'hard')
@@ -183,8 +183,8 @@ def main(run_mnist=True, run_orl=True, cpus=1, iter=1, file=None):
         if not exists(mnist_dir):
             makedirs(mnist_dir)
 
-        plot_classifier_boxplot(mnist_scores, classifiers, title="MNIST Classification", fp=mnist_dir + 'classifier_comp.png')
-        plot_classifier_boxplot(mnist_pca_scores, classifiers, title="MNIST PCA Classification", fp=mnist_dir + 'classifier_pca_comp.png')
+        plot_classifier_boxplot(mnist_scores, classifiers, fp=mnist_dir + 'mnist_classifier_comp.png')
+        plot_classifier_boxplot(mnist_pca_scores, classifiers, fp=mnist_dir + 'mnist_classifier_pca_comp.png')
 
         # Calculate means of scores of each iteration
         mean_mnist_scores = mnist_scores.mean(axis=0)
@@ -212,8 +212,8 @@ def main(run_mnist=True, run_orl=True, cpus=1, iter=1, file=None):
         if not exists(orl_dir):
             makedirs(orl_dir)
 
-        plot_classifier_boxplot(orl_scores, classifiers, title="ORL Classification", fp=orl_dir + 'classifier_comp.png')
-        plot_classifier_boxplot(orl_pca_scores, classifiers, title="ORL PCA Classification", fp=orl_dir + 'classifier_pca_comp.png')
+        plot_classifier_boxplot(orl_scores, classifiers, fp=orl_dir + 'orl_classifier_comp.png')
+        plot_classifier_boxplot(orl_pca_scores, classifiers, fp=orl_dir + 'orl_classifier_pca_comp.png')
 
         # Calculate means of scores of each iteration
         mean_orl_scores = orl_scores.mean(axis=0)
@@ -257,7 +257,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         if sys.argv[1] == 'help':
             print("Usage:")
-            print("\topti_project.py [<mnist> <orl>] [cpus=<int>] [file=<string>]\n")
+            print("\tclassifier_benchmark.py [<mnist> <orl>] [cpus=<int>] [file=<string>]\n")
             print('[Optional Parameters]:')
             help_text = [['Description', 'Usage', 'Default'],
                          ['-----------','-----------','-----------'],
